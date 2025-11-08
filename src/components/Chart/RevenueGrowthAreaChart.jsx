@@ -64,7 +64,7 @@ const generatedYearData = [
   },
 ];
 
-export default function MatchedGrowthAreaChart({
+export default function RevenueGrowthAreaChart({
   selectedYear,
   selectedMonth,
 }) {
@@ -118,8 +118,8 @@ export default function MatchedGrowthAreaChart({
               x2="120%"
               y2="150%"
             >
-              <stop offset="5%" stopColor="#CD8085" stopOpacity={1} />
-              <stop offset="95%" stopColor="#E8F2FF1A" stopOpacity={1} />
+              <stop offset="5%" stopColor="#00D3F2" stopOpacity={1} />
+              <stop offset="95%" stopColor="#2B7FFF1A" stopOpacity={1} />
             </linearGradient>
           </defs>
 
@@ -144,7 +144,7 @@ export default function MatchedGrowthAreaChart({
           <Area
             type="monotone"
             dataKey="growth"
-            stroke="#CD8085"
+            stroke="#2B7FFF"
             fill="url(#growthGradient)" // Apply the gradient fill
             strokeWidth={2}
             activeDot={{ r: 5 }}
