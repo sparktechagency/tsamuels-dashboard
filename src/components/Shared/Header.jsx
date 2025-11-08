@@ -27,7 +27,7 @@ export default function Header() {
   };
 
   return (
-    <div className="flex items-center justify-end bg-[#875473] w-full px-10 py-4 border-b border-gray-200">
+    <div className="flex items-center justify-end w-full px-10 py-4 border-b border-gray-200">
       <div className="flex items-center gap-4">
         {/* <div className="text-white">
           <Link to="/notifications">
@@ -36,7 +36,7 @@ export default function Header() {
         </div> */}
         <Button
           sx={{
-            color: "black",
+            bgcolor: "#2B7FFF",
             textTransform: "none",
             padding: "5px",
             width: "100%",
