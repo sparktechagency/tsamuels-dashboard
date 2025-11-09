@@ -212,16 +212,7 @@ export default function RevenueManagement() {
                 >
                   Revenue Name
                 </TableCell>
-                <TableCell
-                  sx={{
-                    color: "#fff",
-                    textAlign: "center",
-                    fontWeight: "bold",
-                    fontSize: "14px",
-                  }}
-                >
-                  Revenue Type
-                </TableCell>
+               
                 <TableCell
                   sx={{
                     color: "#fff",
@@ -262,9 +253,7 @@ export default function RevenueManagement() {
                     <TableCell sx={{ textAlign: "center" }}>
                       {revenue.revenueName}
                     </TableCell>
-                    <TableCell sx={{ textAlign: "center" }}>
-                      {revenue.revenueType}
-                    </TableCell>
+                  
                     <TableCell sx={{ textAlign: "center", fontWeight: "600" }}>
                       {formatCurrency(revenue.amount)}
                     </TableCell>

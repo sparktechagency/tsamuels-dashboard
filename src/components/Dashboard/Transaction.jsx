@@ -276,7 +276,7 @@ export default function Transaction() {
                     fontSize: "14px",
                   }}
                 >
-                  Type
+                  Package
                 </TableCell>
                 <TableCell
                   sx={{

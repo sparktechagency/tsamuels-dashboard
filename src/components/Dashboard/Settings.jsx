@@ -40,13 +40,13 @@ export default function Settings() {
           <p>Privacy Policy</p>
           <FaChevronRight />
         </Link>
-        <Link
+        {/* <Link
           to="faq"
           className="flex items-center justify-between bg-[#2B7FFF] text-white p-4 rounded-lg w-3/4 hover:font-medium"
         >
           <p>FAQ</p>
           <FaChevronRight />
-        </Link>
+        </Link> */}
       </div>
     </div>
   );

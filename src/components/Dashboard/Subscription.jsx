@@ -5,7 +5,6 @@ import {
   Modal,
   TextField,
   IconButton,
-  Switch,
   Chip,
   Typography,
   InputAdornment,
@@ -14,41 +13,58 @@ import {
   CardContent,
   CardActions,
   Divider,
+  FormControl,
+  InputLabel,
   Select,
   MenuItem,
 } from "@mui/material";
 import { AiOutlineEdit, AiOutlineDelete, AiOutlinePlus } from "react-icons/ai";
-import { FaSearch, FaDollarSign, FaCalendarAlt, FaCheck } from "react-icons/fa";
+import {
+  FaSearch,
+  FaDollarSign,
+  FaCheck,
+  FaUsers,
+  FaCrown,
+} from "react-icons/fa";
+import ManageSubscriptionModal from "../UI/ManageSubscriptionModal";
+import DeleteSubscriptionModal from "../UI/DeleteSubscriptionModal";
 
 const initialSubscriptions = [
   {
     id: 1,
-    name: "Basic Plan",
-    price: 9.99,
-    duration: "Monthly",
-    features: ["5 Events", "Basic Support", "Community Access"],
+    name: "Dual Admin",
+    description: "Up to 2 Admin Users",
+    price: 4.99,
+    icon: "users",
+    isPopular: false,
     isVisible: true,
+    features: [
+      "All premium features included",
+      "AI-powered scheduling assistant",
+      "Real-time traffic updates",
+      "Weather integration",
+      "Smart notifications",
+      "Family calendar sync",
+      "Private & secure",
+    ],
   },
   {
     id: 2,
-    name: "Family Pro",
-    price: 19.99,
-    duration: "Monthly",
-    features: [
-      "Unlimited Events",
-      "Priority Support",
-      "Mentor Access",
-      "Analytics",
-    ],
+    name: "Family Plan",
+    description: "Unlimited Admin Users",
+    price: 10.99,
+    icon: "crown",
+    isPopular: true,
     isVisible: true,
-  },
-  {
-    id: 3,
-    name: "Annual Saver",
-    price: 99.99,
-    duration: "Yearly",
-    features: ["All Pro Features", "20% Discount", "Early Access"],
-    isVisible: false,
+    features: [
+      "All premium features included",
+      "AI-powered scheduling assistant",
+      "Real-time traffic updates",
+      "Weather integration",
+      "Smart notifications",
+      "Family calendar sync",
+      "Private & secure",
+    ],
   },
 ];
 
@@ -62,8 +78,10 @@ export default function Subscription() {
   const [modalMode, setModalMode] = useState("add");
   const [currentSubscription, setCurrentSubscription] = useState({
     name: "",
+    description: "",
     price: "",
-    duration: "Monthly",
+    icon: "users",
+    isPopular: false,
     features: [""],
     isVisible: true,
   });
@@ -72,7 +90,7 @@ export default function Subscription() {
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [subscriptionToDelete, setSubscriptionToDelete] = useState(null);
 
-  // Modal Handlers
+  // Modal
   const handleOpenModal = (mode, sub = null) => {
     setModalMode(mode);
     if (mode === "edit" && sub) {
@@ -80,8 +98,10 @@ export default function Subscription() {
     } else {
       setCurrentSubscription({
         name: "",
+        description: "",
         price: "",
-        duration: "Monthly",
+        icon: "users",
+        isPopular: false,
         features: [""],
         isVisible: true,
       });
@@ -93,8 +113,10 @@ export default function Subscription() {
     setOpenModal(false);
     setCurrentSubscription({
       name: "",
+      description: "",
       price: "",
-      duration: "Monthly",
+      icon: "users",
+      isPopular: false,
       features: [""],
       isVisible: true,
     });
@@ -142,15 +164,6 @@ export default function Subscription() {
     handleCloseModal();
   };
 
-  // Toggle Visibility
-  const toggleVisibility = (id) => {
-    const updated = subscriptions.map((s) =>
-      s.id === id ? { ...s, isVisible: !s.isVisible } : s
-    );
-    setSubscriptions(updated);
-    setFilteredSubscriptions(updated);
-  };
-
   // Delete
   const handleDelete = (sub) => {
     setSubscriptionToDelete(sub);
@@ -168,337 +181,193 @@ export default function Subscription() {
   };
 
   return (
-    <div className="px-6 py-8 bg-[#fffffe] min-h-screen">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-[#1A1A1A]">
-            Subscription Plans
-          </h1>
-          <p className="text-[#2B7FFF] mt-1">Create and manage pricing tiers</p>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-[#f8faff] to-[#f0f4ff] px-6 py-8">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <p className="text-3xl font-bold text-[#1a1a1a]">
+              Subscription Plans
+            </p>
+            <p className="text-[#2B7FFF]">Manage and customize pricing tiers</p>
+          </div>
 
-        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
           <Button
             onClick={() => handleOpenModal("add")}
             startIcon={<AiOutlinePlus />}
             sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "1px",
-              textTransform: "none",
-              bgcolor: "#2B7FFF",
+              bgcolor: "#3B82F6",
               color: "white",
-              px: 3,
-              py: 1,
-              fontWeight: 600,
+              textTransform: "none",
               borderRadius: "10px",
-              transition: "all 0.3s ease",
-              "&:hover": {
-                bgcolor: "#00D3F2",
-                color: "black",
-              },
+              px: 3,
+              fontWeight: 600,
+              "&:hover": { bgcolor: "#2563EB" },
             }}
           >
             Add Plan
           </Button>
         </div>
-      </div>
 
-      {/* Cards Container - Using div + Flexbox */}
-      <div className="flex flex-wrap -mx-4">
-        {filteredSubscriptions.length === 0 ? (
-          <div className="w-full text-center py-12">
-            <p className="text-gray-500">No subscription plans found.</p>
-          </div>
-        ) : (
-          filteredSubscriptions.map((sub) => (
-            <div key={sub.id} className="w-full sm:w-1/2 lg:w-1/4 px-4 mb-8">
-              <div
-                className="h-full flex flex-col bg-white rounded-2xl shadow-xl transition-all duration-300 hover:shadow-xl relative"
-                style={{ opacity: sub.isVisible ? 1 : 0.5 }}
-              >
-                <div className="flex-1 p-6 pb-3">
-                  <div className="flex justify-between items-center mb-2">
-                    <h3 className="text-xl font-bold text-gray-800">
-                      {sub.name}
-                    </h3>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={sub.isVisible}
-                        onChange={() => toggleVisibility(sub.id)}
-                        className="sr-only peer"
-                      />
-                      <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#2B7FFF]"></div>
-                    </label>
-                  </div>
-
-                  <div className="flex items-baseline mb-4">
-                    <span className="text-3xl font-bold text-[#2B7FFF]">
-                      ${sub.price.toFixed(2)}
-                    </span>
-                    <span className="text-gray-500 ml-1">
-                      /{sub.duration.toLowerCase()}
-                    </span>
-                  </div>
-
-                  <hr className="my-4 border-gray-200" />
-
-                  <div className="space-y-2">
-                    {sub.features.map((feature, i) => (
-                      <div key={i} className="flex items-center gap-2">
-                        <FaCheck size={14} className="text-green-600" />
-                        <span className="text-sm text-gray-700">{feature}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="p-4 pt-2 flex justify-between border-t border-gray-100">
-                  <IconButton
-                    onClick={() => handleOpenModal("edit", sub)}
-                    sx={{
-                      color: "#fff",
-                      bgcolor: "#2B7FFF",
-                      ":hover": {
-                        bgcolor: "#fff",
-                        color: "#2B7FFF",
-                        border: "0.5px solid #2B7FFF",
-                      },
-                    }}
-                  >
-                    <AiOutlineEdit size={20} />
-                  </IconButton>
-                  <IconButton
-                    onClick={() => handleDelete(sub)}
-                    sx={{
-                      bgcolor: "red",
-                      color: "white",
-                      ":hover": {
-                        bgcolor: "white",
-                        color: "red",
-                        border: "0.5px solid red",
-                      },
-                    }}
-                  >
-                    <AiOutlineDelete size={20} />
-                  </IconButton>
-                </div>
-              </div>
-            </div>
-          ))
-        )}
-      </div>
-
-      {/* Add/Edit Modal */}
-      <Modal open={openModal} onClose={handleCloseModal}>
-        <Box
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: { xs: "95%", sm: 700 },
-            maxHeight: "90vh",
-            overflowY: "auto",
-            bgcolor: "background.paper",
-            borderRadius: 3,
-            p: 4,
-            boxShadow: 24,
-          }}
-        >
-          <Typography variant="h6" fontWeight="bold" textAlign="center" mb={3}>
-            {modalMode === "edit" ? "Edit Plan" : "Create New Plan"}
-          </Typography>
-
-          <Box sx={{ display: "grid", gap: 3 }}>
-            <TextField
-              label="Plan Name"
-              value={currentSubscription.name}
-              onChange={(e) =>
-                setCurrentSubscription({
-                  ...currentSubscription,
-                  name: e.target.value,
-                })
-              }
-              fullWidth
-              sx={{ "& .MuiOutlinedInput-root": { borderRadius: "16px" } }}
-            />
-
-            <div className="flex gap-2">
-              <TextField
-                label="Price"
-                type="number"
-                fullWidth
-                value={currentSubscription.price}
-                onChange={(e) =>
-                  setCurrentSubscription({
-                    ...currentSubscription,
-                    price: e.target.value,
-                  })
-                }
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <FaDollarSign />
-                    </InputAdornment>
-                  ),
-                }}
+        {/* Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {filteredSubscriptions.length === 0 ? (
+            <Box gridColumn="1 / -1" textAlign="center" py={10}>
+              <Typography color="text.secondary">No plans found.</Typography>
+            </Box>
+          ) : (
+            filteredSubscriptions.map((plan) => (
+              <Card
+                key={plan.id}
                 sx={{
-                  flex: 1,
-                  "& .MuiOutlinedInput-root": { borderRadius: "16px" },
-                }}
-              />
-              <Select
-                labelId="billing-cycle-label"
-                label="Billing Cycle"
-                fullWidth
-                value={currentSubscription.duration}
-                onChange={(e) =>
-                  setCurrentSubscription({
-                    ...currentSubscription,
-                    duration: e.target.value,
-                  })
-                }
-                sx={{
-                  flex: 1,
-                  borderRadius: "16px",
-                  "& .MuiOutlinedInput-root": {
-                    borderRadius: "16px",
+                  borderRadius: 4,
+                  boxShadow: "0 10px 30px rgba(0,0,0,0.05)",
+                  position: "relative",
+                  overflow: "visible",
+                  bgcolor: "#fff",
+                  transition: "all 0.3s ease",
+                  opacity: plan.isVisible ? 1 : 0.6,
+                  "&:hover": {
+                    transform: "translateY(-8px)",
+                    boxShadow: "0 20px 40px rgba(0,0,0,0.1)",
                   },
                 }}
               >
-                <MenuItem value="Monthly">Monthly</MenuItem>
-                <MenuItem value="Yearly">Yearly</MenuItem>
-              </Select>
-            </div>
-
-            <Box>
-              <Typography fontWeight="medium" mb={1}>
-                Features
-              </Typography>
-              {currentSubscription.features.map((feature, index) => (
-                <Box key={index} sx={{ display: "flex", gap: 1, mb: 1 }}>
-                  <TextField
-                    value={feature}
-                    onChange={(e) => handleFeatureChange(index, e.target.value)}
-                    placeholder="e.g. Unlimited Events"
-                    fullWidth
+                {/* Most Popular Badge */}
+                {plan.isPopular && (
+                  <Chip
+                    label="Most Popular"
                     size="small"
                     sx={{
-                      "& .MuiOutlinedInput-root": { borderRadius: "12px" },
+                      position: "absolute",
+                      top: -12,
+                      left: "50%",
+                      transform: "translateX(-50%)",
+                      bgcolor: "#3B82F6",
+                      color: "white",
+                      fontWeight: 600,
+                      fontSize: "0.75rem",
+                      px: 2,
+                      borderRadius: "9999px",
+                      zIndex: 10,
                     }}
                   />
-                  {currentSubscription.features.length > 1 && (
-                    <IconButton
-                      onClick={() => removeFeatureField(index)}
-                      color="error"
-                      size="small"
+                )}
+
+                <CardContent sx={{ pt: 3, pb: 2 }}>
+                  {/* Icon & Title */}
+                  <div className="flex flex-col items-center mb-1">
+                    <div
+                      className="w-16 h-16 rounded-full flex items-center justify-center mb-2"
+                      style={{
+                        backgroundColor:
+                          plan.icon === "crown" ? "#F3E8FF" : "#F1F5F9",
+                      }}
                     >
-                      <AiOutlineDelete />
-                    </IconButton>
-                  )}
-                </Box>
-              ))}
-              <Button
-                onClick={addFeatureField}
-                size="small"
-                sx={{ mt: 1, color: "#2B7FFF" }}
-              >
-                + Add Feature
-              </Button>
-            </Box>
+                      {plan.icon === "crown" ? (
+                        <FaCrown size={28} color="#A78BFA" />
+                      ) : (
+                        <FaUsers size={26} color="#94A3B8" />
+                      )}
+                    </div>
+                    <p className="font-bold text-lg text-[#1a1a1a]">
+                      {plan.name}
+                    </p>
+                    <p className="text-sm text-[#6b6b6b]">{plan.description}</p>
+                  </div>
 
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "flex-end",
-                gap: 2,
-                mt: 3,
-              }}
-            >
-              <Button
-                onClick={handleCloseModal}
-                sx={{
-                  border: "1px solid #2B7FFF",
-                  color: "#2B7FFF",
-                  borderRadius: "50px",
-                  px: 3,
-                  textTransform: "none",
-                }}
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={handleSaveSubscription}
-                variant="contained"
-                sx={{
-                  bgcolor: "#2B7FFF",
-                  color: "white",
-                  borderRadius: "50px",
-                  px: 4,
-                  textTransform: "none",
-                  "&:hover": { bgcolor: "#2B7FFF", boxShadow: "initial" },
-                }}
-              >
-                {modalMode === "edit" ? "Update" : "Create"} Plan
-              </Button>
-            </Box>
-          </Box>
-        </Box>
-      </Modal>
+                  {/* Price */}
+                  <div className="text-center">
+                    <p className="text-4xl font-bold text-[#3B82F6]">
+                      ${plan.price.toFixed(2)}
+                    </p>
+                    <p className="text-sm text-[#6b6b6b]">Per month</p>
+                  </div>
 
-      {/* Delete Confirmation */}
-      <Modal open={openDeleteModal} onClose={() => setOpenDeleteModal(false)}>
-        <Box
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: 400,
-            bgcolor: "background.paper",
-            borderRadius: 3,
-            p: 4,
-            textAlign: "center",
-          }}
-        >
-          <Typography variant="h6" fontWeight="bold" mb={2}>
-            Delete Plan?
-          </Typography>
-          <Typography mb={3}>
-            Remove <strong>{subscriptionToDelete?.name}</strong> permanently?
-          </Typography>
-          <Box sx={{ display: "flex", justifyContent: "center", gap: 2 }}>
-            <Button
-              onClick={() => setOpenDeleteModal(false)}
-              sx={{
-                border: "1px solid #2B7FFF",
-                color: "#2B7FFF",
-                borderRadius: "10px",
-                textTransform: "none",
-                width: "80px",
-              }}
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={confirmDelete}
-              sx={{
-                bgcolor: "#ee443f",
-                color: "white",
-                borderRadius: "10px",
-                textTransform: "none",
-                width: "80px",
-              }}
-            >
-              Delete
-            </Button>
-          </Box>
-        </Box>
-      </Modal>
+                  <Divider sx={{ my: 2 }} />
+
+                  {/* Features */}
+                  <Stack spacing={1.5} mb={2}>
+                    <Typography
+                      variant="subtitle2"
+                      fontWeight="bold"
+                      color="#1A1A1A"
+                    >
+                      What's included:
+                    </Typography>
+                    {plan.features.map((feature, idx) => (
+                      <Box
+                        key={idx}
+                        display="flex"
+                        alignItems="flex-start"
+                        gap={1.5}
+                      >
+                        <FaCheck
+                          size={16}
+                          color="#10B981"
+                          style={{ marginTop: "2px" }}
+                        />
+                        <Typography
+                          variant="body2"
+                          color="text.primary"
+                          fontSize="0.875rem"
+                        >
+                          {feature}
+                        </Typography>
+                      </Box>
+                    ))}
+                  </Stack>
+                </CardContent>
+
+                {/* Actions */}
+                <CardActions sx={{ justifyContent: "center", gap: 1, pb: 3 }}>
+                  <IconButton
+                    onClick={() => handleOpenModal("edit", plan)}
+                    sx={{
+                      bgcolor: "#3B82F6",
+                      color: "white",
+                      "&:hover": { bgcolor: "#2563EB" },
+                    }}
+                  >
+                    <AiOutlineEdit />
+                  </IconButton>
+                  <IconButton
+                    onClick={() => handleDelete(plan)}
+                    sx={{
+                      bgcolor: "#EF4444",
+                      color: "white",
+                      "&:hover": { bgcolor: "#DC2626" },
+                    }}
+                  >
+                    <AiOutlineDelete />
+                  </IconButton>
+                </CardActions>
+              </Card>
+            ))
+          )}
+        </div>
+      </div>
+
+      {/* Add/Edit Modal */}
+      <ManageSubscriptionModal
+        openModal={openModal}
+        handleCloseModal={handleCloseModal}
+        currentSubscription={currentSubscription}
+        setCurrentSubscription={setCurrentSubscription}
+        modalMode={modalMode}
+        handleFeatureChange={handleFeatureChange}
+        removeFeatureField={removeFeatureField}
+        addFeatureField={addFeatureField}
+        handleSaveSubscription={handleSaveSubscription}
+      />
+
+      {/* Delete Modal */}
+      <DeleteSubscriptionModal
+        openDeleteModal={openDeleteModal}
+        setOpenDeleteModal={setOpenDeleteModal}
+        subscriptionToDelete={subscriptionToDelete}
+        confirmDelete={confirmDelete}
+      />
     </div>
   );
 }
