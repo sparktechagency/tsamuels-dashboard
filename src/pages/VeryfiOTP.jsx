@@ -46,7 +46,7 @@ const VerifyOtp = () => {
   };
 
   return (
-    <div className="bg-[#f5e5e4] min-h-[100vh]">
+    <div className="bg-[#a9e9f3] min-h-[100vh]">
       <Container maxWidth="lg">
         <Grid
           container
@@ -101,7 +101,7 @@ const VerifyOtp = () => {
                 backgroundColor: "#2B7FFF",
                 padding: "8px",
                 fontWeight: "bold",
-                borderRadius: "30px",
+                borderRadius: "10px",
                 fontSize: "16px",
                 textTransform: "none",
               }}

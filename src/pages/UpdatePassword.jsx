@@ -44,7 +44,7 @@ const UpdatePassword = () => {
   };
 
   return (
-    <div className="bg-[#f5e5e4] min-h-[100vh]">
+    <div className="bg-[#a9e9f3] min-h-[100vh]">
       <Container maxWidth="lg">
         <Grid
           container
@@ -182,7 +182,7 @@ const UpdatePassword = () => {
                     textTransform: "none",
                     padding: "10px",
                     width: "100%",
-                    borderRadius: "30px",
+                    borderRadius: "10px",
                     fontWeight: "bold",
                   }}
                   type="submit"
