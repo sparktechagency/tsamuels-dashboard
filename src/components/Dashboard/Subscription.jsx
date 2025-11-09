@@ -261,11 +261,11 @@ export default function Subscription() {
                     onClick={() => handleOpenModal("edit", sub)}
                     sx={{
                       color: "#fff",
-                      bgcolor: "#CC5500",
+                      bgcolor: "#2B7FFF",
                       ":hover": {
                         bgcolor: "#fff",
-                        color: "#CC5500",
-                        border: "0.5px solid #CC5500",
+                        color: "#2B7FFF",
+                        border: "0.5px solid #2B7FFF",
                       },
                     }}
                   >
