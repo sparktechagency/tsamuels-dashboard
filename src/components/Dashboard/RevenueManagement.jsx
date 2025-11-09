@@ -95,15 +95,6 @@ const revenueData = [
   },
 ];
 
-const revenueTypes = [
-  "Service Fee",
-  "Course Fee",
-  "License Fee",
-  "Sales",
-  "Recurring",
-  "Project Fee",
-];
-
 export default function RevenueManagement() {
   const [searchText, setSearchText] = useState("");
   const [filteredRevenue, setFilteredRevenue] = useState(revenueData);
