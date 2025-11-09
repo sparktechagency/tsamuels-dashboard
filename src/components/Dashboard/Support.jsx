@@ -45,7 +45,7 @@ const therapyData = [
   },
 ];
 
-export default function InterestsAndValues() {
+export default function Support() {
   const [searchText, setSearchText] = useState("");
   const [filteredTherapy, setFilteredTherapy] = useState(therapyData);
   const [page, setPage] = useState(0);

@@ -69,7 +69,7 @@ const diagnosisData = [
   },
 ];
 
-export default function Diagnosis() {
+export default function RevenueManagement() {
   const [searchText, setSearchText] = useState("");
   const [filteredDiagnosis, setFilteredDiagnosis] = useState(diagnosisData);
   const [page, setPage] = useState(0);

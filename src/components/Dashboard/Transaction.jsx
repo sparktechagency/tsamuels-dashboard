@@ -69,7 +69,7 @@ const therapyData = [
   },
 ];
 
-export default function Therapy() {
+export default function Transaction() {
   const [searchText, setSearchText] = useState("");
   const [filteredTherapy, setFilteredTherapy] = useState(therapyData);
   const [page, setPage] = useState(0);
