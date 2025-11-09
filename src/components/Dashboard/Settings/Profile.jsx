@@ -49,14 +49,15 @@ export default function Profile() {
       <Button
         onClick={() => window.history.back()}
         sx={{
-          backgroundColor: "#CD8085",
+          backgroundColor: "#2B7FFF",
           color: "white",
           padding: "5px",
           width: "10px",
           height: "30px",
           ":hover": {
-            backgroundColor: "#ff989f",
-            color: "black",
+            backgroundColor: "white",
+            color: "#2B7FFF",
+            border: "1px solid #2B7FFF",
           },
         }}
       >
@@ -73,7 +74,7 @@ export default function Profile() {
               position: "absolute",
               top: "50%",
               right: 0,
-              backgroundColor: "#CD8085",
+              backgroundColor: "#2B7FFF",
               borderRadius: "50%",
               padding: "8px",
             }}
@@ -149,7 +150,7 @@ export default function Profile() {
               fullWidth
               variant="contained"
               sx={{
-                backgroundColor: "#CD8085",
+                backgroundColor: "#2B7FFF",
                 color: "white",
                 textTransform: "none",
                 padding: "10px",

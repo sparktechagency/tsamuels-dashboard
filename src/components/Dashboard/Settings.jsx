@@ -7,42 +7,42 @@ export default function Settings() {
       <div className="p-8 rounded-lg flex flex-col gap-4">
         <Link
           to="profile"
-          className="flex items-center justify-between bg-[#CD8085] text-white p-4 rounded-lg w-3/4 hover:font-medium"
+          className="flex items-center justify-between bg-[#2B7FFF] text-white p-4 rounded-lg w-3/4 hover:font-medium"
         >
           <p>Personal Information</p>
           <FaChevronRight />
         </Link>
         <Link
           to="change-password"
-          className="flex items-center justify-between bg-[#CD8085] text-white p-4 rounded-lg w-3/4 hover:font-medium"
+          className="flex items-center justify-between bg-[#2B7FFF] text-white p-4 rounded-lg w-3/4 hover:font-medium"
         >
           <p>Change Password</p>
           <FaChevronRight />
         </Link>
         <Link
           to="terms-and-condition"
-          className="flex items-center justify-between bg-[#CD8085] text-white p-4 rounded-lg w-3/4 hover:font-medium"
+          className="flex items-center justify-between bg-[#2B7FFF] text-white p-4 rounded-lg w-3/4 hover:font-medium"
         >
           <p>Terms & Condition</p>
           <FaChevronRight />
         </Link>
         <Link
           to="about-us"
-          className="flex items-center justify-between bg-[#CD8085] text-white p-4 rounded-lg w-3/4 hover:font-medium"
+          className="flex items-center justify-between bg-[#2B7FFF] text-white p-4 rounded-lg w-3/4 hover:font-medium"
         >
           <p>About Us</p>
           <FaChevronRight />
         </Link>
         <Link
           to="privacy-policy"
-          className="flex items-center justify-between bg-[#CD8085] text-white p-4 rounded-lg w-3/4 hover:font-medium"
+          className="flex items-center justify-between bg-[#2B7FFF] text-white p-4 rounded-lg w-3/4 hover:font-medium"
         >
           <p>Privacy Policy</p>
           <FaChevronRight />
         </Link>
         <Link
           to="faq"
-          className="flex items-center justify-between bg-[#CD8085] text-white p-4 rounded-lg w-3/4 hover:font-medium"
+          className="flex items-center justify-between bg-[#2B7FFF] text-white p-4 rounded-lg w-3/4 hover:font-medium"
         >
           <p>FAQ</p>
           <FaChevronRight />

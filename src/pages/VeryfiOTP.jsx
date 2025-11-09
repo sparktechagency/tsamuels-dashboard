@@ -81,7 +81,7 @@ const VerifyOtp = () => {
                   height: "45px",
                   fontSize: "20px",
                   backgroundColor: "transparent",
-                  border: "1px solid #CD8085",
+                  border: "1px solid #2B7FFF",
                   borderRadius: "8px",
                   margin: "5px",
                   textAlign: "center",
@@ -98,7 +98,7 @@ const VerifyOtp = () => {
               variant="contained"
               style={{
                 marginTop: "20px",
-                backgroundColor: "#CD8085",
+                backgroundColor: "#2B7FFF",
                 padding: "8px",
                 fontWeight: "bold",
                 borderRadius: "30px",

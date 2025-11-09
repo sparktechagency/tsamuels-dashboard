@@ -77,11 +77,11 @@ const SignIn = () => {
                 sx={{
                   "& .MuiOutlinedInput-root": {
                     "&.Mui-focused fieldset": {
-                      borderColor: "#CD8085", // Change border color on focus
+                      borderColor: "#2B7FFF", // Change border color on focus
                     },
                   },
                   "& .MuiInputLabel-root.Mui-focused": {
-                    color: "#CD8085", // Change label color on focus (optional)
+                    color: "#2B7FFF", // Change label color on focus (optional)
                   },
                   height: "50px", // Set the height of the TextField
                   "& .MuiInputBase-root": {
@@ -105,11 +105,11 @@ const SignIn = () => {
                 sx={{
                   "& .MuiOutlinedInput-root": {
                     "&.Mui-focused fieldset": {
-                      borderColor: "#CD8085", // Change border color on focus
+                      borderColor: "#2B7FFF", // Change border color on focus
                     },
                   },
                   "& .MuiInputLabel-root.Mui-focused": {
-                    color: "#CD8085", // Change label color on focus (optional)
+                    color: "#2B7FFF", // Change label color on focus (optional)
                   },
                   height: "50px", // Set the height of the TextField
                   "& .MuiInputBase-root": {
@@ -145,7 +145,7 @@ const SignIn = () => {
                 variant="contained"
                 style={{
                   marginTop: "20px",
-                  backgroundColor: "#CD8085",
+                  backgroundColor: "#2B7FFF",
                   padding: "8px",
                   fontWeight: "semibold",
                   borderRadius: "30px",
