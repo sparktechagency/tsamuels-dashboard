@@ -21,6 +21,7 @@ import {
 import { FaSearch } from "react-icons/fa";
 import { FiEye } from "react-icons/fi";
 import { IoClose } from "react-icons/io5";
+import { getStatusColor } from "../utils/statusColor";
 
 const usersData = [
   {
@@ -97,19 +98,6 @@ export default function UserManagement() {
     setSelectedUser(null);
   };
 
-  const getStatusColor = (status) => {
-    switch (status.toLowerCase()) {
-      case "active":
-        return "success";
-      case "inactive":
-        return "error";
-      case "pending":
-        return "warning";
-      default:
-        return "default";
-    }
-  };
-
   return (
     <div className="px-10 py-8 bg-[#fdfdfd] h-[92vh] overflow-auto">
       {/* Search Bar */}
@@ -170,12 +158,13 @@ export default function UserManagement() {
                   <TableCell align="center">{user.email}</TableCell>
                   <TableCell align="center">{user.location}</TableCell>
                   <TableCell align="center">
-                    <Chip
-                      label={user.status}
-                      color={getStatusColor(user.status)}
-                      size="small"
-                      sx={{ fontWeight: 600, minWidth: 80 }}
-                    />
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(
+                        user.status
+                      )}`}
+                    >
+                      {user.status}
+                    </span>
                   </TableCell>
                   <TableCell align="center">
                     <IconButton
@@ -259,13 +248,13 @@ export default function UserManagement() {
               </Box>
 
               {/* Badges */}
-              <Box display="flex" gap={1} mb={3} flexWrap="wrap">
-                <Chip
-                  label={selectedUser.status}
-                  color={getStatusColor(selectedUser.status)}
-                  sx={{ fontWeight: 600 }}
-                />
-              </Box>
+              <p
+                className={`w-20 text-center mb-4 px-3 py-1 rounded-full text-sm font-semibold ${getStatusColor(
+                  selectedUser.status
+                )}`}
+              >
+                {selectedUser.status}
+              </p>
 
               {/* Details Grid */}
               <Box sx={{ display: "grid", gap: 2.5 }}>
