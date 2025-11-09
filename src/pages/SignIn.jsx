@@ -47,7 +47,7 @@ const SignIn = () => {
   };
 
   return (
-    <div className="bg-[#f5e5e4] min-h-[100vh]">
+    <div className="bg-[#a9e9f3] min-h-[100vh]">
       <Container maxWidth="lg">
         <Grid
           container
@@ -77,11 +77,11 @@ const SignIn = () => {
                 sx={{
                   "& .MuiOutlinedInput-root": {
                     "&.Mui-focused fieldset": {
-                      borderColor: "#CD8085", // Change border color on focus
+                      borderColor: "#2B7FFF", // Change border color on focus
                     },
                   },
                   "& .MuiInputLabel-root.Mui-focused": {
-                    color: "#CD8085", // Change label color on focus (optional)
+                    color: "#2B7FFF", // Change label color on focus (optional)
                   },
                   height: "50px", // Set the height of the TextField
                   "& .MuiInputBase-root": {
@@ -105,11 +105,11 @@ const SignIn = () => {
                 sx={{
                   "& .MuiOutlinedInput-root": {
                     "&.Mui-focused fieldset": {
-                      borderColor: "#CD8085", // Change border color on focus
+                      borderColor: "#2B7FFF", // Change border color on focus
                     },
                   },
                   "& .MuiInputLabel-root.Mui-focused": {
-                    color: "#CD8085", // Change label color on focus (optional)
+                    color: "#2B7FFF", // Change label color on focus (optional)
                   },
                   height: "50px", // Set the height of the TextField
                   "& .MuiInputBase-root": {
@@ -119,7 +119,7 @@ const SignIn = () => {
               />
 
               <div className="flex items-center justify-between mt-2">
-                <div className="text-[#875473] font-semibold">
+                <div className="text-[#2B7FFF] font-semibold">
                   <FormControlLabel
                     control={<Checkbox name="rememberMe" color="primary" />}
                     label="Remember Me"
@@ -131,7 +131,7 @@ const SignIn = () => {
                     style={{
                       fontWeight: "bold",
                       textDecoration: "underline",
-                      color: "#875473",
+                      color: "#2B7FFF",
                     }}
                   >
                     Forgot Password?
@@ -145,10 +145,10 @@ const SignIn = () => {
                 variant="contained"
                 style={{
                   marginTop: "20px",
-                  backgroundColor: "#CD8085",
+                  backgroundColor: "#2B7FFF",
                   padding: "8px",
                   fontWeight: "semibold",
-                  borderRadius: "30px",
+                  borderRadius: "10px",
                   fontSize: "16px",
                   textTransform: "none",
                 }}

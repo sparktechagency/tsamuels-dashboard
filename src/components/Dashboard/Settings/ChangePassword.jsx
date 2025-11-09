@@ -45,14 +45,15 @@ export default function ChangePassword() {
       <Button
         onClick={() => window.history.back()}
         sx={{
-          backgroundColor: "#CD8085",
+          backgroundColor: "#2B7FFF",
           color: "white",
           padding: "5px",
           width: "10px",
           height: "30px",
           ":hover": {
-            backgroundColor: "#ff989f",
-            color: "black",
+            backgroundColor: "white",
+            color: "#2B7FFF",
+            border: "1px solid #2B7FFF",
           },
         }}
       >
@@ -66,7 +67,7 @@ export default function ChangePassword() {
               <InputLabel
                 htmlFor="outlined-adornment-password"
                 sx={{
-                  color: "#CD8085",
+                  color: "#2B7FFF",
                 }}
               >
                 Current Password
@@ -87,9 +88,9 @@ export default function ChangePassword() {
                       edge="end"
                     >
                       {showCurrentPassword ? (
-                        <IoIosEyeOff className="text-[#CD8085]" />
+                        <IoIosEyeOff className="text-[#2B7FFF]" />
                       ) : (
-                        <IoMdEye className="text-[#CD8085]" />
+                        <IoMdEye className="text-[#2B7FFF]" />
                       )}
                     </IconButton>
                   </InputAdornment>
@@ -102,7 +103,7 @@ export default function ChangePassword() {
               <InputLabel
                 htmlFor="outlined-adornment-password"
                 sx={{
-                  color: "#CD8085",
+                  color: "#2B7FFF",
                 }}
               >
                 New Password
@@ -123,9 +124,9 @@ export default function ChangePassword() {
                       edge="end"
                     >
                       {showNewPassword ? (
-                        <IoIosEyeOff className="text-[#CD8085]" />
+                        <IoIosEyeOff className="text-[#2B7FFF]" />
                       ) : (
-                        <IoMdEye className="text-[#CD8085]" />
+                        <IoMdEye className="text-[#2B7FFF]" />
                       )}
                     </IconButton>
                   </InputAdornment>
@@ -138,7 +139,7 @@ export default function ChangePassword() {
               <InputLabel
                 htmlFor="outlined-adornment-password"
                 sx={{
-                  color: "#CD8085",
+                  color: "#2B7FFF",
                 }}
               >
                 Confirm New Password
@@ -159,9 +160,9 @@ export default function ChangePassword() {
                       edge="end"
                     >
                       {showConfirmPassword ? (
-                        <IoIosEyeOff className="text-[#CD8085]" />
+                        <IoIosEyeOff className="text-[#2B7FFF]" />
                       ) : (
-                        <IoMdEye className="text-[#CD8085]" />
+                        <IoMdEye className="text-[#2B7FFF]" />
                       )}
                     </IconButton>
                   </InputAdornment>
@@ -181,7 +182,7 @@ export default function ChangePassword() {
               <Button
                 variant="contained"
                 sx={{
-                  backgroundColor: "#CD8085",
+                  backgroundColor: "#2B7FFF",
                   color: "white",
                   fontSize: "16px",
                   textTransform: "none",

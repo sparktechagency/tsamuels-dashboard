@@ -50,14 +50,15 @@ export default function Faq() {
       <Button
         onClick={() => window.history.back()}
         sx={{
-          backgroundColor: "#CD8085",
+          backgroundColor: "#2B7FFF",
           color: "white",
           padding: "5px",
           width: "10px",
           height: "30px",
           ":hover": {
-            backgroundColor: "#ff989f",
-            color: "black",
+            backgroundColor: "white",
+            color: "#2B7FFF",
+            border: "1px solid #2B7FFF",
           },
         }}
       >
@@ -75,7 +76,7 @@ export default function Faq() {
             expanded={expanded === faq.question}
             onChange={handleChange(faq.question)}
             sx={{
-              bgcolor: "#875473",
+              bgcolor: "#fff",
               boxShadow: "none",
               "&:before": { display: "none" },
               borderRadius: "15px", // Modify the border radius here for the entire accordion
@@ -86,15 +87,16 @@ export default function Faq() {
               aria-controls={`${faq.question}-content`}
               id={`${faq.question}-header`}
               sx={{
-                color: "white",
+                color: expanded === faq.question ? "white" : "black",
                 fontSize: {
                   xs: "12px",
                   md: "14px",
                   lg: "16px",
                 },
+                fontWeight: "500",
                 px: 2,
                 borderRadius: expanded === faq.question ? "15px" : "10px", // Adjust border radius on expanded state
-                background: expanded === faq.question ? "#CD8085" : "#875473",
+                background: expanded === faq.question ? "#2B7FFF" : "#00D3F2",
                 transition: "background-color 0.3s ease",
               }}
             >
@@ -102,7 +104,7 @@ export default function Faq() {
             </AccordionSummary>
             <AccordionDetails
               sx={{
-                background: "#CD8085",
+                background: "#2B7FFF",
                 color: "#fff",
                 px: 2,
                 fontSize: {

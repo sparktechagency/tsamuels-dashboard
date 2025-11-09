@@ -70,14 +70,15 @@ const PrivacyPolicy = () => {
       <Button
         onClick={() => window.history.back()}
         sx={{
-          backgroundColor: "#CD8085",
+          backgroundColor: "#2B7FFF",
           color: "white",
           padding: "5px",
           width: "10px",
           height: "30px",
           ":hover": {
-            backgroundColor: "#ff989f",
-            color: "black",
+            backgroundColor: "white",
+            color: "#2B7FFF",
+            border: "1px solid #2B7FFF",
           },
         }}
       >
@@ -90,7 +91,7 @@ const PrivacyPolicy = () => {
             onClick={handleOnSave}
             sx={{
               width: "150px",
-              bgcolor: "#CD8085",
+              bgcolor: "#2B7FFF",
               color: "white",
               textTransform: "none",
               height: "40px",

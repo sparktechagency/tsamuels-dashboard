@@ -1,533 +1,393 @@
 import { useState } from "react";
 import {
-  MenuItem,
-  Select,
-  FormControl,
-  InputLabel,
   TableContainer,
   Table,
-  Paper,
   TableHead,
   TableRow,
   TableCell,
   TableBody,
   TablePagination,
-  Button,
-  Checkbox,
-  Modal,
-  Box,
-  TextField,
   InputBase,
   InputAdornment,
+  Modal,
   IconButton,
-  Input,
-  checkboxClasses,
+  TextField,
+  Button,
 } from "@mui/material";
-import { AiOutlineEdit } from "react-icons/ai";
-import { AiOutlineDelete } from "react-icons/ai";
 import { FaSearch } from "react-icons/fa";
+import { FiEye } from "react-icons/fi";
+import { toast } from "sonner";
 
-const therapyData = [
+const supportEmailData = [
   {
-    name: "Just Sharing",
-    icon: "", // Base64 image or URL can be used here
-    type: "Therapy",
+    name: "Samuel Johnson",
+    userName: "SJohnson",
+    phoneNumber: "+6908975678",
+    problemDescription:
+      "The user is not responding to messages. The issue started on 13th September.",
+    status: "Solved",
+    date: "2023-10-01",
   },
   {
-    name: "Managing Day-to-Day",
-    icon: "",
-    type: "Therapy",
+    name: "Emily Davis",
+    userName: "EDavis",
+    phoneNumber: "+6908981234",
+    problemDescription: "Unable to log into the system after password reset.",
+    status: "Pending",
+    date: "2023-10-02",
   },
   {
-    name: "Mentor Ready",
-    icon: "",
-    type: "Therapy",
+    name: "Michael Smith",
+    userName: "MSmith",
+    phoneNumber: "+6908998765",
+    problemDescription:
+      "The user is reporting slow system performance during peak hours.",
+    status: "Pending",
+    date: "2023-10-03",
+  },
+  {
+    name: "Olivia Brown",
+    userName: "OBrown",
+    phoneNumber: "+6908884321",
+    problemDescription:
+      "The user is unable to access their profile page after recent updates.",
+    status: "Solved",
+    date: "2023-10-04",
+  },
+  {
+    name: "James Wilson",
+    userName: "JWilson",
+    phoneNumber: "+6908776543",
+    problemDescription:
+      "The user encountered a system crash during data upload.",
+    status: "Solved",
+    date: "2023-10-05",
   },
 ];
 
 export default function Support() {
   const [searchText, setSearchText] = useState("");
-  const [filteredTherapy, setFilteredTherapy] = useState(therapyData);
+  const [filteredEmails, setFilteredEmails] = useState(supportEmailData);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [checked, setChecked] = useState([]);
-  const [openModal, setOpenModal] = useState(false);
-  const [modalMode, setModalMode] = useState("add"); // "add" or "edit"
-  const [editTherapy, setEditTherapy] = useState(null);
-  const [openDeleteModal, setOpenDeleteModal] = useState(false);
-  const [therapyToDelete, setTherapyToDelete] = useState(null);
-  const [iconFile, setIconFile] = useState(null);
+  const [openDetailsModal, setOpenDetailsModal] = useState(false);
+  const [selectedEmail, setSelectedEmail] = useState(null);
+  const [replyText, setReplyText] = useState("");
 
-  const handleChange = (event, therapyName) => {
-    const updatedChecked = checked.includes(therapyName)
-      ? checked.filter((item) => item !== therapyName)
-      : [...checked, therapyName];
-    setChecked(updatedChecked);
-  };
-
-  const filterTherapy = (search) => {
-    let filtered = therapyData;
-
-    if (search) {
-      filtered = filtered.filter((therapy) =>
-        therapy.name.toLowerCase().includes(search.toLowerCase())
-      );
-    }
-
-    setFilteredTherapy(filtered);
+  const handleSearchChange = (e) => {
+    const search = e.target.value;
+    setSearchText(search);
+    const filtered = supportEmailData.filter(
+      (email) =>
+        email.userName.toLowerCase().includes(search.toLowerCase()) ||
+        email.phoneNumber.includes(search)
+    );
+    setFilteredEmails(filtered);
+    setPage(0);
   };
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
-
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
 
-  const handleOpenModal = (mode, therapy = null) => {
-    setModalMode(mode); // "add" or "edit"
-    setEditTherapy(therapy); // Set therapy data if it's edit mode
-    setOpenModal(true);
+  const handleOpenModal = (email) => {
+    setSelectedEmail(email);
+    setReplyText("");
+    setOpenDetailsModal(true);
   };
 
   const handleCloseModal = () => {
-    setOpenModal(false);
-    setEditTherapy(null);
-    setIconFile(null);
+    setOpenDetailsModal(false);
+    setSelectedEmail(null);
+    setReplyText("");
   };
 
-  const handleSaveTherapy = () => {
-    if (modalMode === "edit") {
-      const updatedData = therapyData.map((therapy) =>
-        therapy.name === editTherapy.name
-          ? { ...editTherapy, icon: iconFile }
-          : therapy
-      );
-      setFilteredTherapy(updatedData);
-    } else if (modalMode === "add") {
-      const newTherapy = {
-        name: editTherapy.name,
-        icon: iconFile,
-        type: editTherapy.type,
-      };
-      therapyData.push(newTherapy);
-      setFilteredTherapy([...therapyData]);
+  const handleSendReply = () => {
+    if (!replyText.trim()) {
+      toast.error("Please type a reply before sending.");
+      return;
     }
-    setOpenModal(false);
-    setEditTherapy(null);
-    setIconFile(null);
-  };
 
-  const handleDeleteTherapy = (therapyName) => {
-    setTherapyToDelete(therapyName);
-    setOpenDeleteModal(true);
-  };
-
-  const confirmDelete = () => {
-    const updatedData = therapyData.filter(
-      (therapy) => therapy.name !== therapyToDelete
+    const updatedEmails = filteredEmails.map((email) =>
+      email.phoneNumber === selectedEmail.phoneNumber
+        ? { ...email, status: "Solved" }
+        : email
     );
-    setFilteredTherapy(updatedData);
-    setOpenDeleteModal(false);
-    setTherapyToDelete(null);
-  };
 
-  const cancelDelete = () => {
-    setOpenDeleteModal(false);
-    setTherapyToDelete(null);
-  };
+    setFilteredEmails(updatedEmails);
 
-  const handleSearchChange = (e) => {
-    const search = e.target.value;
-    setSearchText(search);
-    filterTherapy(search);
-  };
+    console.log("Sending reply:", replyText);
+    console.log("To:", selectedEmail.userName);
 
-  const handleImageUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setIconFile(reader.result);
-      };
-      reader.readAsDataURL(file); // Converts the image to base64
-    }
+    toast.success("Reply sent successfully!");
+
+    setReplyText("");
+    handleCloseModal();
   };
 
   return (
-    <div className="px-10 py-8 bg-[#fffffe] h-[92vh]">
-      <div className="flex items-center justify-end gap-3">
-        <TextField
-          sx={{
-            width: 300,
-            "& .MuiOutlinedInput-root": {
-              "&.Mui-focused fieldset": {
-                borderColor: "#CD8085", // Change border color on focus
-              },
-            },
-            "& .MuiOutlinedInput-notchedOutline": {
-              borderRadius: "20px", // Apply border-radius to the outline
-            },
-            height: "40px", // Set the height of the TextField
-            "& .MuiInputBase-root": {
-              height: "100%", // Ensure the input base fills the TextField height
-            },
-          }}
-          placeholder="Search by Therapy Name"
-          value={searchText}
-          onChange={handleSearchChange}
-          startAdornment={
-            <InputAdornment position="start">
-              <FaSearch />
-            </InputAdornment>
-          }
-        />
-        <Button
-          onClick={() => handleOpenModal("add")}
-          sx={{
-            bgcolor: "#CD8085",
-            width: "150px",
-            textTransform: "none",
-            color: "white",
-            height: "40px",
-            fontSize: "14px",
-            borderRadius: "50px",
-          }}
-        >
-          + Add More
-        </Button>
-      </div>
+    <div className="px-10 py-8 bg-[#fbfbfb] h-[92vh]">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-[#1A1A1A]">Support Emails</h1>
+          <p className="text-[#2B7FFF] mt-1">Check the support messages</p>
+        </div>
 
-      <div className="flex flex-col items-center mt-6">
-        <TableContainer sx={{ border: "none", outline: "none" }}>
-          <Table>
-            <TableHead
+        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+          <TextField
+            sx={{
+              width: 300,
+              "& .MuiOutlinedInput-root": {
+                "&.Mui-focused fieldset": {
+                  borderColor: "#2B7FFF",
+                },
+              },
+              "& .MuiOutlinedInput-notchedOutline": {
+                borderRadius: "10px",
+              },
+              height: "40px",
+              "& .MuiInputBase-root": {
+                height: "100%",
+              },
+            }}
+            placeholder="Search by User Name"
+            value={searchText}
+            onChange={handleSearchChange}
+            startAdornment={
+              <InputAdornment position="start">
+                <FaSearch />
+              </InputAdornment>
+            }
+          />
+        </div>
+      </div>
+      <div className="flex items-center justify-end mb-4"></div>
+
+      <TableContainer>
+        <Table>
+          <TableHead>
+            <TableRow
               sx={{
-                borderRadius: "50px",
+                background: "linear-gradient(90deg, #00D3F2 0%, #2B7FFF 100%)",
               }}
             >
-              <TableRow
-                sx={{ backgroundColor: "#CD8085", borderRadius: "50px" }}
+              <TableCell
+                sx={{
+                  color: "#fff",
+                  textAlign: "center",
+                  fontWeight: "600",
+                  fontSize: "14px",
+                }}
               >
-                <TableCell
-                  sx={{
-                    color: "#fff",
-                    textAlign: "center",
-                    fontWeight: "bold",
-                    fontSize: "14px",
-                  }}
-                >
-                  Therapy Name
-                </TableCell>
-                <TableCell
-                  sx={{
-                    color: "#fff",
-                    textAlign: "center",
-                    fontWeight: "bold",
-                    fontSize: "14px",
-                  }}
-                >
-                  Icon
-                </TableCell>
-                <TableCell
-                  sx={{
-                    color: "#fff",
-                    textAlign: "center",
-                    fontWeight: "bold",
-                    fontSize: "14px",
-                  }}
-                >
-                  Type
-                </TableCell>
-                <TableCell
-                  sx={{
-                    color: "#fff",
-                    textAlign: "center",
-                    fontWeight: "bold",
-                    fontSize: "14px",
-                  }}
-                >
-                  Action
-                </TableCell>
-                <TableCell
-                  sx={{
-                    color: "#fff",
-                    textAlign: "center",
-                    fontWeight: "bold",
-                    fontSize: "14px",
-                  }}
-                >
-                  Select Visibility
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredTherapy
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((therapy) => (
-                  <TableRow key={therapy.name}>
-                    <TableCell sx={{ textAlign: "center" }}>
-                      {therapy.name}
-                    </TableCell>
-                    <TableCell sx={{ textAlign: "center" }}>
-                      {therapy.icon ? (
-                        <img
-                          src={therapy.icon}
-                          alt="icon"
-                          width="30"
-                          height="30"
-                          className="mx-auto"
-                        />
-                      ) : (
-                        "No Icon"
-                      )}
-                    </TableCell>
-                    <TableCell sx={{ textAlign: "center" }}>
-                      {therapy.type}
-                    </TableCell>
-                    <TableCell sx={{ textAlign: "center" }}>
-                      <IconButton
-                        onClick={() => handleOpenModal("edit", therapy)}
-                      >
-                        <AiOutlineEdit className="text-xl text-[#ffaa00]" />
-                      </IconButton>
-                      <IconButton
-                        onClick={() => handleDeleteTherapy(therapy.name)}
-                      >
-                        <AiOutlineDelete className="text-xl text-[#ee443f]" />
-                      </IconButton>
-                    </TableCell>
-                    <TableCell sx={{ textAlign: "center" }}>
-                      <Checkbox
-                        checked={checked.includes(therapy.name)}
-                        onChange={(e) => handleChange(e, therapy.name)}
-                        sx={{
-                          [`&, &.${checkboxClasses.checked}`]: {
-                            color: "#CD8085", // This changes the color of the checkmark and the border when checked
-                          },
-                        }}
-                      />
-                    </TableCell>
-                  </TableRow>
-                ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+                User Name
+              </TableCell>
+              <TableCell
+                sx={{
+                  color: "#fff",
+                  textAlign: "center",
+                  fontWeight: "bold",
+                  fontSize: "14px",
+                }}
+              >
+                Phone Number
+              </TableCell>
+              <TableCell
+                sx={{
+                  color: "#fff",
+                  textAlign: "center",
+                  fontWeight: "bold",
+                  fontSize: "14px",
+                }}
+              >
+                Problem Description
+              </TableCell>
+              <TableCell
+                sx={{
+                  color: "#fff",
+                  textAlign: "center",
+                  fontWeight: "bold",
+                  fontSize: "14px",
+                }}
+              >
+                Status
+              </TableCell>
+              <TableCell
+                sx={{
+                  color: "#fff",
+                  textAlign: "center",
+                  fontWeight: "bold",
+                  fontSize: "14px",
+                }}
+              >
+                Action
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {filteredEmails
+              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              .map((email) => (
+                <TableRow key={email.phoneNumber}>
+                  <TableCell sx={{ textAlign: "center" }}>
+                    {email.userName}
+                  </TableCell>
+                  <TableCell sx={{ textAlign: "center" }}>
+                    {email.phoneNumber}
+                  </TableCell>
+                  <TableCell sx={{ textAlign: "center" }}>
+                    {email.problemDescription}
+                  </TableCell>
+                  <TableCell sx={{ textAlign: "center" }}>
+                    <span
+                      style={{
+                        padding: "10px 12px",
+                        borderRadius: "12px",
+                        color: "white",
+                        backgroundColor:
+                          email.status.toLowerCase() === "solved"
+                            ? "#1EC74F"
+                            : "#EE5252", // Adjust the status color as per the status
+                        fontWeight: "600",
+                      }}
+                    >
+                      {email.status}
+                    </span>
+                  </TableCell>
 
-        <TablePagination
-          rowsPerPageOptions={[5, 8]}
-          component="div"
-          count={filteredTherapy.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
-      </div>
+                  <TableCell sx={{ textAlign: "center" }}>
+                    <IconButton onClick={() => handleOpenModal(email)}>
+                      <FiEye className="text-lg text-[#131927]" />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
 
-      {/* Modal for Add/Edit Therapy */}
+      <TablePagination
+        rowsPerPageOptions={[5, 10, 25]}
+        component="div"
+        count={supportEmailData.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+      />
+
+      {/* Modal to display email details */}
       <Modal
-        open={openModal}
+        open={openDetailsModal}
         onClose={handleCloseModal}
-        aria-labelledby="edit-therapy-modal"
-        aria-describedby="modal-to-edit-therapy"
+        aria-labelledby="email-details-modal"
+        aria-describedby="modal-to-view-email-details"
       >
-        <Box
-          className="modal-content"
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: 700,
-            backgroundColor: "white",
-            boxShadow: 24,
-            padding: 4,
-            borderRadius: 2,
-          }}
-        >
-          <p className="text-center text-[#1A1A1A] font-semibold text-xl mb-4">
-            {modalMode === "edit" ? "Edit Therapy" : "Add Therapy"}
-          </p>
-          <div className="flex flex-col gap-5 items-center">
-            <TextField
-              label="Enjoy Name"
-              value={editTherapy ? editTherapy.name : ""}
-              onChange={(e) =>
-                setEditTherapy({
-                  ...editTherapy,
-                  name: e.target.value,
-                })
-              }
-              fullWidth
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  "&.Mui-focused fieldset": {
-                    borderColor: "#CD8085", // Change border color on focus
-                  },
-                },
-                "& .MuiInputLabel-root.Mui-focused": {
-                  color: "#CD8085", // Change label color on focus (optional)
-                },
-                "& .MuiOutlinedInput-notchedOutline": {
-                  borderRadius: "20px", // Apply border-radius to the outline
-                },
-                height: "50px", // Set the height of the TextField
-                "& .MuiInputBase-root": {
-                  height: "100%", // Ensure the input base fills the TextField height
-                },
-              }}
-            />
-            <div className="flex items-center justify-between gap-10">
-              <TextField
-                label="Enjoy Type"
-                value={editTherapy ? editTherapy.type : ""}
-                onChange={(e) =>
-                  setEditTherapy({
-                    ...editTherapy,
-                    type: e.target.value,
-                  })
-                }
-                fullWidth
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    "&.Mui-focused fieldset": {
-                      borderColor: "#CD8085", // Change border color on focus
-                    },
-                  },
-                  "& .MuiInputLabel-root.Mui-focused": {
-                    color: "#CD8085", // Change label color on focus (optional)
-                  },
-                  "& .MuiOutlinedInput-notchedOutline": {
-                    borderRadius: "20px", // Apply border-radius to the outline
-                  },
-                  height: "50px", // Set the height of the TextField
-                  "& .MuiInputBase-root": {
-                    height: "100%", // Ensure the input base fills the TextField height
-                  },
-                }}
-              />
-              <div className="flex items-center gap-5">
-                <input
-                  accept="image/*"
-                  type="file"
-                  onChange={handleImageUpload}
-                  style={{ display: "none" }}
-                  id="upload-icon"
-                />
-                <label htmlFor="upload-icon">
-                  <Button
-                    component="span"
-                    variant="contained"
-                    sx={{
-                      bgcolor: "#CD8085",
-                      width: "120px",
-                      textTransform: "none",
-                      borderRadius: "50px",
-                      height: "50px",
-                    }}
-                  >
-                    Upload Icon
-                  </Button>
-                </label>
-                {iconFile && (
-                  <img
-                    src={iconFile}
-                    alt="Uploaded Icon"
-                    style={{ marginTop: "10px", maxWidth: "50px" }}
-                  />
-                )}
-              </div>
-            </div>
-            <div className="flex items-center justify-end w-full">
-              <Button
-                onClick={handleSaveTherapy}
-                variant="contained"
-                sx={{
-                  bgcolor: "#CD8085",
-                  width: "120px",
-                  textTransform: "none",
-                  borderRadius: "50px",
-                }}
-              >
-                Save
-              </Button>
-              <Button
-                onClick={handleCloseModal}
-                sx={{
-                  marginLeft: "10px",
-                  width: "120px",
-                  color: "#CD8085",
-                  border: "1px solid #CD8085",
-                  textTransform: "none",
-                  borderRadius: "50px",
-                }}
-              >
-                Cancel
-              </Button>
-            </div>
-          </div>
-        </Box>
-      </Modal>
-
-      {/* Delete Confirmation Modal */}
-      <Modal
-        open={openDeleteModal}
-        onClose={cancelDelete}
-        aria-labelledby="delete-confirmation-modal"
-      >
-        <Box
-          sx={{
+        <div
+          style={{
             position: "absolute",
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
             width: 600,
-            backgroundColor: "white",
-            boxShadow: 24,
-            padding: 4,
-            borderRadius: 2,
-            display: "flex",
-            flexDirection: "column",
-            gap: "20px",
+            backgroundColor: "#FDFDFD",
+            boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+            padding: "20px",
+            borderRadius: "8px",
           }}
         >
-          <p className="text-center text-[#1A1A1A] font-semibold text-xl">
-            Confirm Delete
-          </p>
-          <p className="text-lg">
-            Are you sure you want to delete this therapy?
-          </p>
-          <div className="flex items-center justify-end">
-            <Button
-              onClick={confirmDelete}
-              sx={{
-                bgcolor: "#CD8085",
-                width: "120px",
-                textTransform: "none",
-                borderRadius: "50px",
-                color: "white",
-              }}
-            >
-              Confirm
-            </Button>
-            <Button
-              onClick={cancelDelete}
-              sx={{
-                marginLeft: "10px",
-                width: "120px",
-                color: "#CD8085",
-                border: "1px solid #CD8085",
-                textTransform: "none",
-                borderRadius: "50px",
-              }}
-            >
-              Cancel
-            </Button>
-          </div>
-        </Box>
+          {selectedEmail && (
+            <div className="flex flex-col items-center gap-5 ">
+              <p className="text-center text-3xl font-semibold text-[#1A1A1A] py-5">
+                Support Request Details
+              </p>
+              <div className="flex flex-col gap-5 w-full px-10">
+                <div className="flex justify-between w-full gap-10">
+                  <div>
+                    <p className="font-semibold">From:</p>
+                    <p>{selectedEmail.userName}</p>
+                  </div>
+                  <div>
+                    <p className="font-semibold">Phone Number:</p>
+                    <p>{selectedEmail.phoneNumber}</p>
+                  </div>
+                  <div>
+                    <p className="font-semibold">Date:</p>
+                    <p>{selectedEmail.date}</p>
+                  </div>
+                </div>
+                <div>
+                  <p className="font-semibold">Message:</p>
+                  <p className="text-justify">
+                    {selectedEmail.problemDescription}
+                  </p>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <p className="font-semibold">Your Reply</p>
+                  <TextField
+                    className="w-full"
+                    value={replyText}
+                    onChange={(e) => setReplyText(e.target.value)}
+                    sx={{
+                      width: "100%",
+                      "& .MuiOutlinedInput-root": {
+                        "&.Mui-focused fieldset": {
+                          borderColor: "#131927", // Change border color on focus
+                        },
+                      },
+                      "& .MuiOutlinedInput-notchedOutline": {
+                        borderRadius: "12px", // Apply border-radius to the outline
+                      },
+                      "& .MuiInputBase-root": {
+                        height: "100%", // Ensure the input base fills the TextField height
+                      },
+                      backgroundColor: "#F5F5F5",
+                      "& .MuiInputBase-input": {
+                        padding: "8px", // Adjust padding for better text alignment
+                      },
+                    }}
+                    multiline
+                    rows={4}
+                    placeholder="Type your reply here..."
+                  />
+                  <div className="flex justify-end gap-4 mt-5">
+                    <Button
+                      onClick={handleCloseModal}
+                      sx={{
+                        backgroundColor: "#FA4747",
+                        textTransform: "none",
+                        width: "100px",
+                        color: "white",
+                        "&:hover": {
+                          backgroundColor: "#EE5252",
+                        },
+                      }}
+                    >
+                      Decline
+                    </Button>
+                    <Button
+                      sx={{
+                        backgroundColor: "#2B7FFF",
+                        textTransform: "none",
+                        width: "100px",
+                        color: "white",
+                        "&:hover": {
+                          backgroundColor: "#2B7FFF",
+                        },
+                      }}
+                      onClick={handleSendReply}
+                    >
+                      Send
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       </Modal>
     </div>
   );

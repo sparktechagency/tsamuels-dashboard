@@ -1,413 +1,502 @@
 import { useState } from "react";
 import {
-  MenuItem,
-  Select,
-  FormControl,
-  InputLabel,
-  TableContainer,
-  Table,
-  Paper,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  TablePagination,
-  Button,
-  Checkbox,
-  Modal,
   Box,
+  Button,
+  Modal,
   TextField,
-  InputBase,
-  InputAdornment,
-  checkboxClasses,
   IconButton,
+  Switch,
+  Chip,
+  Typography,
+  InputAdornment,
+  Stack,
+  Card,
+  CardContent,
+  CardActions,
+  Divider,
+  Select,
+  MenuItem,
 } from "@mui/material";
-import { AiOutlineEdit } from "react-icons/ai";
-import { AiOutlineDelete } from "react-icons/ai";
-import { FaSearch } from "react-icons/fa";
+import { AiOutlineEdit, AiOutlineDelete, AiOutlinePlus } from "react-icons/ai";
+import { FaSearch, FaDollarSign, FaCalendarAlt, FaCheck } from "react-icons/fa";
 
-const therapyData = [
+const initialSubscriptions = [
   {
-    therapyName: "Just Sharing",
+    id: 1,
+    name: "Basic Plan",
+    price: 9.99,
+    duration: "Monthly",
+    features: ["5 Events", "Basic Support", "Community Access"],
+    isVisible: true,
   },
   {
-    therapyName: "Managing Day-to-Day ",
+    id: 2,
+    name: "Family Pro",
+    price: 19.99,
+    duration: "Monthly",
+    features: [
+      "Unlimited Events",
+      "Priority Support",
+      "Mentor Access",
+      "Analytics",
+    ],
+    isVisible: true,
   },
   {
-    therapyName: "Mentor Ready",
+    id: 3,
+    name: "Annual Saver",
+    price: 99.99,
+    duration: "Yearly",
+    features: ["All Pro Features", "20% Discount", "Early Access"],
+    isVisible: false,
   },
 ];
 
 export default function Subscription() {
-  const [searchText, setSearchText] = useState("");
-  const [filteredTherapy, setFilteredTherapy] = useState(therapyData);
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [checked, setChecked] = useState([]);
+  const [subscriptions, setSubscriptions] = useState(initialSubscriptions);
+  const [filteredSubscriptions, setFilteredSubscriptions] =
+    useState(initialSubscriptions);
+
+  // Modal
   const [openModal, setOpenModal] = useState(false);
-  const [modalMode, setModalMode] = useState("add"); // "add" or "edit"
-  const [editTherapy, setEditTherapy] = useState(null);
+  const [modalMode, setModalMode] = useState("add");
+  const [currentSubscription, setCurrentSubscription] = useState({
+    name: "",
+    price: "",
+    duration: "Monthly",
+    features: [""],
+    isVisible: true,
+  });
+
+  // Delete
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
-  const [therapyToDelete, setTherapyToDelete] = useState(null);
+  const [subscriptionToDelete, setSubscriptionToDelete] = useState(null);
 
-  const handleChange = (event, therapyName) => {
-    const updatedChecked = checked.includes(therapyName)
-      ? checked.filter((item) => item !== therapyName)
-      : [...checked, therapyName];
-    setChecked(updatedChecked);
-  };
-
-  const filterTherapy = (search) => {
-    let filtered = therapyData;
-
-    if (search) {
-      filtered = filtered.filter((therapy) =>
-        therapy.therapyName.toLowerCase().includes(search.toLowerCase())
-      );
+  // Modal Handlers
+  const handleOpenModal = (mode, sub = null) => {
+    setModalMode(mode);
+    if (mode === "edit" && sub) {
+      setCurrentSubscription({ ...sub });
+    } else {
+      setCurrentSubscription({
+        name: "",
+        price: "",
+        duration: "Monthly",
+        features: [""],
+        isVisible: true,
+      });
     }
-
-    setFilteredTherapy(filtered);
-  };
-
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
-  const handleOpenModal = (mode, therapy = null) => {
-    setModalMode(mode); // "add" or "edit"
-    setEditTherapy(therapy); // Set therapy data if it's edit mode
     setOpenModal(true);
   };
 
   const handleCloseModal = () => {
     setOpenModal(false);
-    setEditTherapy(null);
+    setCurrentSubscription({
+      name: "",
+      price: "",
+      duration: "Monthly",
+      features: [""],
+      isVisible: true,
+    });
   };
 
-  const handleSaveTherapy = () => {
-    if (modalMode === "edit") {
-      const updatedData = therapyData.map((therapy) =>
-        therapy.therapyName === editTherapy.therapyName ? editTherapy : therapy
-      );
-      setFilteredTherapy(updatedData);
-    } else if (modalMode === "add") {
-      const newTherapy = {
-        therapyName: editTherapy.therapyName,
-      };
-      therapyData.push(newTherapy);
-      setFilteredTherapy([...therapyData]);
+  // Features
+  const handleFeatureChange = (index, value) => {
+    const updated = [...currentSubscription.features];
+    updated[index] = value;
+    setCurrentSubscription({ ...currentSubscription, features: updated });
+  };
+
+  const addFeatureField = () => {
+    setCurrentSubscription({
+      ...currentSubscription,
+      features: [...currentSubscription.features, ""],
+    });
+  };
+
+  const removeFeatureField = (index) => {
+    const updated = currentSubscription.features.filter((_, i) => i !== index);
+    setCurrentSubscription({ ...currentSubscription, features: updated });
+  };
+
+  // Save
+  const handleSaveSubscription = () => {
+    const cleanedFeatures = currentSubscription.features.filter((f) =>
+      f.trim()
+    );
+    const newSub = {
+      ...currentSubscription,
+      id: modalMode === "add" ? Date.now() : currentSubscription.id,
+      features: cleanedFeatures,
+    };
+
+    let updated;
+    if (modalMode === "add") {
+      updated = [...subscriptions, newSub];
+    } else {
+      updated = subscriptions.map((s) => (s.id === newSub.id ? newSub : s));
     }
-    setOpenModal(false);
-    setEditTherapy(null);
+
+    setSubscriptions(updated);
+    setFilteredSubscriptions(updated);
+    handleCloseModal();
   };
 
-  const handleDeleteTherapy = (therapyName) => {
-    setTherapyToDelete(therapyName);
+  // Toggle Visibility
+  const toggleVisibility = (id) => {
+    const updated = subscriptions.map((s) =>
+      s.id === id ? { ...s, isVisible: !s.isVisible } : s
+    );
+    setSubscriptions(updated);
+    setFilteredSubscriptions(updated);
+  };
+
+  // Delete
+  const handleDelete = (sub) => {
+    setSubscriptionToDelete(sub);
     setOpenDeleteModal(true);
   };
 
   const confirmDelete = () => {
-    const updatedData = therapyData.filter(
-      (therapy) => therapy.therapyName !== therapyToDelete
+    const updated = subscriptions.filter(
+      (s) => s.id !== subscriptionToDelete.id
     );
-    setFilteredTherapy(updatedData);
+    setSubscriptions(updated);
+    setFilteredSubscriptions(updated);
     setOpenDeleteModal(false);
-    setTherapyToDelete(null);
-  };
-
-  const cancelDelete = () => {
-    setOpenDeleteModal(false);
-    setTherapyToDelete(null);
-  };
-
-  const handleSearchChange = (e) => {
-    const search = e.target.value;
-    setSearchText(search);
-    filterTherapy(search);
+    setSubscriptionToDelete(null);
   };
 
   return (
-    <div className="px-10 py-8 bg-[#fffffe] h-[92vh]">
-      <div className="flex items-center justify-end gap-3">
-        <TextField
-          sx={{
-            width: 300,
-            "& .MuiOutlinedInput-root": {
-              "&.Mui-focused fieldset": {
-                borderColor: "#CD8085", // Change border color on focus
+    <div className="px-6 py-8 bg-[#fffffe] min-h-screen">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-[#1A1A1A]">
+            Subscription Plans
+          </h1>
+          <p className="text-[#2B7FFF] mt-1">Create and manage pricing tiers</p>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+          <Button
+            onClick={() => handleOpenModal("add")}
+            startIcon={<AiOutlinePlus />}
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "1px",
+              textTransform: "none",
+              bgcolor: "#2B7FFF",
+              color: "white",
+              px: 3,
+              py: 1,
+              fontWeight: 600,
+              borderRadius: "10px",
+              transition: "all 0.3s ease",
+              "&:hover": {
+                bgcolor: "#00D3F2",
+                color: "black",
               },
-            },
-            "& .MuiOutlinedInput-notchedOutline": {
-              borderRadius: "20px", // Apply border-radius to the outline
-            },
-            height: "40px", // Set the height of the TextField
-            "& .MuiInputBase-root": {
-              height: "100%", // Ensure the input base fills the TextField height
-            },
-          }}
-          placeholder="Search by Therapy Name"
-          value={searchText}
-          onChange={handleSearchChange}
-          startAdornment={
-            <InputAdornment position="start">
-              <FaSearch />
-            </InputAdornment>
-          }
-        />
-        <Button
-          onClick={() => handleOpenModal("add")}
-          sx={{
-            bgcolor: "#CD8085",
-            width: "150px",
-            textTransform: "none",
-            color: "white",
-            height: "40px",
-            fontSize: "14px",
-            borderRadius: "50px",
-          }}
-        >
-          + Add More
-        </Button>
+            }}
+          >
+            Add Plan
+          </Button>
+        </div>
       </div>
 
-      <div className="flex flex-col items-center mt-6">
-        <TableContainer sx={{ border: "none", outline: "none" }}>
-          <Table>
-            <TableHead
-              sx={{
-                borderRadius: "50px",
-              }}
-            >
-              <TableRow
-                sx={{ backgroundColor: "#CD8085", borderRadius: "50px" }}
+      {/* Cards Container - Using div + Flexbox */}
+      <div className="flex flex-wrap -mx-4">
+        {filteredSubscriptions.length === 0 ? (
+          <div className="w-full text-center py-12">
+            <p className="text-gray-500">No subscription plans found.</p>
+          </div>
+        ) : (
+          filteredSubscriptions.map((sub) => (
+            <div key={sub.id} className="w-full sm:w-1/2 lg:w-1/4 px-4 mb-8">
+              <div
+                className="h-full flex flex-col bg-white rounded-2xl shadow-xl transition-all duration-300 hover:shadow-xl relative"
+                style={{ opacity: sub.isVisible ? 1 : 0.5 }}
               >
-                <TableCell
-                  sx={{
-                    color: "#fff",
-                    textAlign: "center",
-                    fontWeight: "bold",
-                    fontSize: "14px",
-                  }}
-                >
-                  Therapy Name
-                </TableCell>
-
-                <TableCell
-                  sx={{
-                    color: "#fff",
-                    textAlign: "center",
-                    fontWeight: "bold",
-                    fontSize: "14px",
-                  }}
-                >
-                  Action
-                </TableCell>
-                <TableCell
-                  sx={{
-                    color: "#fff",
-                    textAlign: "center",
-                    fontWeight: "bold",
-                    fontSize: "14px",
-                  }}
-                >
-                  Select Visibility
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredTherapy
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((therapy) => (
-                  <TableRow key={therapy.therapyName}>
-                    <TableCell sx={{ textAlign: "center" }}>
-                      {therapy.therapyName}
-                    </TableCell>
-
-                    <TableCell sx={{ textAlign: "center" }}>
-                      <IconButton
-                        onClick={() => handleOpenModal("edit", therapy)}
-                      >
-                        <AiOutlineEdit className="text-xl text-[#ffaa00]" />
-                      </IconButton>
-                      <IconButton
-                        onClick={() => handleDeleteTherapy(therapy.therapyName)}
-                      >
-                        <AiOutlineDelete className="text-xl text-[#ee443f]" />
-                      </IconButton>
-                    </TableCell>
-                    <TableCell sx={{ textAlign: "center" }}>
-                      <Checkbox
-                        checked={checked.includes(therapy.therapyName)}
-                        onChange={(e) => handleChange(e, therapy.therapyName)}
-                        sx={{
-                          [`&, &.${checkboxClasses.checked}`]: {
-                            color: "#CD8085", // This changes the color of the checkmark and the border when checked
-                          },
-                        }}
+                <div className="flex-1 p-6 pb-3">
+                  <div className="flex justify-between items-center mb-2">
+                    <h3 className="text-xl font-bold text-gray-800">
+                      {sub.name}
+                    </h3>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={sub.isVisible}
+                        onChange={() => toggleVisibility(sub.id)}
+                        className="sr-only peer"
                       />
-                    </TableCell>
-                  </TableRow>
-                ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+                      <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#2B7FFF]"></div>
+                    </label>
+                  </div>
 
-        <TablePagination
-          rowsPerPageOptions={[5, 8]}
-          component="div"
-          count={filteredTherapy.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
+                  <div className="flex items-baseline mb-4">
+                    <span className="text-3xl font-bold text-[#2B7FFF]">
+                      ${sub.price.toFixed(2)}
+                    </span>
+                    <span className="text-gray-500 ml-1">
+                      /{sub.duration.toLowerCase()}
+                    </span>
+                  </div>
+
+                  <hr className="my-4 border-gray-200" />
+
+                  <div className="space-y-2">
+                    {sub.features.map((feature, i) => (
+                      <div key={i} className="flex items-center gap-2">
+                        <FaCheck size={14} className="text-green-600" />
+                        <span className="text-sm text-gray-700">{feature}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="p-4 pt-2 flex justify-between border-t border-gray-100">
+                  <IconButton
+                    onClick={() => handleOpenModal("edit", sub)}
+                    sx={{
+                      color: "#fff",
+                      bgcolor: "#2B7FFF",
+                      ":hover": {
+                        bgcolor: "#fff",
+                        color: "#2B7FFF",
+                        border: "0.5px solid #2B7FFF",
+                      },
+                    }}
+                  >
+                    <AiOutlineEdit size={20} />
+                  </IconButton>
+                  <IconButton
+                    onClick={() => handleDelete(sub)}
+                    sx={{
+                      bgcolor: "red",
+                      color: "white",
+                      ":hover": {
+                        bgcolor: "white",
+                        color: "red",
+                        border: "0.5px solid red",
+                      },
+                    }}
+                  >
+                    <AiOutlineDelete size={20} />
+                  </IconButton>
+                </div>
+              </div>
+            </div>
+          ))
+        )}
       </div>
 
-      {/* Modal for Add/Edit Therapy */}
-      <Modal
-        open={openModal}
-        onClose={handleCloseModal}
-        aria-labelledby="edit-therapy-modal"
-        aria-describedby="modal-to-edit-therapy"
-      >
+      {/* Add/Edit Modal */}
+      <Modal open={openModal} onClose={handleCloseModal}>
         <Box
-          className="modal-content"
           sx={{
             position: "absolute",
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
-            width: 700,
-            backgroundColor: "white",
+            width: { xs: "95%", sm: 700 },
+            maxHeight: "90vh",
+            overflowY: "auto",
+            bgcolor: "background.paper",
+            borderRadius: 3,
+            p: 4,
             boxShadow: 24,
-            padding: 4,
-            borderRadius: 2,
           }}
         >
-          <p className="text-center text-[#1A1A1A] font-semibold text-xl mb-4">
-            {modalMode === "edit" ? "Edit Therapy" : "Add Therapy"}
-          </p>
-          <div className="flex flex-col gap-5 items-center">
+          <Typography variant="h6" fontWeight="bold" textAlign="center" mb={3}>
+            {modalMode === "edit" ? "Edit Plan" : "Create New Plan"}
+          </Typography>
+
+          <Box sx={{ display: "grid", gap: 3 }}>
             <TextField
-              label="Parenting Journey Therapy Name"
-              value={editTherapy ? editTherapy.therapyName : ""}
+              label="Plan Name"
+              value={currentSubscription.name}
               onChange={(e) =>
-                setEditTherapy({
-                  ...editTherapy,
-                  therapyName: e.target.value,
+                setCurrentSubscription({
+                  ...currentSubscription,
+                  name: e.target.value,
                 })
               }
               fullWidth
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  "&.Mui-focused fieldset": {
-                    borderColor: "#CD8085", // Change border color on focus
-                  },
-                },
-                "& .MuiInputLabel-root.Mui-focused": {
-                  color: "#CD8085", // Change label color on focus (optional)
-                },
-                "& .MuiOutlinedInput-notchedOutline": {
-                  borderRadius: "20px", // Apply border-radius to the outline
-                },
-                height: "50px", // Set the height of the TextField
-                "& .MuiInputBase-root": {
-                  height: "100%", // Ensure the input base fills the TextField height
-                },
-              }}
+              sx={{ "& .MuiOutlinedInput-root": { borderRadius: "16px" } }}
             />
 
-            <div className="flex items-center justify-end w-full">
-              <Button
-                onClick={handleSaveTherapy}
-                variant="contained"
+            <div className="flex gap-2">
+              <TextField
+                label="Price"
+                type="number"
+                fullWidth
+                value={currentSubscription.price}
+                onChange={(e) =>
+                  setCurrentSubscription({
+                    ...currentSubscription,
+                    price: e.target.value,
+                  })
+                }
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <FaDollarSign />
+                    </InputAdornment>
+                  ),
+                }}
                 sx={{
-                  bgcolor: "#CD8085",
-                  width: "120px",
-                  textTransform: "none",
-                  borderRadius: "50px",
+                  flex: 1,
+                  "& .MuiOutlinedInput-root": { borderRadius: "16px" },
+                }}
+              />
+              <Select
+                labelId="billing-cycle-label"
+                label="Billing Cycle"
+                fullWidth
+                value={currentSubscription.duration}
+                onChange={(e) =>
+                  setCurrentSubscription({
+                    ...currentSubscription,
+                    duration: e.target.value,
+                  })
+                }
+                sx={{
+                  flex: 1,
+                  borderRadius: "16px",
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: "16px",
+                  },
                 }}
               >
-                Save
+                <MenuItem value="Monthly">Monthly</MenuItem>
+                <MenuItem value="Yearly">Yearly</MenuItem>
+              </Select>
+            </div>
+
+            <Box>
+              <Typography fontWeight="medium" mb={1}>
+                Features
+              </Typography>
+              {currentSubscription.features.map((feature, index) => (
+                <Box key={index} sx={{ display: "flex", gap: 1, mb: 1 }}>
+                  <TextField
+                    value={feature}
+                    onChange={(e) => handleFeatureChange(index, e.target.value)}
+                    placeholder="e.g. Unlimited Events"
+                    fullWidth
+                    size="small"
+                    sx={{
+                      "& .MuiOutlinedInput-root": { borderRadius: "12px" },
+                    }}
+                  />
+                  {currentSubscription.features.length > 1 && (
+                    <IconButton
+                      onClick={() => removeFeatureField(index)}
+                      color="error"
+                      size="small"
+                    >
+                      <AiOutlineDelete />
+                    </IconButton>
+                  )}
+                </Box>
+              ))}
+              <Button
+                onClick={addFeatureField}
+                size="small"
+                sx={{ mt: 1, color: "#2B7FFF" }}
+              >
+                + Add Feature
               </Button>
+            </Box>
+
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "flex-end",
+                gap: 2,
+                mt: 3,
+              }}
+            >
               <Button
                 onClick={handleCloseModal}
                 sx={{
-                  marginLeft: "10px",
-                  width: "120px",
-                  color: "#CD8085",
-                  border: "1px solid #CD8085",
-                  textTransform: "none",
+                  border: "1px solid #2B7FFF",
+                  color: "#2B7FFF",
                   borderRadius: "50px",
+                  px: 3,
+                  textTransform: "none",
                 }}
               >
                 Cancel
               </Button>
-            </div>
-          </div>
+              <Button
+                onClick={handleSaveSubscription}
+                variant="contained"
+                sx={{
+                  bgcolor: "#2B7FFF",
+                  color: "white",
+                  borderRadius: "50px",
+                  px: 4,
+                  textTransform: "none",
+                  "&:hover": { bgcolor: "#2B7FFF", boxShadow: "initial" },
+                }}
+              >
+                {modalMode === "edit" ? "Update" : "Create"} Plan
+              </Button>
+            </Box>
+          </Box>
         </Box>
       </Modal>
 
-      {/* Delete Confirmation Modal */}
-      <Modal
-        open={openDeleteModal}
-        onClose={cancelDelete}
-        aria-labelledby="delete-confirmation-modal"
-      >
+      {/* Delete Confirmation */}
+      <Modal open={openDeleteModal} onClose={() => setOpenDeleteModal(false)}>
         <Box
           sx={{
             position: "absolute",
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
-            width: 600,
-            backgroundColor: "white",
-            boxShadow: 24,
-            padding: 4,
-            borderRadius: 2,
-            display: "flex",
-            flexDirection: "column",
-            gap: "20px",
+            width: 400,
+            bgcolor: "background.paper",
+            borderRadius: 3,
+            p: 4,
+            textAlign: "center",
           }}
         >
-          <p className="text-center text-[#1A1A1A] font-semibold text-xl">
-            Confirm Delete
-          </p>
-          <p className="text-lg">
-            Are you sure you want to delete this therapy?
-          </p>
-          <div className="flex items-center justify-end">
+          <Typography variant="h6" fontWeight="bold" mb={2}>
+            Delete Plan?
+          </Typography>
+          <Typography mb={3}>
+            Remove <strong>{subscriptionToDelete?.name}</strong> permanently?
+          </Typography>
+          <Box sx={{ display: "flex", justifyContent: "center", gap: 2 }}>
             <Button
-              onClick={confirmDelete}
+              onClick={() => setOpenDeleteModal(false)}
               sx={{
-                bgcolor: "#CD8085",
-                width: "120px",
+                border: "1px solid #2B7FFF",
+                color: "#2B7FFF",
+                borderRadius: "10px",
                 textTransform: "none",
-                borderRadius: "50px",
-                color: "white",
-              }}
-            >
-              Confirm
-            </Button>
-            <Button
-              onClick={cancelDelete}
-              sx={{
-                marginLeft: "10px",
-                width: "120px",
-                color: "#CD8085",
-                border: "1px solid #CD8085",
-                textTransform: "none",
-                borderRadius: "50px",
+                width: "80px",
               }}
             >
               Cancel
             </Button>
-          </div>
+            <Button
+              onClick={confirmDelete}
+              sx={{
+                bgcolor: "#ee443f",
+                color: "white",
+                borderRadius: "10px",
+                textTransform: "none",
+                width: "80px",
+              }}
+            >
+              Delete
+            </Button>
+          </Box>
         </Box>
       </Modal>
     </div>

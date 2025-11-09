@@ -44,7 +44,7 @@ const UpdatePassword = () => {
   };
 
   return (
-    <div className="bg-[#f5e5e4] min-h-[100vh]">
+    <div className="bg-[#a9e9f3] min-h-[100vh]">
       <Container maxWidth="lg">
         <Grid
           container
@@ -84,11 +84,11 @@ const UpdatePassword = () => {
                   sx={{
                     "& .MuiOutlinedInput-root": {
                       "&.Mui-focused fieldset": {
-                        borderColor: "#CD8085", // Change border color on focus
+                        borderColor: "#2B7FFF", // Change border color on focus
                       },
                     },
                     "& .MuiInputLabel-root.Mui-focused": {
-                      color: "#CD8085", // Change label color on focus
+                      color: "#2B7FFF", // Change label color on focus
                     },
                     height: "50px", // Set the height of the TextField
                     "& .MuiInputBase-root": {
@@ -105,9 +105,9 @@ const UpdatePassword = () => {
                         edge="end"
                       >
                         {showNewPassword ? (
-                          <IoIosEyeOff className="text-[#CD8085]" />
+                          <IoIosEyeOff className="text-[#2B7FFF]" />
                         ) : (
-                          <IoMdEye className="text-[#CD8085]" />
+                          <IoMdEye className="text-[#2B7FFF]" />
                         )}
                       </IconButton>
                     </InputAdornment>
@@ -130,12 +130,12 @@ const UpdatePassword = () => {
                   sx={{
                     "& .MuiOutlinedInput-root": {
                       "&.Mui-focused fieldset": {
-                        borderColor: "#CD8085",
-                        outlingColor: "#CD8085",
+                        borderColor: "#2B7FFF",
+                        outlingColor: "#2B7FFF",
                       },
                     },
                     "& .MuiInputLabel-root.Mui-focused": {
-                      color: "#CD8085", // Change label color on focus
+                      color: "#2B7FFF", // Change label color on focus
                     },
                     height: "50px", // Set the height of the TextField
                     "& .MuiInputBase-root": {
@@ -154,9 +154,9 @@ const UpdatePassword = () => {
                         edge="end"
                       >
                         {showConfirmPassword ? (
-                          <IoIosEyeOff className="text-[#CD8085]" />
+                          <IoIosEyeOff className="text-[#2B7FFF]" />
                         ) : (
-                          <IoMdEye className="text-[#CD8085]" />
+                          <IoMdEye className="text-[#2B7FFF]" />
                         )}
                       </IconButton>
                     </InputAdornment>
@@ -176,13 +176,13 @@ const UpdatePassword = () => {
                 <Button
                   variant="contained"
                   sx={{
-                    backgroundColor: "#CD8085",
+                    backgroundColor: "#2B7FFF",
                     color: "white",
                     fontSize: "16px",
                     textTransform: "none",
                     padding: "10px",
                     width: "100%",
-                    borderRadius: "30px",
+                    borderRadius: "10px",
                     fontWeight: "bold",
                   }}
                   type="submit"

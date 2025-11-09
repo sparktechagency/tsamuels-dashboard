@@ -48,7 +48,7 @@ const journeyStatsDataByYear = {
 
 function JourneyProgress({ label, value }) {
   const getProgressBarColor = (value) => {
-    if (value) return "#CD8085";
+    if (value) return "#2B7FFF";
     return "#E9E9E9";
   };
 
