@@ -193,7 +193,9 @@ export default function RevenueManagement() {
       <div className="flex items-center justify-end gap-3 mb-6"></div>
 
       <div className="flex flex-col items-center">
-        <TableContainer sx={{ border: "none", outline: "none" }}>
+        <TableContainer
+          sx={{ borderRadius: 3, overflow: "hidden", boxShadow: 3 }}
+        >
           <Table>
             <TableHead>
               <TableRow
@@ -212,7 +214,7 @@ export default function RevenueManagement() {
                 >
                   Revenue Name
                 </TableCell>
-               
+
                 <TableCell
                   sx={{
                     color: "#fff",
@@ -249,11 +251,14 @@ export default function RevenueManagement() {
               {filteredRevenue
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((revenue) => (
-                  <TableRow key={revenue.id}>
+                  <TableRow
+                    key={revenue.id}
+                    sx={{ "&:hover": { bgcolor: "#f8faff" } }}
+                  >
                     <TableCell sx={{ textAlign: "center" }}>
                       {revenue.revenueName}
                     </TableCell>
-                  
+
                     <TableCell sx={{ textAlign: "center", fontWeight: "600" }}>
                       {formatCurrency(revenue.amount)}
                     </TableCell>

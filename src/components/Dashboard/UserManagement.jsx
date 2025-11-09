@@ -134,7 +134,9 @@ export default function UserManagement() {
       </div>
 
       {/* Table */}
-      <TableContainer component={Paper} elevation={2}>
+      <TableContainer
+        sx={{ borderRadius: 3, overflow: "hidden", boxShadow: 3 }}
+      >
         <Table>
           <TableHead>
             <TableRow
@@ -160,7 +162,7 @@ export default function UserManagement() {
                 <TableRow
                   key={user.email}
                   hover
-                  sx={{ cursor: "pointer" }}
+                  sx={{ "&:hover": { bgcolor: "#f8faff" } }}
                   onClick={() => handleOpenModal(user)}
                 >
                   <TableCell align="center">{user.name}</TableCell>
