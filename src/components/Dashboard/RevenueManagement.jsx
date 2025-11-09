@@ -17,10 +17,10 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
+  Typography,
 } from "@mui/material";
-import { AiOutlineEdit } from "react-icons/ai";
-import { AiOutlineDelete } from "react-icons/ai";
 import { FaSearch } from "react-icons/fa";
+import { AiOutlineInfoCircle } from "react-icons/ai";
 
 const revenueData = [
   {
@@ -109,9 +109,8 @@ export default function RevenueManagement() {
   const [filteredRevenue, setFilteredRevenue] = useState(revenueData);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [openModal, setOpenModal] = useState(false);
-  const [modalMode, setModalMode] = useState("add");
-  const [editRevenue, setEditRevenue] = useState(null);
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const [selectedRevenue, setSelectedRevenue] = useState(null);
 
   const filterRevenue = (search) => {
     let filtered = revenueData;
@@ -134,39 +133,12 @@ export default function RevenueManagement() {
     setPage(0);
   };
 
-  const handleOpenModal = (mode, revenue = null) => {
-    setModalMode(mode);
-    setEditRevenue(
-      revenue || {
-        id: Date.now(),
-        revenueName: "",
-        revenueType: "",
-        amount: "",
-        date: new Date().toISOString().split("T")[0],
-      }
-    );
-    setOpenModal(true);
+  const openDetails = (revenue) => {
+    setSelectedRevenue(revenue);
+    setDetailsOpen(true);
   };
+  const closeDetails = () => setDetailsOpen(false);
 
-  const handleCloseModal = () => {
-    setOpenModal(false);
-    setEditRevenue(null);
-  };
-
-  const handleSaveRevenue = () => {
-    if (modalMode === "edit") {
-      const index = revenueData.findIndex((r) => r.id === editRevenue.id);
-      if (index !== -1) {
-        revenueData[index] = editRevenue;
-      }
-      setFilteredRevenue([...revenueData]);
-    } else if (modalMode === "add") {
-      revenueData.push(editRevenue);
-      setFilteredRevenue([...revenueData]);
-    }
-    setOpenModal(false);
-    setEditRevenue(null);
-  };
   const handleSearchChange = (e) => {
     const search = e.target.value;
     setSearchText(search);
@@ -207,7 +179,7 @@ export default function RevenueManagement() {
               },
             },
             "& .MuiOutlinedInput-notchedOutline": {
-              borderRadius: "20px",
+              borderRadius: "10px",
             },
             height: "40px",
             "& .MuiInputBase-root": {
@@ -310,9 +282,12 @@ export default function RevenueManagement() {
                     </TableCell>
                     <TableCell sx={{ textAlign: "center" }}>
                       <IconButton
-                        onClick={() => handleOpenModal("edit", revenue)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openDetails(revenue);
+                        }}
                       >
-                        <AiOutlineEdit className="text-xl text-[#2B7FFF]" />
+                        <AiOutlineInfoCircle className="text-xl text-[#2B7FFF]" />
                       </IconButton>
                     </TableCell>
                   </TableRow>
@@ -332,199 +307,82 @@ export default function RevenueManagement() {
         />
       </div>
 
-      {/* Modal for Add/Edit Revenue */}
+      {/* ---------- Revenue Details Modal ---------- */}
       <Modal
-        open={openModal}
-        onClose={handleCloseModal}
-        aria-labelledby="edit-revenue-modal"
-        aria-describedby="modal-to-edit-revenue"
+        open={detailsOpen}
+        onClose={closeDetails}
+        aria-labelledby="revenue-details-modal"
       >
         <Box
-          className="modal-content"
           sx={{
             position: "absolute",
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
-            width: 700,
-            backgroundColor: "white",
+            width: { xs: "90%", sm: 560 },
+            bgcolor: "background.paper",
             boxShadow: 24,
-            padding: 4,
+            p: 4,
             borderRadius: 2,
           }}
         >
-          <p className="text-center text-[#1A1A1A] font-semibold text-xl mb-4">
-            {modalMode === "edit" ? "Edit Revenue" : "Add Revenue"}
-          </p>
-          <div className="flex flex-col gap-5 items-center">
-            <TextField
-              label="Revenue Name"
-              value={editRevenue ? editRevenue.revenueName : ""}
-              onChange={(e) =>
-                setEditRevenue({
-                  ...editRevenue,
-                  revenueName: e.target.value,
-                })
-              }
-              fullWidth
+          <Typography
+            id="revenue-details-modal"
+            variant="h6"
+            component="h2"
+            textAlign="center"
+            mb={3}
+            color="#1A1A1A"
+            fontWeight="bold"
+          >
+            Revenue Details
+          </Typography>
+
+          {selectedRevenue && (
+            <Box
               sx={{
-                "& .MuiOutlinedInput-root": {
-                  "&.Mui-focused fieldset": {
-                    borderColor: "#2B7FFF",
-                  },
-                },
-                "& .MuiInputLabel-root.Mui-focused": {
-                  color: "#2B7FFF",
-                },
-                "& .MuiOutlinedInput-notchedOutline": {
-                  borderRadius: "20px",
-                },
-                height: "50px",
-                "& .MuiInputBase-root": {
-                  height: "100%",
-                },
+                display: "grid",
+                gap: 2,
+                gridTemplateColumns: { xs: "1fr", sm: "max-content 1fr" },
+                alignItems: "center",
               }}
-            />
-            <FormControl
-              fullWidth
+            >
+              {" "}
+              <Typography fontWeight="medium">ID:</Typography>
+              <Typography>{selectedRevenue.id}</Typography>
+              <Typography fontWeight="medium">Revenue Name:</Typography>
+              <Typography>{selectedRevenue.revenueName}</Typography>
+              <Typography fontWeight="medium">Revenue Type:</Typography>
+              <Typography>{selectedRevenue.revenueType}</Typography>
+              <Typography fontWeight="medium">Amount:</Typography>
+              <Typography fontWeight="600">
+                {formatCurrency(selectedRevenue.amount)}
+              </Typography>
+              <Typography fontWeight="medium">Date:</Typography>
+              <Typography>
+                {new Date(selectedRevenue.date).toLocaleDateString()}
+              </Typography>
+            </Box>
+          )}
+
+          <Box sx={{ mt: 4, textAlign: "right" }}>
+            <Button
+              onClick={closeDetails}
+              variant="outlined"
               sx={{
-                "& .MuiOutlinedInput-root": {
-                  "&.Mui-focused fieldset": {
-                    borderColor: "#2B7FFF",
-                  },
-                },
-                "& .MuiInputLabel-root.Mui-focused": {
-                  color: "#2B7FFF",
-                },
-                "& .MuiOutlinedInput-notchedOutline": {
-                  borderRadius: "20px",
-                },
-                height: "50px",
-                "& .MuiInputBase-root": {
-                  height: "100%",
+                borderColor: "#00D3F2",
+                color: "#00D3F2",
+                textTransform: "none",
+                borderRadius: "50px",
+                "&:hover": {
+                  borderColor: "#00C4E3",
+                  backgroundColor: "rgba(0, 211, 242, 0.04)",
                 },
               }}
             >
-              <InputLabel>Revenue Type</InputLabel>
-              <Select
-                value={editRevenue ? editRevenue.revenueType : ""}
-                onChange={(e) =>
-                  setEditRevenue({
-                    ...editRevenue,
-                    revenueType: e.target.value,
-                  })
-                }
-                label="Revenue Type"
-              >
-                {revenueTypes.map((type) => (
-                  <MenuItem key={type} value={type}>
-                    {type}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <TextField
-              label="Amount"
-              type="number"
-              value={editRevenue ? editRevenue.amount : ""}
-              onChange={(e) =>
-                setEditRevenue({
-                  ...editRevenue,
-                  amount: parseFloat(e.target.value) || 0,
-                })
-              }
-              fullWidth
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  "&.Mui-focused fieldset": {
-                    borderColor: "#2B7FFF",
-                  },
-                },
-                "& .MuiInputLabel-root.Mui-focused": {
-                  color: "#2B7FFF",
-                },
-                "& .MuiOutlinedInput-notchedOutline": {
-                  borderRadius: "20px",
-                },
-                height: "50px",
-                "& .MuiInputBase-root": {
-                  height: "100%",
-                },
-              }}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">$</InputAdornment>
-                ),
-              }}
-            />
-            <TextField
-              label="Date"
-              type="date"
-              value={editRevenue ? editRevenue.date : ""}
-              onChange={(e) =>
-                setEditRevenue({
-                  ...editRevenue,
-                  date: e.target.value,
-                })
-              }
-              fullWidth
-              InputLabelProps={{
-                shrink: true,
-              }}
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  "&.Mui-focused fieldset": {
-                    borderColor: "#2B7FFF",
-                  },
-                },
-                "& .MuiInputLabel-root.Mui-focused": {
-                  color: "#2B7FFF",
-                },
-                "& .MuiOutlinedInput-notchedOutline": {
-                  borderRadius: "20px",
-                },
-                height: "50px",
-                "& .MuiInputBase-root": {
-                  height: "100%",
-                },
-              }}
-            />
-            <div className="flex items-center justify-end gap-2 w-full">
-              <Button
-                onClick={handleSaveRevenue}
-                variant="contained"
-                sx={{
-                  background:
-                    "linear-gradient(90deg, #00D3F2 0%, #2B7FFF 100%)",
-                  width: "120px",
-                  textTransform: "none",
-                  borderRadius: "50px",
-                  "&:hover": {
-                    background:
-                      "linear-gradient(90deg, #00C4E3 0%, #1A6FEF 100%)",
-                  },
-                }}
-              >
-                Save
-              </Button>
-              <Button
-                onClick={() => setOpenModal(false)}
-                sx={{
-                  width: "120px",
-                  color: "#00D3F2",
-                  border: "2px solid #00D3F2",
-                  textTransform: "none",
-                  borderRadius: "50px",
-                  "&:hover": {
-                    border: "2px solid #00C4E3",
-                    backgroundColor: "rgba(0, 211, 242, 0.04)",
-                  },
-                }}
-              >
-                Cancel
-              </Button>
-            </div>
-          </div>
+              Close
+            </Button>
+          </Box>
         </Box>
       </Modal>
     </div>
