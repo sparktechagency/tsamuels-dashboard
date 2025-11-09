@@ -110,19 +110,6 @@ export default function UserManagement() {
     }
   };
 
-  const getJourneyColor = (journey) => {
-    switch (journey) {
-      case "Starting":
-        return "info";
-      case "Managing Day-to-Day":
-        return "primary";
-      case "Mentor Ready":
-        return "secondary";
-      default:
-        return "default";
-    }
-  };
-
   return (
     <div className="px-10 py-8 bg-[#fdfdfd] h-[92vh] overflow-auto">
       {/* Search Bar */}
