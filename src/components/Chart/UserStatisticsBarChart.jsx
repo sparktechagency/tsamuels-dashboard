@@ -65,7 +65,7 @@ const generatedYearData = [
 
 export default function UserStatisticsBarChart({
   selectedYear,
-  selectedMonth,
+  // selectedMonth,
 }) {
   const [chartData, setChartData] = useState([]);
 
@@ -74,16 +74,9 @@ export default function UserStatisticsBarChart({
       (data) => data.year === selectedYear
     );
     if (yearData) {
-      if (selectedMonth === "All") {
-        setChartData(yearData.data);
-      } else {
-        const filteredData = yearData.data.filter(
-          (entry) => entry.month === selectedMonth
-        );
-        setChartData(filteredData);
-      }
+      setChartData(yearData.data);
     }
-  }, [selectedMonth, selectedYear]);
+  }, [selectedYear]);
 
   return (
     <div className="w-full">

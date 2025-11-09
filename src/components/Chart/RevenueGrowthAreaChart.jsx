@@ -66,7 +66,7 @@ const generatedYearData = [
 
 export default function RevenueGrowthAreaChart({
   selectedYear,
-  selectedMonth,
+  // selectedMonth,
 }) {
   const [chartData, setChartData] = useState([]);
 
@@ -75,16 +75,16 @@ export default function RevenueGrowthAreaChart({
       (data) => data.year === selectedYear
     );
     if (yearData) {
-      if (selectedMonth === "All") {
-        setChartData(yearData.data);
-      } else {
-        const filteredData = yearData.data.filter(
-          (entry) => entry.month === selectedMonth
-        );
-        setChartData(filteredData);
-      }
+      setChartData(yearData.data);
+      // if (selectedMonth === "All") {
+      // } else {
+      //   const filteredData = yearData.data.filter(
+      //     (entry) => entry.month === selectedMonth
+      //   );
+      //   setChartData(filteredData);
+      // }
     }
-  }, [selectedMonth, selectedYear]);
+  }, [selectedYear]);
 
   if (!chartData.length) {
     return (

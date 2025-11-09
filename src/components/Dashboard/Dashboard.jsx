@@ -9,22 +9,22 @@ import RevenueGrowthAreaChart from "../Chart/RevenueGrowthAreaChart";
 
 export default function Dashboard() {
   const [userGrowthByYear, setUserGrowthByYear] = useState(2025);
-  const [userGrowthByMonth, setUserGrowthByMonth] = useState("All");
+  // const [userGrowthByMonth, setUserGrowthByMonth] = useState("All");
   const [matchesGrowthByYear, setMatchesGrowthByYear] = useState(2025);
-  const [matchesGrowthByMonth, setMatchesGrowthByMonth] = useState("All");
+  // const [matchesGrowthByMonth, setMatchesGrowthByMonth] = useState("All");
 
   const handleUserGrowthYearChange = (event) => {
     setUserGrowthByYear(event.target.value);
   };
-  const handleUserGrowthMonthChange = (event) => {
-    setUserGrowthByMonth(event.target.value);
-  };
+  // const handleUserGrowthMonthChange = (event) => {
+  //   setUserGrowthByMonth(event.target.value);
+  // };
   const handleMatchesGrowthYearChange = (event) => {
     setMatchesGrowthByYear(event.target.value);
   };
-  const handleMatchesGrowthMonthChange = (event) => {
-    setMatchesGrowthByMonth(event.target.value);
-  };
+  // const handleMatchesGrowthMonthChange = (event) => {
+  //   setMatchesGrowthByMonth(event.target.value);
+  // };
 
   // console.log("yaaaaaaaaaaaaaaaaaar", year);
 
@@ -54,7 +54,7 @@ export default function Dashboard() {
                 Total Growth of User
               </p>
             </div>
-            <div className="flex items-center gap-3 w-64">
+            <div className="flex items-center gap-3">
               <FormControl fullWidth>
                 <InputLabel id="demo-simple-select-label">
                   <div className="flex items-center">
@@ -77,13 +77,12 @@ export default function Dashboard() {
                   <MenuItem value={2023}>2023</MenuItem>
                 </Select>
               </FormControl>
-              <FormControl fullWidth>
+              {/* <FormControl fullWidth>
                 <InputLabel id="demo-simple-select-label">
                   <div className="flex items-center">
                     <p>
                       <LuCalendar fontSize={20} />
                     </p>
-                    {/* <p className="text-sm">Year</p> */}
                   </div>
                 </InputLabel>
                 <Select
@@ -114,13 +113,13 @@ export default function Dashboard() {
                     </MenuItem>
                   ))}
                 </Select>
-              </FormControl>
+              </FormControl> */}
             </div>
           </div>
           <div className="mt-5">
             <UserStatisticsBarChart
               selectedYear={userGrowthByYear}
-              selectedMonth={userGrowthByMonth}
+              // selectedMonth={userGrowthByMonth}
             />
           </div>
         </div>
@@ -134,7 +133,7 @@ export default function Dashboard() {
               <p className="text-[#333333] font-semibold text-xl">
                 Revenue Growth
               </p>
-              <div className="flex items-center gap-3 w-56">
+              <div className="flex items-center gap-3">
                 <FormControl fullWidth>
                   <InputLabel id="revenue-year-label">
                     <div className="flex items-center">
@@ -157,13 +156,12 @@ export default function Dashboard() {
                     <MenuItem value={2023}>2023</MenuItem>
                   </Select>
                 </FormControl>
-                <FormControl fullWidth>
+                {/* <FormControl fullWidth>
                   <InputLabel id="revenue-year-label">
                     <div className="flex items-center">
                       <p>
                         <LuCalendar fontSize={20} />
                       </p>
-                      {/* <p className="text-sm">Year</p> */}
                     </div>
                   </InputLabel>
                   <Select
@@ -194,13 +192,13 @@ export default function Dashboard() {
                       </MenuItem>
                     ))}
                   </Select>
-                </FormControl>
+                </FormControl> */}
               </div>
             </div>
             <div className="flex mt-5 h-full">
               <RevenueGrowthAreaChart
                 selectedYear={matchesGrowthByYear}
-                selectedMonth={matchesGrowthByMonth}
+                // selectedMonth={matchesGrowthByMonth}
               />
             </div>
           </div>
