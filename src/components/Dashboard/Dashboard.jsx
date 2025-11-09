@@ -4,16 +4,14 @@ import { LuCalendar } from "react-icons/lu";
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 
 import UserStatisticsBarChart from "../Chart/UserStatisticsBarChart";
-import MatchedGrowthAreaChart from "../Chart/MatchedGrowthAreaChart";
 import JourneyStats from "../UI/JourneyStats";
+import RevenueGrowthAreaChart from "../Chart/RevenueGrowthAreaChart";
 
 export default function Dashboard() {
   const [userGrowthByYear, setUserGrowthByYear] = useState(2025);
   const [userGrowthByMonth, setUserGrowthByMonth] = useState("All");
   const [matchesGrowthByYear, setMatchesGrowthByYear] = useState(2025);
   const [matchesGrowthByMonth, setMatchesGrowthByMonth] = useState("All");
-  const [journeyStatByYear, setJourneyStatByYear] = useState(2025);
-  const [journeyStatByMonth, setJourneyStatByMonth] = useState("All");
 
   const handleUserGrowthYearChange = (event) => {
     setUserGrowthByYear(event.target.value);
@@ -27,12 +25,6 @@ export default function Dashboard() {
   const handleMatchesGrowthMonthChange = (event) => {
     setMatchesGrowthByMonth(event.target.value);
   };
-  const handleJourneyStatYearChange = (event) => {
-    setJourneyStatByYear(event.target.value);
-  };
-  const handleJourneyStatMonthChange = (event) => {
-    setJourneyStatByMonth(event.target.value);
-  };
 
   // console.log("yaaaaaaaaaaaaaaaaaar", year);
 
@@ -40,21 +32,17 @@ export default function Dashboard() {
     <div className="bg-[#fdfdfd] px-10 py-3 h-[92vh] w-full">
       <div className="flex flex-col gap-4 mt-2">
         <div className="flex items-center justify-between gap-5">
-          <div className="flex flex-col items-center justify-center bg-[#CD8085] text-white rounded-lg px-8 py-4 w-full h-28">
+          <div className="flex flex-col items-center justify-center bg-[#2B7FFF] text-white rounded-lg px-8 py-4 w-full h-28">
             <p className="font-medium text-lg">Total User</p>
             <p className="text-3xl font-semibold">150</p>
           </div>
-          <div className="flex flex-col items-center justify-center bg-[#CD8085] text-white rounded-lg px-8 py-4 w-full  h-28">
-            <p className="font-medium text-lg">Total Matches</p>
+          <div className="flex flex-col items-center justify-center bg-[#2B7FFF] text-white rounded-lg px-8 py-4 w-full  h-28">
+            <p className="font-medium text-lg">Total Subscribers</p>
             <p className="text-3xl font-semibold">50</p>
           </div>
-          <div className="flex flex-col items-center justify-center bg-[#CD8085] text-white rounded-lg px-8 py-4 w-full  h-28">
-            <p className="font-medium text-lg">Total Diagnosis</p>
-            <p className="text-3xl font-semibold">12</p>
-          </div>
-          <div className="flex flex-col items-center justify-center bg-[#CD8085] text-white rounded-lg px-8 py-4 w-full h-28">
-            <p className="font-medium text-lg">Total Therapy</p>
-            <p className="text-3xl font-semibold">10</p>
+          <div className="flex flex-col items-center justify-center bg-[#2B7FFF] text-white rounded-lg px-8 py-4 w-full  h-28">
+            <p className="font-medium text-lg">Total Revenue</p>
+            <p className="text-3xl font-semibold">$50</p>
           </div>
         </div>
       </div>
@@ -144,7 +132,7 @@ export default function Dashboard() {
           >
             <div className="flex items-center justify-between">
               <p className="text-[#333333] font-semibold text-xl">
-                Matches Growth
+                Revenue Growth
               </p>
               <div className="flex items-center gap-3 w-56">
                 <FormControl fullWidth>
@@ -210,91 +198,11 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="flex mt-5 h-full">
-              <MatchedGrowthAreaChart
+              <RevenueGrowthAreaChart
                 selectedYear={matchesGrowthByYear}
                 selectedMonth={matchesGrowthByMonth}
               />
             </div>
-          </div>
-
-          {/* service stats */}
-          <div
-            className="bg-[#FDF9F7] shadow-xl flex-1 px-5 py-3"
-            style={{ minHeight: 325 }}
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-[#1A1A1A] font-semibold text-xl">
-                  Journey Stats
-                </p>
-              </div>
-              <div className="flex items-center gap-2 w-56">
-                <FormControl fullWidth>
-                  <InputLabel id="service-year-label">
-                    <div className="flex items-center">
-                      <p>
-                        <LuCalendar fontSize={20} />
-                      </p>
-                      {/* <p className="text-sm">Year</p> */}
-                    </div>
-                  </InputLabel>
-                  <Select
-                    labelId="service-year-label"
-                    id="service-year-select"
-                    value={journeyStatByYear}
-                    label="Year"
-                    onChange={handleJourneyStatYearChange}
-                    className="h-10"
-                  >
-                    <MenuItem value={2025}>2025</MenuItem>
-                    <MenuItem value={2024}>2024</MenuItem>
-                    <MenuItem value={2023}>2023</MenuItem>
-                  </Select>
-                </FormControl>
-                <FormControl fullWidth>
-                  <InputLabel id="service-year-label">
-                    <div className="flex items-center">
-                      <p>
-                        <LuCalendar fontSize={20} />
-                      </p>
-                      {/* <p className="text-sm">Year</p> */}
-                    </div>
-                  </InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={matchesGrowthByMonth}
-                    label="Month"
-                    onChange={handleJourneyStatMonthChange}
-                    className="h-10"
-                  >
-                    {[
-                      "All",
-                      "January",
-                      "February",
-                      "March",
-                      "April",
-                      "May",
-                      "June",
-                      "July",
-                      "August",
-                      "September",
-                      "October",
-                      "November",
-                      "December",
-                    ].map((month, index) => (
-                      <MenuItem key={index} value={month}>
-                        {month}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </div>
-            </div>
-            <JourneyStats
-              selectedYear={journeyStatByYear}
-              selectedMonth={journeyStatByMonth}
-            />
           </div>
         </div>
       </div>

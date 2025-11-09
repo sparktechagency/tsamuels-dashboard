@@ -11,14 +11,14 @@ import UserDetails from "../Dashboard/UserDetails";
 import Settings from "../Dashboard/Settings";
 import Profile from "../Dashboard/Settings/Profile";
 import ChangePassword from "../Dashboard/Settings/ChangePassword";
-import Diagnosis from "../Dashboard/Diagnosis";
-import Therapy from "../Dashboard/Therapy";
-import ParentingJourney from "../Dashboard/ParentingJourney";
-import InterestsAndValues from "../Dashboard/InterestsAndValues";
 import Faq from "../Dashboard/Settings/Faq";
 import TermsAndConditions from "../Dashboard/Settings/TermsAndConditions";
 import AboutUs from "../Dashboard/Settings/AboutUs";
 import PrivacyPolicy from "../Dashboard/Settings/PrivacyPolicy";
+import RevenueManagement from "../Dashboard/Diagnosis";
+import Transaction from "../Dashboard/Transaction";
+import Subscription from "../Dashboard/Subscription";
+import Support from "../Dashboard/Support";
 
 const router = createBrowserRouter([
   {
@@ -54,25 +54,25 @@ const router = createBrowserRouter([
             element: <Dashboard />,
           },
           {
-            path: "user-details",
+            path: "user-management",
             element: <UserDetails />,
           },
           {
-            path: "diagnosis",
-            element: <Diagnosis />,
+            path: "revenue-management",
+            element: <RevenueManagement />,
           },
           {
-            path: "therapy",
-            element: <Therapy />,
+            path: "transaction",
+            element: <Transaction />,
           },
           {
-            path: "parenting-journey",
-            element: <ParentingJourney />,
+            path: "subscription",
+            element: <Subscription />,
           },
 
           {
-            path: "interests-and-values",
-            element: <InterestsAndValues />,
+            path: "support",
+            element: <Support />,
           },
           {
             path: "settings",

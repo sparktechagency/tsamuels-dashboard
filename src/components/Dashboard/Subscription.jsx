@@ -38,7 +38,7 @@ const therapyData = [
   },
 ];
 
-export default function ParentingJourney() {
+export default function Subscription() {
   const [searchText, setSearchText] = useState("");
   const [filteredTherapy, setFilteredTherapy] = useState(therapyData);
   const [page, setPage] = useState(0);

@@ -96,7 +96,7 @@ export default function UserStatisticsBarChart({
           <XAxis dataKey="month" />
           <YAxis />
           <Tooltip />
-          <Bar dataKey="users" fill="#CD8085" barSize={20} />
+          <Bar dataKey="users" fill="#2B7FFF" barSize={20} />
         </BarChart>
       </ResponsiveContainer>
     </div>

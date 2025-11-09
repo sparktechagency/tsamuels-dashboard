@@ -2,11 +2,12 @@ import { useState } from "react";
 
 import { MdOutlineDashboard } from "react-icons/md";
 import { PiUsers } from "react-icons/pi";
-import { PiTestTubeBold } from "react-icons/pi";
-import { FaFirstAid } from "react-icons/fa";
-import { IoCar } from "react-icons/io5";
+import { AiOutlineTransaction } from "react-icons/ai";
+import { MdDiamond } from "react-icons/md";
+import { MdOutlineMarkEmailUnread } from "react-icons/md";
 import { BsChatHeart } from "react-icons/bs";
 import { IoSettingsOutline } from "react-icons/io5";
+import { BiDollarCircle } from "react-icons/bi";
 
 import { Link, NavLink } from "react-router-dom";
 
@@ -20,7 +21,7 @@ export default function Sidebar() {
   };
 
   return (
-    <div className="bg-linear-to-r from-[#00D3F2] to-[#2B7FFF] h-screen w-full">
+    <div className="bg-[#2B7FFF] h-screen w-full">
       <div className="flex flex-col items-center gap-4 py-5">
         <Link to="/" className="">
           <img src={logo} alt="" className="h-12 mx-auto" />
@@ -35,30 +36,30 @@ export default function Sidebar() {
             label: "Overview",
           },
           {
-            to: "/user-details",
+            to: "/user-management",
             icon: <PiUsers fontSize={24} />,
-            label: "User Details",
+            label: "User Management",
           },
           {
-            to: "/diagnosis",
-            icon: <PiTestTubeBold fontSize={24} />,
-            label: "Diagnosis",
+            to: "/revenue-management",
+            icon: <BiDollarCircle fontSize={24} />,
+            label: "Revenue Management",
           },
 
           {
-            to: "/therapy",
-            icon: <FaFirstAid fontSize={24} />,
-            label: "Therapy",
+            to: "/transaction",
+            icon: <AiOutlineTransaction fontSize={24} />,
+            label: "Transaction",
           },
           {
-            to: "/parenting-journey",
-            icon: <IoCar fontSize={24} />,
-            label: "Parenting Journey",
+            to: "/subscription",
+            icon: <MdDiamond fontSize={24} />,
+            label: "Subscription",
           },
           {
-            to: "/interests-and-values",
-            icon: <BsChatHeart fontSize={24} />,
-            label: "Interests & Values",
+            to: "/support",
+            icon: <MdOutlineMarkEmailUnread fontSize={24} />,
+            label: "Support",
           },
           {
             to: "/settings",
@@ -80,12 +81,12 @@ export default function Sidebar() {
               `flex items-center font-medium gap-3 text-base py-2 px-2 rounded-md 
               ${
                 isActive
-                  ? "bg-[#2B7FFF] text-[#fff]"
+                  ? "bg-[#00D3F2] text-[#000]"
                   : selected === to
-                  ? "bg-[#2B7FFF] text-black"
-                  : "text-black"
+                  ? "bg-[#00D3F2] text-black"
+                  : "text-white"
               }
-              hover:bg-[#2B7FFF] hover:text-[#fff]`
+              hover:bg-[#00D3F2] hover:text-[#fff]`
             }
           >
             {icon}
