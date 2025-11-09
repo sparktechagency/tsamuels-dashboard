@@ -19,6 +19,7 @@ import Transaction from "../Dashboard/Transaction";
 import Subscription from "../Dashboard/Subscription";
 import Support from "../Dashboard/Support";
 import UserManagement from "../Dashboard/UserManagement";
+import AddAvatar from "../Dashboard/Settings/AddAvatar";
 
 const router = createBrowserRouter([
   {
@@ -81,6 +82,10 @@ const router = createBrowserRouter([
           {
             path: "settings/profile",
             element: <Profile />,
+          },
+          {
+            path: "settings/add-avatar",
+            element: <AddAvatar />,
           },
           {
             path: "settings/change-password",

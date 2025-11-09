@@ -41,12 +41,19 @@ export default function Settings() {
           <FaChevronRight />
         </Link>
         <Link
+          to="add-avatar"
+          className="flex items-center justify-between bg-[#2B7FFF] text-white p-4 rounded-lg w-3/4 hover:font-medium"
+        >
+          <p>Add Avatar</p>
+          <FaChevronRight />
+        </Link>
+        {/* <Link
           to="faq"
           className="flex items-center justify-between bg-[#2B7FFF] text-white p-4 rounded-lg w-3/4 hover:font-medium"
         >
           <p>FAQ</p>
           <FaChevronRight />
-        </Link>
+        </Link> */}
       </div>
     </div>
   );

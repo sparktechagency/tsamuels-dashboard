@@ -101,7 +101,16 @@ export default function UserManagement() {
   return (
     <div className="px-10 py-8 bg-[#fdfdfd] h-[92vh] overflow-auto">
       {/* Search Bar */}
-      <div className="flex justify-end mb-6">
+      <div className="flex justify-between mb-4">
+        <div>
+          <h1 className="text-3xl font-bold text-[#1A1A1A]">User Management</h1>
+          <p className="text-[#2B7FFF] mt-1">
+            Total Users:{" "}
+            <span className="font-semibold text-lg">
+              {filteredUsers.length}
+            </span>
+          </p>
+        </div>
         <TextField
           placeholder="Search by Name, Email or Username"
           value={searchText}
@@ -125,7 +134,9 @@ export default function UserManagement() {
       </div>
 
       {/* Table */}
-      <TableContainer component={Paper} elevation={2}>
+      <TableContainer
+        sx={{ borderRadius: 3, overflow: "hidden", boxShadow: 3 }}
+      >
         <Table>
           <TableHead>
             <TableRow
@@ -151,7 +162,7 @@ export default function UserManagement() {
                 <TableRow
                   key={user.email}
                   hover
-                  sx={{ cursor: "pointer" }}
+                  sx={{ "&:hover": { bgcolor: "#f8faff" } }}
                   onClick={() => handleOpenModal(user)}
                 >
                   <TableCell align="center">{user.name}</TableCell>
