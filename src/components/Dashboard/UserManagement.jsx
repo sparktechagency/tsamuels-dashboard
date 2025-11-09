@@ -101,7 +101,16 @@ export default function UserManagement() {
   return (
     <div className="px-10 py-8 bg-[#fdfdfd] h-[92vh] overflow-auto">
       {/* Search Bar */}
-      <div className="flex justify-end mb-6">
+      <div className="flex justify-between mb-4">
+        <div>
+          <h1 className="text-3xl font-bold text-[#1A1A1A]">User Management</h1>
+          <p className="text-[#2B7FFF] mt-1">
+            Total Users:{" "}
+            <span className="font-semibold text-lg">
+              {filteredUsers.length}
+            </span>
+          </p>
+        </div>
         <TextField
           placeholder="Search by Name, Email or Username"
           value={searchText}
