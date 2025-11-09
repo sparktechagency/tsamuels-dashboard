@@ -7,7 +7,6 @@ import Dashboard from "../Dashboard/Dashboard";
 import Notifications from "../Dashboard/Notifications";
 import VerifyOtp from "../../pages/VeryfiOTP";
 import UpdatePassword from "../../pages/UpdatePassword";
-import UserDetails from "../Dashboard/UserDetails";
 import Settings from "../Dashboard/Settings";
 import Profile from "../Dashboard/Settings/Profile";
 import ChangePassword from "../Dashboard/Settings/ChangePassword";
@@ -15,10 +14,11 @@ import Faq from "../Dashboard/Settings/Faq";
 import TermsAndConditions from "../Dashboard/Settings/TermsAndConditions";
 import AboutUs from "../Dashboard/Settings/AboutUs";
 import PrivacyPolicy from "../Dashboard/Settings/PrivacyPolicy";
-import RevenueManagement from "../Dashboard/Diagnosis";
+import RevenueManagement from "../Dashboard/RevenueManagement";
 import Transaction from "../Dashboard/Transaction";
 import Subscription from "../Dashboard/Subscription";
 import Support from "../Dashboard/Support";
+import UserManagement from "../Dashboard/UserManagement";
 
 const router = createBrowserRouter([
   {
@@ -55,7 +55,7 @@ const router = createBrowserRouter([
           },
           {
             path: "user-management",
-            element: <UserDetails />,
+            element: <UserManagement />,
           },
           {
             path: "revenue-management",

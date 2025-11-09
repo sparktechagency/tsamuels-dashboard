@@ -190,7 +190,7 @@ const usersData = [
   },
 ];
 
-export default function UserDetails() {
+export default function UserManagement() {
   const [searchText, setSearchText] = useState("");
   const [filteredUsers, setFilteredUsers] = useState(usersData);
   const [page, setPage] = useState(0);
@@ -237,7 +237,7 @@ export default function UserDetails() {
             width: 300,
             "& .MuiOutlinedInput-root": {
               "&.Mui-focused fieldset": {
-                borderColor: "#CD8085", // Change border color on focus
+                borderColor: "#2B7FFF", // Change border color on focus
               },
             },
             "& .MuiOutlinedInput-notchedOutline": {
@@ -262,7 +262,11 @@ export default function UserDetails() {
       <TableContainer>
         <Table>
           <TableHead>
-            <TableRow sx={{ backgroundColor: "#CD8085" }}>
+            <TableRow
+              sx={{
+                background: "linear-gradient(90deg, #00D3F2 0%, #2B7FFF 100%)",
+              }}
+            >
               <TableCell
                 sx={{
                   color: "#fff",
@@ -293,16 +297,7 @@ export default function UserDetails() {
               >
                 Location
               </TableCell>
-              <TableCell
-                sx={{
-                  color: "#fff",
-                  textAlign: "center",
-                  fontWeight: "bold",
-                  fontSize: "14px",
-                }}
-              >
-                Parenting Journey
-              </TableCell>
+
               <TableCell
                 sx={{
                   color: "#fff",
@@ -340,9 +335,6 @@ export default function UserDetails() {
                     {user.location}
                   </TableCell>
                   <TableCell sx={{ textAlign: "center" }}>
-                    {user.parentingJourney}
-                  </TableCell>
-                  <TableCell sx={{ textAlign: "center" }}>
                     <span
                       style={{
                         padding: "10px 12px",
@@ -364,7 +356,7 @@ export default function UserDetails() {
                   </TableCell>{" "}
                   <TableCell sx={{ textAlign: "center" }}>
                     <IconButton onClick={() => handleOpenModal(user)}>
-                      <FiEye className="text-lg text-[#cd8a0d]" />
+                      <FiEye className="text-lg text-[#2B7FFF]" />
                     </IconButton>
                   </TableCell>
                 </TableRow>
