@@ -21,7 +21,7 @@ export default function Sidebar() {
   };
 
   return (
-    <div className="bg-[#2B7FFF] h-screen w-full">
+    <div className="bg-[#ffffff] h-screen w-full shadow-2xl">
       <div className="flex flex-col items-center gap-4 py-5">
         <Link to="/" className="">
           <img src={logo} alt="" className="h-12 mx-auto" />
@@ -81,12 +81,12 @@ export default function Sidebar() {
               `flex items-center font-medium gap-3 text-base py-2 px-2 rounded-md 
               ${
                 isActive
-                  ? "bg-[#00D3F2] text-[#000]"
+                  ? "bg-gradient-to-r from-[#2B7FFF] to-[#00D3F2]  text-[#fff]"
                   : selected === to
-                  ? "bg-[#00D3F2] text-black"
-                  : "text-white"
+                  ? "bg-[#2B7FFF] text-black"
+                  : "text-black"
               }
-              hover:bg-[#00D3F2] hover:text-[#fff]`
+              hover:bg-[#2B7FFF] hover:text-[#fff]`
             }
           >
             {icon}

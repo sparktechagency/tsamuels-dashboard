@@ -44,6 +44,11 @@ import {
   allTimeToValueData,
   allUserTypeData,
 } from "../../../public/data/overviewData";
+import GrowthVsLoyaltyChart from "../Chart/GrowthVsLoyaltyChart";
+import FeatureUsageChart from "../Chart/FeatureUsageChart";
+import SessionChart from "../Chart/SessionChart";
+import OnboardingChart from "../Chart/OnboardingChart";
+import CalendarAndFamilyChart from "../Chart/Calendar&FamilyChart";
 
 export default function Dashboard() {
   // Individual year filters for each chart
@@ -158,182 +163,68 @@ export default function Dashboard() {
       </div>
 
       {/* Charts Row 1: New vs Returning Users & Feature Usage */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(500px, 1fr))",
-          gap: "24px",
-          marginBottom: "24px",
-        }}
-      >
-        <Card
-          elevation={2}
-          sx={{
-            borderRadius: 4,
-            background: "linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%)",
-          }}
-        >
-          <CardContent sx={{ p: 3 }}>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: "4px",
-              }}
-            >
-              <p style={{ margin: 0, fontSize: "1.25rem", fontWeight: 600 }}>
-                New vs Returning Users
-              </p>
-              <FormControl sx={{ minWidth: 100 }} size="small">
-                <Select
-                  value={userTypeYear}
-                  onChange={(e) => setUserTypeYear(e.target.value)}
-                  sx={{
-                    borderRadius: 2,
-                    background: "white",
-                    "& .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "rgb(59, 130, 246)",
-                    },
-                  }}
-                >
-                  <MenuItem value="2023">2023</MenuItem>
-                  <MenuItem value="2024">2024</MenuItem>
-                  <MenuItem value="2025">2025</MenuItem>
-                </Select>
-              </FormControl>
-            </div>
-            <p
-              style={{
-                margin: 0,
-                fontSize: "0.875rem",
-                color: "#6b7280",
-                marginBottom: "24px",
-              }}
-            >
-              Growth vs loyalty trends
+      <div className="grid gap-6 mb-6 [grid-template-columns:repeat(auto-fit,minmax(500px,1fr))]">
+        <div className="p-4 bg-white rounded-lg shadow-lg">
+          <div className="flex justify-between items-center mb-1">
+            <p style={{ margin: 0, fontSize: "1.25rem", fontWeight: 600 }}>
+              New vs Returning Users
             </p>
-            <ResponsiveContainer width="100%" height={300}>
-              <AreaChart data={userTypeData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis dataKey="month" stroke="#6b7280" />
-                <YAxis stroke="#6b7280" />
-                <Tooltip
-                  contentStyle={{
-                    background: "white",
-                    border: "1px solid #e5e7eb",
-                    borderRadius: "8px",
-                  }}
-                />
-                <Legend />
-                <Area
-                  type="monotone"
-                  dataKey="new"
-                  stackId="1"
-                  stroke="#3b82f6"
-                  fill="#3b82f6"
-                  name="New Users"
-                />
-                <Area
-                  type="monotone"
-                  dataKey="returning"
-                  stackId="1"
-                  stroke="#10b981"
-                  fill="#10b981"
-                  name="Returning Users"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
+            <FormControl sx={{ minWidth: 100 }} size="small">
+              <Select
+                value={userTypeYear}
+                onChange={(e) => setUserTypeYear(e.target.value)}
+                sx={{
+                  borderRadius: 2,
+                  background: "white",
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "rgb(59, 130, 246)",
+                  },
+                }}
+              >
+                <MenuItem value="2023">2023</MenuItem>
+                <MenuItem value="2024">2024</MenuItem>
+                <MenuItem value="2025">2025</MenuItem>
+              </Select>
+            </FormControl>
+          </div>
+          <p className="text-sm text-[#6b7280] mb-6">
+            Growth vs loyalty trends
+          </p>
+          <GrowthVsLoyaltyChart userTypeData={userTypeData} />
+        </div>
 
-        <Card
-          elevation={2}
-          sx={{
-            borderRadius: 4,
-            background: "linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%)",
-          }}
-        >
-          <CardContent sx={{ p: 3 }}>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: "4px",
-              }}
-            >
-              <p style={{ margin: 0, fontSize: "1.25rem", fontWeight: 600 }}>
-                Feature Usage Rates
-              </p>
-              <FormControl sx={{ minWidth: 100 }} size="small">
-                <Select
-                  value={featureUsageYear}
-                  onChange={(e) => setFeatureUsageYear(e.target.value)}
-                  sx={{
-                    borderRadius: 2,
-                    background: "white",
-                    "& .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "rgb(59, 130, 246)",
-                    },
-                  }}
-                >
-                  <MenuItem value="2023">2023</MenuItem>
-                  <MenuItem value="2024">2024</MenuItem>
-                  <MenuItem value="2025">2025</MenuItem>
-                </Select>
-              </FormControl>
-            </div>
-            <p
-              style={{
-                margin: 0,
-                fontSize: "0.875rem",
-                color: "#6b7280",
-                marginBottom: "24px",
-              }}
-            >
-              Active users and session counts by feature
+        <div className="p-4 bg-white rounded-lg shadow-lg">
+          <div className="flex justify-between items-center mb-1">
+            <p style={{ margin: 0, fontSize: "1.25rem", fontWeight: 600 }}>
+              Feature Usage Rates
             </p>
-            <ResponsiveContainer width="100%" height={300}>
-              <ComposedChart data={featureUsageData} layout="vertical">
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis type="number" stroke="#6b7280" />
-                <YAxis
-                  dataKey="feature"
-                  type="category"
-                  width={120}
-                  stroke="#6b7280"
-                />
-                <Tooltip
-                  contentStyle={{
-                    background: "white",
-                    border: "1px solid #e5e7eb",
-                    borderRadius: "8px",
-                  }}
-                />
-                <Legend />
-                <Bar dataKey="usageRate" fill="#3b82f6" name="Usage Rate %" />
-                <Line
-                  dataKey="users"
-                  stroke="#10b981"
-                  strokeWidth={2}
-                  name="Active Users"
-                />
-              </ComposedChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
+            <FormControl sx={{ minWidth: 100 }} size="small">
+              <Select
+                value={featureUsageYear}
+                onChange={(e) => setFeatureUsageYear(e.target.value)}
+                sx={{
+                  borderRadius: 2,
+                  background: "white",
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "rgb(59, 130, 246)",
+                  },
+                }}
+              >
+                <MenuItem value="2023">2023</MenuItem>
+                <MenuItem value="2024">2024</MenuItem>
+                <MenuItem value="2025">2025</MenuItem>
+              </Select>
+            </FormControl>
+          </div>
+          <p className="text-sm text-[#6b7280] mb-6">
+            Active users and session counts by feature
+          </p>
+          <FeatureUsageChart featureUsageData={featureUsageData} />
+        </div>
       </div>
 
       {/* Charts Row 2: Onboarding Funnel & Session Metrics */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(500px, 1fr))",
-          gap: "24px",
-          marginBottom: "24px",
-        }}
-      >
+      <div className="grid gap-6 mb-6 [grid-template-columns:repeat(auto-fit,minmax(500px,1fr))]">
         <Card
           elevation={2}
           sx={{
@@ -341,15 +232,8 @@ export default function Dashboard() {
             background: "linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%)",
           }}
         >
-          <CardContent sx={{ p: 3 }}>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: "4px",
-              }}
-            >
+          <div className="p-4 bg-white rounded-lg shadow-lg">
+            <div className="flex justify-between items-center mb-1">
               <p style={{ margin: 0, fontSize: "1.25rem", fontWeight: 600 }}>
                 Onboarding Completion
               </p>
@@ -371,40 +255,11 @@ export default function Dashboard() {
                 </Select>
               </FormControl>
             </div>
-            <p
-              style={{
-                margin: 0,
-                fontSize: "0.875rem",
-                color: "#6b7280",
-                marginBottom: "24px",
-              }}
-            >
+            <p className="text-sm text-[#6b7280] mb-6">
               User progression and drop-off points
             </p>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={onboardingData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis
-                  dataKey="step"
-                  stroke="#6b7280"
-                  angle={-45}
-                  textAnchor="end"
-                  height={80}
-                />
-                <YAxis stroke="#6b7280" />
-                <Tooltip
-                  contentStyle={{
-                    background: "white",
-                    border: "1px solid #e5e7eb",
-                    borderRadius: "8px",
-                  }}
-                />
-                <Legend />
-                <Bar dataKey="users" fill="#3b82f6" name="Users" />
-                <Bar dataKey="percent" fill="#10b981" name="Completion %" />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
+            <OnboardingChart onboardingData={onboardingData} />
+          </div>
         </Card>
 
         <Card
@@ -414,15 +269,8 @@ export default function Dashboard() {
             background: "linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%)",
           }}
         >
-          <CardContent sx={{ p: 3 }}>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: "4px",
-              }}
-            >
+          <div className="p-4 bg-white rounded-lg shadow-lg">
+            <div className="flex items-center justify-between mb-1">
               <p style={{ margin: 0, fontSize: "1.25rem", fontWeight: 600 }}>
                 Session Metrics by Day
               </p>
@@ -444,70 +292,25 @@ export default function Dashboard() {
                 </Select>
               </FormControl>
             </div>
-            <p
-              style={{
-                margin: 0,
-                fontSize: "0.875rem",
-                color: "#6b7280",
-                marginBottom: "24px",
-              }}
-            >
+            <p className="text-sm text-[#6b7280] mb-6">
               Session length (min) and sessions per user
             </p>
-            <ResponsiveContainer width="100%" height={300}>
-              <ComposedChart data={sessionData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis dataKey="day" stroke="#6b7280" />
-                <YAxis yAxisId="left" stroke="#6b7280" />
-                <YAxis yAxisId="right" orientation="right" stroke="#6b7280" />
-                <Tooltip
-                  contentStyle={{
-                    background: "white",
-                    border: "1px solid #e5e7eb",
-                    borderRadius: "8px",
-                  }}
-                />
-                <Legend />
-                <Bar
-                  yAxisId="left"
-                  dataKey="avgLength"
-                  fill="#3b82f6"
-                  name="Avg Length (min)"
-                />
-                <Line
-                  yAxisId="right"
-                  type="monotone"
-                  dataKey="sessionsPerUser"
-                  stroke="#10b981"
-                  strokeWidth={3}
-                  name="Sessions/User"
-                />
-              </ComposedChart>
-            </ResponsiveContainer>
-          </CardContent>
+            <SessionChart sessionData={sessionData} />
+          </div>
         </Card>
       </div>
 
       {/* Charts Row 3: Calendar Density & Time to Value */}
-      <div
-        style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "24px" }}
-      >
+      <div className="flex gap-6">
         <Card
           elevation={2}
           sx={{
+            flex: 1,
             borderRadius: 4,
-            background: "linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%)",
           }}
         >
-          <CardContent sx={{ p: 3 }}>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: "4px",
-              }}
-            >
+          <div className="p-4 bg-white rounded-lg shadow-lg">
+            <div className="flex items-center justify-between mb-1">
               <p style={{ margin: 0, fontSize: "1.25rem", fontWeight: 600 }}>
                 Calendar Density & Family Growth
               </p>
@@ -529,47 +332,11 @@ export default function Dashboard() {
                 </Select>
               </FormControl>
             </div>
-            <p
-              style={{
-                margin: 0,
-                fontSize: "0.875rem",
-                color: "#6b7280",
-                marginBottom: "24px",
-              }}
-            >
+            <p className="text-sm text-[#6b7280] mb-6">
               Events per family and average members
             </p>
-            <ResponsiveContainer width="100%" height={300}>
-              <ComposedChart data={calendarDensityData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis dataKey="month" stroke="#6b7280" />
-                <YAxis yAxisId="left" stroke="#6b7280" />
-                <YAxis yAxisId="right" orientation="right" stroke="#6b7280" />
-                <Tooltip
-                  contentStyle={{
-                    background: "white",
-                    border: "1px solid #e5e7eb",
-                    borderRadius: "8px",
-                  }}
-                />
-                <Legend />
-                <Bar
-                  yAxisId="left"
-                  dataKey="eventsPerFamily"
-                  fill="#3b82f6"
-                  name="Events per Family"
-                />
-                <Line
-                  yAxisId="right"
-                  type="monotone"
-                  dataKey="avgMembers"
-                  stroke="#10b981"
-                  strokeWidth={3}
-                  name="Avg Members"
-                />
-              </ComposedChart>
-            </ResponsiveContainer>
-          </CardContent>
+            <CalendarAndFamilyChart calendarDensityData={calendarDensityData} />
+          </div>
         </Card>
 
         <Card
@@ -580,15 +347,8 @@ export default function Dashboard() {
             background: "linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%)",
           }}
         >
-          <CardContent sx={{ p: 3 }}>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: "4px",
-              }}
-            >
+          <div className="p-4 bg-white rounded-lg shadow-lg">
+            <div className="flex items-center justify-between mb-1">
               <p style={{ margin: 0, fontSize: "1.25rem", fontWeight: 600 }}>
                 Time to Value
               </p>
@@ -610,61 +370,19 @@ export default function Dashboard() {
                 </Select>
               </FormControl>
             </div>
-            <p
-              style={{
-                margin: 0,
-                fontSize: "0.875rem",
-                color: "#6b7280",
-                marginBottom: "24px",
-              }}
-            >
+            <p className="text-sm text-[#6b7280] mb-6">
               Median days from signup
             </p>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "16px",
-                marginTop: "32px",
-              }}
-            >
+            <div className="flex flex-col gap-4 mt-2">
               {timeToValueData.map((item, index) => (
                 <div key={item.metric}>
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      marginBottom: "8px",
-                    }}
-                  >
-                    <p
-                      style={{
-                        margin: 0,
-                        fontSize: "0.875rem",
-                        fontWeight: 600,
-                      }}
-                    >
-                      {item.metric}
-                    </p>
-                    <p
-                      style={{
-                        margin: 0,
-                        fontSize: "0.875rem",
-                        color: "#3b82f6",
-                        fontWeight: 700,
-                      }}
-                    >
+                  <div className="flex justify-between mb-2">
+                    <p className="text-sm font-semibold">{item.metric}</p>
+                    <p className="text-sm text-[#3b82f6] font-bold">
                       {item.days} days
                     </p>
                   </div>
-                  <div
-                    style={{
-                      height: "8px",
-                      borderRadius: "4px",
-                      background: "#e5e7eb",
-                      overflow: "hidden",
-                    }}
-                  >
+                  <div className="h-2 rounded-sm bg-[#e5e7eb] overflow-hidden">
                     <div
                       style={{
                         height: "100%",
@@ -679,28 +397,13 @@ export default function Dashboard() {
                 </div>
               ))}
             </div>
-            <div
-              style={{
-                marginTop: "32px",
-                padding: "16px",
-                borderRadius: "8px",
-                background: "rgba(59, 130, 246, 0.1)",
-                border: "1px solid rgba(59, 130, 246, 0.2)",
-              }}
-            >
-              <p
-                style={{
-                  margin: 0,
-                  fontSize: "0.875rem",
-                  color: "#1e40af",
-                  fontWeight: 600,
-                }}
-              >
+            <div className="mt-8 p-4 rounded-lg border border-[#3B82F633] bg-[#3b82f619]">
+              <p className="text-sm text-[#1e40af] font-semibold">
                 💡 Lower is better - faster time to value means users see the
                 benefit sooner
               </p>
             </div>
-          </CardContent>
+          </div>
         </Card>
       </div>
     </div>
