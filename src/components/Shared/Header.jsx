@@ -27,7 +27,7 @@ export default function Header() {
   };
 
   return (
-    <div className="flex items-center justify-end w-full px-10 py-4 border-b border-gray-200">
+    <div className="flex items-center justify-end w-full px-10 py-4  bg-white shadow-lg">
       <div className="flex items-center gap-4">
         {/* <div className="text-white">
           <Link to="/notifications">

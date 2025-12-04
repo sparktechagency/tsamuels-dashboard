@@ -16,10 +16,11 @@ export function MetricCard({
       elevation={1}
       sx={{
         borderRadius: 4,
-        transition: "box-shadow 0.3s",
+        transition: "all 0.25s ease-in-out",
+        transform: "scale(1)",
         "&:hover": {
           boxShadow: 4,
-          width: "100%",
+          transform: "scale(1.03)",
         },
       }}
     >
@@ -73,7 +74,9 @@ export function MetricCard({
                 ) : (
                   <IoMdTrendingDown size={16} />
                 )}
-                <p className="text-sm">{Math.abs(change).toFixed(2)}%</p>
+                <p className="text-sm font-semibold">
+                  {Math.abs(change).toFixed(2)}%
+                </p>
               </Box>
             )}
           </Box>

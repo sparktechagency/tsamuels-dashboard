@@ -9,8 +9,8 @@ export default function DashboardLayout() {
       <div className="sm:w-[15%]">
         <Sidebar />
       </div>
-      <div className="w-full flex-1">
-        <Header />
+      <div className="flex-1 flex flex-col h-screen overflow-y-auto">
+        <Header className="sticky top-0 z-50 " />
         <Outlet />
       </div>
     </div>

@@ -99,7 +99,7 @@ export default function UserManagement() {
   };
 
   return (
-    <div className="px-10 py-8 bg-[#fdfdfd] h-[92vh] overflow-auto">
+    <div className="px-10 py-8 bg-[#fdfdfd] h-[92vh] w-full">
       {/* Search Bar */}
       <div className="flex justify-between mb-4">
         <div>
