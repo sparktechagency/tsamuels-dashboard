@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Bar,
   CartesianGrid,
@@ -11,10 +10,10 @@ import {
   YAxis,
 } from "recharts";
 
-export default function CalendarAndFamilyChart({ calendarDensityData }) {
+export default function InviteMetricsChart({ inviteData }) {
   return (
-    <ResponsiveContainer width="100%" height={300}>
-      <ComposedChart data={calendarDensityData}>
+    <ResponsiveContainer width="100%" height={320}>
+      <ComposedChart data={inviteData}>
         <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
         <XAxis dataKey="month" stroke="#6b7280" />
         <YAxis yAxisId="left" stroke="#6b7280" />
@@ -26,21 +25,28 @@ export default function CalendarAndFamilyChart({ calendarDensityData }) {
             borderRadius: "8px",
           }}
         />
-        <Legend iconType="circle" />
+        <Legend />
         <Bar
           yAxisId="left"
-          dataKey="eventsPerFamily"
+          dataKey="sent"
+          fill="#93c5fd"
+          name="Invites Sent"
+          barSize={30}
+        />
+        <Bar
+          yAxisId="left"
+          dataKey="accepted"
           fill="#3b82f6"
-          name="Events per Family"
+          name="Accepted"
           barSize={30}
         />
         <Line
           yAxisId="right"
           type="monotone"
-          dataKey="avgMembers"
+          dataKey="rate"
           stroke="#10b981"
           strokeWidth={3}
-          name="Avg Members"
+          name="Accept Rate %"
         />
       </ComposedChart>
     </ResponsiveContainer>

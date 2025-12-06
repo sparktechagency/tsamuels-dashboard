@@ -30,6 +30,7 @@ export default function FeatureUsageChart({ featureUsageData }) {
           dataKey={(d) => d.usageRate * 100}
           fill="#3b82f6"
           name="Usage Rate %"
+          barSize={30}
         />
         <Line
           dataKey="users"

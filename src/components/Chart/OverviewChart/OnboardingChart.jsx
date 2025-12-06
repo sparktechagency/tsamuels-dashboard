@@ -33,12 +33,13 @@ export default function OnboardingChart({ onboardingData }) {
           }}
         />
         <Legend iconType="circle" />
-        <Bar dataKey="users" fill="#3b82f6" name="Users" />
+        <Bar dataKey="users" fill="#3b82f6" name="Users" barSize={30} />
         <Bar
           dataKey="percent"
           fill="#10b981"
           name="Completion %"
           yAxisId="right"
+          barSize={30}
         />
       </BarChart>
     </ResponsiveContainer>
