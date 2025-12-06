@@ -18,8 +18,8 @@ import RevenueManagement from "../Dashboard/RevenueManagement";
 import Transaction from "../Dashboard/Transaction";
 import Subscription from "../Dashboard/Subscription";
 import Support from "../Dashboard/Support";
-import UserManagement from "../Dashboard/UserManagement";
 import AddAvatar from "../Dashboard/Settings/AddAvatar";
+import { GrowthRetention } from "../Dashboard/GrowthAndRetention";
 
 const router = createBrowserRouter([
   {
@@ -55,8 +55,8 @@ const router = createBrowserRouter([
             element: <Dashboard />,
           },
           {
-            path: "user-management",
-            element: <UserManagement />,
+            path: "growth-retention",
+            element: <GrowthRetention />,
           },
           {
             path: "revenue-management",

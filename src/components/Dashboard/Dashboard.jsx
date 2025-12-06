@@ -44,11 +44,11 @@ import {
   allTimeToValueData,
   allUserTypeData,
 } from "../../../public/data/overviewData";
-import GrowthVsLoyaltyChart from "../Chart/GrowthVsLoyaltyChart";
-import FeatureUsageChart from "../Chart/FeatureUsageChart";
-import SessionChart from "../Chart/SessionChart";
-import OnboardingChart from "../Chart/OnboardingChart";
-import CalendarAndFamilyChart from "../Chart/Calendar&FamilyChart";
+import GrowthVsLoyaltyChart from "../Chart/OverviewChart/GrowthVsLoyaltyChart";
+import FeatureUsageChart from "../Chart/OverviewChart/FeatureUsageChart";
+import SessionChart from "../Chart/OverviewChart/SessionChart";
+import OnboardingChart from "../Chart/OverviewChart/OnboardingChart";
+import CalendarAndFamilyChart from "../Chart/OverviewChart/Calendar&FamilyChart";
 
 export default function Dashboard() {
   // Individual year filters for each chart
