@@ -20,6 +20,7 @@ import Subscription from "../Dashboard/Subscription";
 import Support from "../Dashboard/Support";
 import AddAvatar from "../Dashboard/Settings/AddAvatar";
 import { GrowthRetention } from "../Dashboard/GrowthAndRetention";
+import AdminControls from "../Dashboard/Settings";
 
 const router = createBrowserRouter([
   {
@@ -76,8 +77,8 @@ const router = createBrowserRouter([
             element: <Support />,
           },
           {
-            path: "settings",
-            element: <Settings />,
+            path: "admin-controls",
+            element: <AdminControls />,
           },
           {
             path: "settings/profile",

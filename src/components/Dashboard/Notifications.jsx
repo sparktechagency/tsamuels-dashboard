@@ -52,8 +52,6 @@ import {
   ResponsiveContainer,
   ComposedChart,
 } from "recharts";
-import { MetricCard } from "../UI/MetricCard";
-import { toast } from "sonner";
 import PushNotificationChart from "../Chart/NotificationChart/PushNotificationChart";
 
 export default function Notifications() {
@@ -1413,31 +1411,6 @@ export default function Notifications() {
     "#6ee7b7",
   ];
 
-  // Calculate current metrics from latest month
-  const latestDelivery = deliverabilityData[deliverabilityData.length - 1];
-  const avgDeliveryRate = (
-    ((latestDelivery.pushDelivered / latestDelivery.pushSent +
-      latestDelivery.smsDelivered / latestDelivery.smsSent +
-      latestDelivery.emailDelivered / latestDelivery.emailSent) /
-      3) *
-    100
-  ).toFixed(1);
-  const avgOpenRate = (
-    ((latestDelivery.pushOpened / latestDelivery.pushDelivered +
-      latestDelivery.smsOpened / latestDelivery.smsDelivered +
-      latestDelivery.emailOpened / latestDelivery.emailDelivered) /
-      3) *
-    100
-  ).toFixed(1);
-  const avgClickRate = (
-    ((latestDelivery.pushClicked / latestDelivery.pushOpened +
-      latestDelivery.smsClicked / latestDelivery.smsOpened +
-      latestDelivery.emailClicked / latestDelivery.emailOpened) /
-      3) *
-    100
-  ).toFixed(1);
-  const latestLatency = latencyData[latencyData.length - 1];
-
   // Generate table data for pagination
   const generateNotificationData = () => {
     const names = [
@@ -2231,21 +2204,6 @@ export default function Notifications() {
             </div>
           )}
         </DialogContent>
-
-        {modalMode !== "view" && (
-          <DialogActions sx={{ p: 3, pt: 2 }}>
-            <Button onClick={closeModal} sx={{ textTransform: "none" }}>
-              Cancel
-            </Button>
-            <Button
-              variant="contained"
-              onClick={handleSave}
-              sx={{ textTransform: "none" }}
-            >
-              {modalMode === "edit" ? "Save Changes" : "Send Notification"}
-            </Button>
-          </DialogActions>
-        )}
       </Dialog>
     </div>
   );

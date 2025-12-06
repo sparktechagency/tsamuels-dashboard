@@ -63,9 +63,9 @@ export default function Sidebar() {
             label: "Support",
           },
           {
-            to: "/settings",
+            to: "/admin-controls",
             icon: <IoSettingsOutline fontSize={24} />,
-            label: "Settings",
+            label: "Admin Controls",
           },
 
           // {
