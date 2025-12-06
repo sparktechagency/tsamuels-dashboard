@@ -48,9 +48,9 @@ export default function Sidebar() {
           },
 
           {
-            to: "/transaction",
+            to: "/notifications",
             icon: <AiOutlineTransaction fontSize={24} />,
-            label: "Transaction",
+            label: "Notifications",
           },
           {
             to: "/subscription",
