@@ -25,7 +25,7 @@ export default function FeatureUsageChart({ featureUsageData }) {
             borderRadius: "8px",
           }}
         />
-        <Legend />
+        <Legend iconType="circle" />
         <Bar
           dataKey={(d) => d.usageRate * 100}
           fill="#3b82f6"

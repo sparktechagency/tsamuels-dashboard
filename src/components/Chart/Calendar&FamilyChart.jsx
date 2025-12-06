@@ -26,7 +26,7 @@ export default function CalendarAndFamilyChart({ calendarDensityData }) {
             borderRadius: "8px",
           }}
         />
-        <Legend />
+        <Legend iconType="circle" />
         <Bar
           yAxisId="left"
           dataKey="eventsPerFamily"

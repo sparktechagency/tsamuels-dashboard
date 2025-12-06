@@ -87,25 +87,25 @@ export default function Dashboard() {
         }}
       >
         <MetricCard
-          title="DAU"
+          title="Daily Active Users"
           value="12,458"
           change={5.2}
           icon={FaUsers}
-          subtitle="Daily Active Users"
+          subtitle="DAU"
         />
         <MetricCard
-          title="WAU"
+          title="Weekly Active Users"
           value="32,145"
           change={8.7}
           icon={FaChartLine}
-          subtitle="Weekly Active Users"
+          subtitle="WAU"
         />
         <MetricCard
-          title="MAU"
+          title="Monthly Active Users"
           value="48,392"
           change={12.3}
           icon={FaChartBar}
-          subtitle="Monthly Active Users"
+          subtitle="MAU"
         />
         <MetricCard
           title="Stickiness"
@@ -113,25 +113,7 @@ export default function Dashboard() {
           change={3.1}
           icon={FaBolt}
           subtitle="DAU/MAU Ratio"
-        />
-        <MetricCard
-          title="Avg Sessions/Week"
-          value="3.1"
-          change={6.8}
-          icon={FaChartBar}
-          subtitle="Per User"
-        />
-      </div>
-
-      {/* Second Row Metrics - Family & User Stats */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-          gap: "24px",
-          marginBottom: "32px",
-        }}
-      >
+        />{" "}
         <MetricCard
           title="Active Families"
           value="8,942"
@@ -145,20 +127,6 @@ export default function Dashboard() {
           change={4.2}
           icon={FaUsers}
           subtitle="Average family size"
-        />
-        <MetricCard
-          title="Avg Session Length"
-          value="10.8 min"
-          change={9.1}
-          icon={FaClock}
-          subtitle="Per session"
-        />
-        <MetricCard
-          title="Events/Family"
-          value="31.2"
-          change={11.5}
-          icon={FaCalendar}
-          subtitle="Monthly average"
         />
       </div>
 
@@ -272,7 +240,7 @@ export default function Dashboard() {
           <div className="p-4 bg-white rounded-lg shadow-lg">
             <div className="flex items-center justify-between mb-1">
               <p style={{ margin: 0, fontSize: "1.25rem", fontWeight: 600 }}>
-                Session Metrics by Day
+                Session Metrics
               </p>
               <FormControl sx={{ minWidth: 100 }} size="small">
                 <Select
@@ -292,8 +260,8 @@ export default function Dashboard() {
                 </Select>
               </FormControl>
             </div>
-            <p className="text-sm text-[#6b7280] mb-6">
-              Session length (min) and sessions per user
+            <p className="text-sm text-[#6b7280] mb-4">
+              Track session duration and frequency to measure user engagement
             </p>
             <SessionChart sessionData={sessionData} />
           </div>
