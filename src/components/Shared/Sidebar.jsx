@@ -53,9 +53,9 @@ export default function Sidebar() {
             label: "Notifications",
           },
           {
-            to: "/subscription",
+            to: "/reliabilities",
             icon: <MdDiamond fontSize={24} />,
-            label: "Subscription",
+            label: "Reliabilities",
           },
           {
             to: "/support",

@@ -55,17 +55,11 @@ import {
 import PushNotificationChart from "../Chart/NotificationChart/PushNotificationChart";
 
 export default function Notifications() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalMode, setModalMode] = useState("view");
-  const [selectedRecord, setSelectedRecord] = useState(null);
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-
   // Year filters for each chart
   const [deliverabilityYear, setDeliverabilityYear] = useState("2025");
   const [digestYear, setDigestYear] = useState("2025");
   const [optInYear, setOptInYear] = useState("2025");
-  const [latencyYear, setLatencyYear] = useState("2025");
+  // const [latencyYear, setLatencyYear] = useState("2025");
 
   // Deliverability Data - 12 months (Push/SMS/Email: sent, delivered, opened, clicked)
   const allDeliverabilityData = {
@@ -1352,55 +1346,55 @@ export default function Notifications() {
   };
 
   // Latency Data - 12 months (trigger to notification, notification to action)
-  const allLatencyData = {
-    2023: [
-      { month: "Jan", triggerToNotif: 2.8, notifToAction: 45 },
-      { month: "Feb", triggerToNotif: 2.7, notifToAction: 43 },
-      { month: "Mar", triggerToNotif: 2.6, notifToAction: 41 },
-      { month: "Apr", triggerToNotif: 2.5, notifToAction: 40 },
-      { month: "May", triggerToNotif: 2.4, notifToAction: 38 },
-      { month: "Jun", triggerToNotif: 2.3, notifToAction: 36 },
-      { month: "Jul", triggerToNotif: 2.2, notifToAction: 35 },
-      { month: "Aug", triggerToNotif: 2.1, notifToAction: 33 },
-      { month: "Sep", triggerToNotif: 2.0, notifToAction: 32 },
-      { month: "Oct", triggerToNotif: 1.9, notifToAction: 30 },
-      { month: "Nov", triggerToNotif: 1.8, notifToAction: 29 },
-      { month: "Dec", triggerToNotif: 1.7, notifToAction: 27 },
-    ],
-    2024: [
-      { month: "Jan", triggerToNotif: 1.6, notifToAction: 26 },
-      { month: "Feb", triggerToNotif: 1.5, notifToAction: 25 },
-      { month: "Mar", triggerToNotif: 1.4, notifToAction: 24 },
-      { month: "Apr", triggerToNotif: 1.3, notifToAction: 23 },
-      { month: "May", triggerToNotif: 1.2, notifToAction: 22 },
-      { month: "Jun", triggerToNotif: 1.1, notifToAction: 21 },
-      { month: "Jul", triggerToNotif: 1.0, notifToAction: 20 },
-      { month: "Aug", triggerToNotif: 0.95, notifToAction: 19 },
-      { month: "Sep", triggerToNotif: 0.9, notifToAction: 18 },
-      { month: "Oct", triggerToNotif: 0.85, notifToAction: 17 },
-      { month: "Nov", triggerToNotif: 0.8, notifToAction: 16 },
-      { month: "Dec", triggerToNotif: 0.75, notifToAction: 15 },
-    ],
-    2025: [
-      { month: "Jan", triggerToNotif: 0.7, notifToAction: 14 },
-      { month: "Feb", triggerToNotif: 0.68, notifToAction: 13.5 },
-      { month: "Mar", triggerToNotif: 0.65, notifToAction: 13 },
-      { month: "Apr", triggerToNotif: 0.63, notifToAction: 12.5 },
-      { month: "May", triggerToNotif: 0.6, notifToAction: 12 },
-      { month: "Jun", triggerToNotif: 0.58, notifToAction: 11.5 },
-      { month: "Jul", triggerToNotif: 0.55, notifToAction: 11 },
-      { month: "Aug", triggerToNotif: 0.53, notifToAction: 10.5 },
-      { month: "Sep", triggerToNotif: 0.5, notifToAction: 10 },
-      { month: "Oct", triggerToNotif: 0.48, notifToAction: 9.5 },
-      { month: "Nov", triggerToNotif: 0.45, notifToAction: 9 },
-      { month: "Dec", triggerToNotif: 0.43, notifToAction: 8.5 },
-    ],
-  };
+  // const allLatencyData = {
+  //   2023: [
+  //     { month: "Jan", triggerToNotif: 2.8, notifToAction: 45 },
+  //     { month: "Feb", triggerToNotif: 2.7, notifToAction: 43 },
+  //     { month: "Mar", triggerToNotif: 2.6, notifToAction: 41 },
+  //     { month: "Apr", triggerToNotif: 2.5, notifToAction: 40 },
+  //     { month: "May", triggerToNotif: 2.4, notifToAction: 38 },
+  //     { month: "Jun", triggerToNotif: 2.3, notifToAction: 36 },
+  //     { month: "Jul", triggerToNotif: 2.2, notifToAction: 35 },
+  //     { month: "Aug", triggerToNotif: 2.1, notifToAction: 33 },
+  //     { month: "Sep", triggerToNotif: 2.0, notifToAction: 32 },
+  //     { month: "Oct", triggerToNotif: 1.9, notifToAction: 30 },
+  //     { month: "Nov", triggerToNotif: 1.8, notifToAction: 29 },
+  //     { month: "Dec", triggerToNotif: 1.7, notifToAction: 27 },
+  //   ],
+  //   2024: [
+  //     { month: "Jan", triggerToNotif: 1.6, notifToAction: 26 },
+  //     { month: "Feb", triggerToNotif: 1.5, notifToAction: 25 },
+  //     { month: "Mar", triggerToNotif: 1.4, notifToAction: 24 },
+  //     { month: "Apr", triggerToNotif: 1.3, notifToAction: 23 },
+  //     { month: "May", triggerToNotif: 1.2, notifToAction: 22 },
+  //     { month: "Jun", triggerToNotif: 1.1, notifToAction: 21 },
+  //     { month: "Jul", triggerToNotif: 1.0, notifToAction: 20 },
+  //     { month: "Aug", triggerToNotif: 0.95, notifToAction: 19 },
+  //     { month: "Sep", triggerToNotif: 0.9, notifToAction: 18 },
+  //     { month: "Oct", triggerToNotif: 0.85, notifToAction: 17 },
+  //     { month: "Nov", triggerToNotif: 0.8, notifToAction: 16 },
+  //     { month: "Dec", triggerToNotif: 0.75, notifToAction: 15 },
+  //   ],
+  //   2025: [
+  //     { month: "Jan", triggerToNotif: 0.7, notifToAction: 14 },
+  //     { month: "Feb", triggerToNotif: 0.68, notifToAction: 13.5 },
+  //     { month: "Mar", triggerToNotif: 0.65, notifToAction: 13 },
+  //     { month: "Apr", triggerToNotif: 0.63, notifToAction: 12.5 },
+  //     { month: "May", triggerToNotif: 0.6, notifToAction: 12 },
+  //     { month: "Jun", triggerToNotif: 0.58, notifToAction: 11.5 },
+  //     { month: "Jul", triggerToNotif: 0.55, notifToAction: 11 },
+  //     { month: "Aug", triggerToNotif: 0.53, notifToAction: 10.5 },
+  //     { month: "Sep", triggerToNotif: 0.5, notifToAction: 10 },
+  //     { month: "Oct", triggerToNotif: 0.48, notifToAction: 9.5 },
+  //     { month: "Nov", triggerToNotif: 0.45, notifToAction: 9 },
+  //     { month: "Dec", triggerToNotif: 0.43, notifToAction: 8.5 },
+  //   ],
+  // };
 
   const deliverabilityData = allDeliverabilityData[deliverabilityYear];
   const digestData = allDigestData[digestYear];
   const optInData = allOptInData[optInYear];
-  const latencyData = allLatencyData[latencyYear];
+  // const latencyData = allLatencyData[latencyYear];
 
   const COLORS = [
     "#3b82f6",
@@ -1412,81 +1406,81 @@ export default function Notifications() {
   ];
 
   // Generate table data for pagination
-  const generateNotificationData = () => {
-    const names = [
-      "John Doe",
-      "Jane Smith",
-      "Bob Johnson",
-      "Alice Williams",
-      "Charlie Brown",
-      "Diana Prince",
-      "Edward Norton",
-      "Fiona Apple",
-      "George Miller",
-      "Hannah Montana",
-    ];
-    const channels = ["Twilio SMS", "Apple Push", "Firebase", "Email"];
-    const types = [
-      "Event Reminder",
-      "Daily Digest",
-      "Invite",
-      "Leave-By Alert",
-    ];
-    const statuses = ["Delivered", "Opened", "Clicked", "Failed"];
-    const data = [];
+  // const generateNotificationData = () => {
+  //   const names = [
+  //     "John Doe",
+  //     "Jane Smith",
+  //     "Bob Johnson",
+  //     "Alice Williams",
+  //     "Charlie Brown",
+  //     "Diana Prince",
+  //     "Edward Norton",
+  //     "Fiona Apple",
+  //     "George Miller",
+  //     "Hannah Montana",
+  //   ];
+  //   const channels = ["Twilio SMS", "Apple Push", "Firebase", "Email"];
+  //   const types = [
+  //     "Event Reminder",
+  //     "Daily Digest",
+  //     "Invite",
+  //     "Leave-By Alert",
+  //   ];
+  //   const statuses = ["Delivered", "Opened", "Clicked", "Failed"];
+  //   const data = [];
 
-    for (let i = 1; i <= 40; i++) {
-      const channel = channels[i % channels.length];
-      const status = statuses[i % statuses.length];
-      data.push({
-        id: String(i),
-        userId: `user_${100 + i}`,
-        userName: names[i % names.length],
-        channel,
-        type: types[i % types.length],
-        status,
-        latency: (Math.random() * 2 + 0.3).toFixed(2),
-        sentAt: `2024-12-${String(Math.floor(Math.random() * 28) + 1).padStart(
-          2,
-          "0"
-        )} ${String(Math.floor(Math.random() * 24)).padStart(2, "0")}:${String(
-          Math.floor(Math.random() * 60)
-        ).padStart(2, "0")}`,
-        actionAt:
-          status === "Clicked" || status === "Opened"
-            ? `${Math.floor(Math.random() * 60)} sec`
-            : "-",
-      });
-    }
-    return data;
-  };
+  //   for (let i = 1; i <= 40; i++) {
+  //     const channel = channels[i % channels.length];
+  //     const status = statuses[i % statuses.length];
+  //     data.push({
+  //       id: String(i),
+  //       userId: `user_${100 + i}`,
+  //       userName: names[i % names.length],
+  //       channel,
+  //       type: types[i % types.length],
+  //       status,
+  //       latency: (Math.random() * 2 + 0.3).toFixed(2),
+  //       sentAt: `2024-12-${String(Math.floor(Math.random() * 28) + 1).padStart(
+  //         2,
+  //         "0"
+  //       )} ${String(Math.floor(Math.random() * 24)).padStart(2, "0")}:${String(
+  //         Math.floor(Math.random() * 60)
+  //       ).padStart(2, "0")}`,
+  //       actionAt:
+  //         status === "Clicked" || status === "Opened"
+  //           ? `${Math.floor(Math.random() * 60)} sec`
+  //           : "-",
+  //     });
+  //   }
+  //   return data;
+  // };
 
-  const notificationData = generateNotificationData();
+  // const notificationData = generateNotificationData();
 
-  const paginatedData = notificationData.slice(
-    page * rowsPerPage,
-    page * rowsPerPage + rowsPerPage
-  );
+  // const paginatedData = notificationData.slice(
+  //   page * rowsPerPage,
+  //   page * rowsPerPage + rowsPerPage
+  // );
 
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
+  // const handleChangePage = (event, newPage) => {
+  //   setPage(newPage);
+  // };
 
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
+  // const handleChangeRowsPerPage = (event) => {
+  //   setRowsPerPage(parseInt(event.target.value, 10));
+  //   setPage(0);
+  // };
 
-  const handleView = (record) => {
-    setSelectedRecord(record);
-    setModalMode("view");
-    setIsModalOpen(true);
-  };
+  // const handleView = (record) => {
+  //   setSelectedRecord(record);
+  //   setModalMode("view");
+  //   setIsModalOpen(true);
+  // };
 
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setSelectedRecord(null);
-  };
+  // const closeModal = () => {
+  //   setIsModalOpen(false);
+  //   setSelectedRecord(null);
+  // };
 
   return (
     <div style={{ padding: "32px" }}>
@@ -1835,7 +1829,8 @@ export default function Notifications() {
       </div>
 
       {/* Charts Row 3: Latency Metrics */}
-      <Card
+      {/*  
+       <Card
         elevation={2}
         sx={{
           borderRadius: 4,
@@ -1925,11 +1920,12 @@ export default function Notifications() {
             </ComposedChart>
           </ResponsiveContainer>
         </CardContent>
-      </Card>
+      </Card> 
+      */}
 
       {/* Data Table */}
 
-      <TableContainer component={Paper} elevation={1} sx={{ borderRadius: 4 }}>
+      {/* <TableContainer component={Paper} elevation={1} sx={{ borderRadius: 4 }}>
         <Table>
           <TableHead sx={{ bgcolor: "grey.50" }}>
             <TableRow>
@@ -2006,9 +2002,9 @@ export default function Notifications() {
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
-      </TableContainer>
+      </TableContainer> */}
 
-      <Dialog
+      {/* <Dialog
         open={isModalOpen}
         onClose={closeModal}
         maxWidth="md"
@@ -2204,7 +2200,7 @@ export default function Notifications() {
             </div>
           )}
         </DialogContent>
-      </Dialog>
+      </Dialog> */}
     </div>
   );
 }

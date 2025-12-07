@@ -73,7 +73,6 @@ export default function AdminControls() {
   // Generate user and family data
   const generateUserData = () => {
     const plans = ["Free", "Premium", "Trial"];
-    const statuses = ["Active", "Inactive", "Blocked"];
     const data = [];
 
     for (let i = 1; i <= 100; i++) {
@@ -145,9 +144,6 @@ export default function AdminControls() {
 
   const totalFamilies = familyData.length;
   const activeFamilies = familyData.filter((f) => f.status === "Active").length;
-  const premiumFamilies = familyData.filter((f) =>
-    f.plan.includes("Premium")
-  ).length;
 
   // Chart data
   const userStatusData = [
@@ -307,32 +303,32 @@ export default function AdminControls() {
     }
   };
 
-  const handleGrantPromo = () => {
-    if (!actionInputs.promoMonths) {
-      toast.error("Please enter number of promo months");
-      return;
-    }
-    toast.success(
-      `${actionInputs.promoMonths} promo months granted to ${selectedRecord.name}`
-    );
-    closeModal();
-  };
+  // const handleGrantPromo = () => {
+  //   if (!actionInputs.promoMonths) {
+  //     toast.error("Please enter number of promo months");
+  //     return;
+  //   }
+  //   toast.success(
+  //     `${actionInputs.promoMonths} promo months granted to ${selectedRecord.name}`
+  //   );
+  //   closeModal();
+  // };
 
-  const handleCompPlan = () => {
-    toast.success(`Premium plan comped for ${selectedRecord.name}`);
-    closeModal();
-  };
+  // const handleCompPlan = () => {
+  //   toast.success(`Premium plan comped for ${selectedRecord.name}`);
+  //   closeModal();
+  // };
 
-  const handleIssueRefund = () => {
-    if (!actionInputs.refundAmount) {
-      toast.error("Please enter refund amount");
-      return;
-    }
-    toast.success(
-      `Refund of $${actionInputs.refundAmount} issued to ${selectedRecord.name}`
-    );
-    closeModal();
-  };
+  // const handleIssueRefund = () => {
+  //   if (!actionInputs.refundAmount) {
+  //     toast.error("Please enter refund amount");
+  //     return;
+  //   }
+  //   toast.success(
+  //     `Refund of $${actionInputs.refundAmount} issued to ${selectedRecord.name}`
+  //   );
+  //   closeModal();
+  // };
 
   return (
     <div style={{ padding: "32px" }}>
@@ -544,13 +540,10 @@ export default function AdminControls() {
             <TableRow>
               {activeTab === 0 ? (
                 <>
-                  <TableCell>User ID</TableCell>
                   <TableCell>Name</TableCell>
                   <TableCell>Email</TableCell>
                   <TableCell>Plan</TableCell>
                   <TableCell>Status</TableCell>
-                  <TableCell>Family ID</TableCell>
-                  <TableCell>Sessions</TableCell>
                   <TableCell>Last Active</TableCell>
                   <TableCell align="right">Actions</TableCell>
                 </>
@@ -574,11 +567,6 @@ export default function AdminControls() {
               <TableRow key={record.id} hover>
                 {activeTab === 0 ? (
                   <>
-                    <TableCell
-                      sx={{ fontFamily: "monospace", fontSize: "0.875rem" }}
-                    >
-                      {record.id}
-                    </TableCell>
                     <TableCell>{record.name}</TableCell>
                     <TableCell>{record.email}</TableCell>
                     <TableCell>
@@ -607,12 +595,6 @@ export default function AdminControls() {
                         }
                       />
                     </TableCell>
-                    <TableCell
-                      sx={{ fontFamily: "monospace", fontSize: "0.75rem" }}
-                    >
-                      {record.familyId}
-                    </TableCell>
-                    <TableCell>{record.sessionsActive}</TableCell>
                     <TableCell sx={{ fontSize: "0.875rem", color: "#6b7280" }}>
                       {record.lastActive}
                     </TableCell>
@@ -1181,7 +1163,7 @@ export default function AdminControls() {
                       </div>
 
                       {/* Billing Actions */}
-                      <div style={{ marginBottom: "16px" }}>
+                      {/* <div style={{ marginBottom: "16px" }}>
                         <p
                           style={{
                             margin: 0,
@@ -1279,7 +1261,7 @@ export default function AdminControls() {
                             ⭐ Comp Premium Plan
                           </Button>
                         </div>
-                      </div>
+                      </div> */}
                     </>
                   ) : (
                     <>
@@ -1379,7 +1361,7 @@ export default function AdminControls() {
                       </div>
 
                       {/* Billing Actions for Families */}
-                      <div style={{ marginBottom: "16px" }}>
+                      {/* <div style={{ marginBottom: "16px" }}>
                         <p
                           style={{
                             margin: 0,
@@ -1469,12 +1451,12 @@ export default function AdminControls() {
                             ⭐ Comp Premium Plan
                           </Button>
                         </div>
-                      </div>
+                      </div> */}
                     </>
                   )}
 
                   {/* Optional Notes */}
-                  <TextField
+                  {/* <TextField
                     fullWidth
                     size="small"
                     label="Reason / Notes (optional)"
@@ -1488,7 +1470,7 @@ export default function AdminControls() {
                       })
                     }
                     sx={{ mt: 2 }}
-                  />
+                  /> */}
                 </div>
               </>
             )}
