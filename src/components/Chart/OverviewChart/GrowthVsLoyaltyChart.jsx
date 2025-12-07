@@ -14,7 +14,7 @@ export default function GrowthVsLoyaltyChart({ userTypeData }) {
     <ResponsiveContainer width="100%" height={300}>
       <AreaChart data={userTypeData}>
         <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-        <XAxis dataKey="month" stroke="#2B7FFF" />
+        <XAxis dataKey="month" stroke="#6b7280" />
         <YAxis stroke="#6b7280" />
         <Tooltip
           contentStyle={{
@@ -23,7 +23,7 @@ export default function GrowthVsLoyaltyChart({ userTypeData }) {
             borderRadius: "8px",
           }}
         />
-        <Legend />
+        <Legend iconType="circle" />
         <Area
           type="monotone"
           dataKey="new"

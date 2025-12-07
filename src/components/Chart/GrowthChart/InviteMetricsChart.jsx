@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Bar,
   CartesianGrid,
@@ -11,12 +10,12 @@ import {
   YAxis,
 } from "recharts";
 
-export default function SessionChart({ sessionData }) {
+export default function InviteMetricsChart({ inviteData }) {
   return (
-    <ResponsiveContainer width="100%" height={300}>
-      <ComposedChart data={sessionData}>
+    <ResponsiveContainer width="100%" height={320}>
+      <ComposedChart data={inviteData}>
         <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-        <XAxis dataKey="day" stroke="#6b7280" />
+        <XAxis dataKey="month" stroke="#6b7280" />
         <YAxis yAxisId="left" stroke="#6b7280" />
         <YAxis yAxisId="right" orientation="right" stroke="#6b7280" />
         <Tooltip
@@ -29,18 +28,25 @@ export default function SessionChart({ sessionData }) {
         <Legend />
         <Bar
           yAxisId="left"
-          dataKey="avgLength"
+          dataKey="sent"
+          fill="#93c5fd"
+          name="Invites Sent"
+          barSize={30}
+        />
+        <Bar
+          yAxisId="left"
+          dataKey="accepted"
           fill="#3b82f6"
-          name="Avg Length (min)"
-          barSize={40}
+          name="Accepted"
+          barSize={30}
         />
         <Line
           yAxisId="right"
           type="monotone"
-          dataKey="sessionsPerUser"
+          dataKey="rate"
           stroke="#10b981"
           strokeWidth={3}
-          name="Sessions/User"
+          name="Accept Rate %"
         />
       </ComposedChart>
     </ResponsiveContainer>

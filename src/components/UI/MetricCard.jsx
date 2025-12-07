@@ -24,7 +24,7 @@ export function MetricCard({
         },
       }}
     >
-      <CardContent sx={{ p: 3, width: "100%" }}>
+      <CardContent sx={{ p: 2, width: "100%" }}>
         <Box
           sx={{
             display: "flex",
@@ -33,12 +33,12 @@ export function MetricCard({
             mb: 2,
           }}
         >
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             {Icon && (
               <Box
                 sx={{
-                  width: 40,
-                  height: 40,
+                  width: 35,
+                  height: 35,
                   borderRadius: 3,
                   display: "flex",
                   alignItems: "center",
@@ -47,7 +47,7 @@ export function MetricCard({
                     "linear-gradient(135deg, rgb(219, 234, 254) 0%, rgb(191, 219, 254) 100%)",
                 }}
               >
-                <Icon size={20} color="rgb(37, 99, 235)" />
+                <Icon size={16} color="rgb(37, 99, 235)" />
               </Box>
             )}
             <p className="font-medium">{title}</p>

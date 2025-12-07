@@ -12,7 +12,7 @@ import {
 
 export default function OnboardingChart({ onboardingData }) {
   return (
-    <ResponsiveContainer width="100%" height={300}>
+    <ResponsiveContainer width="100%" height={350}>
       <BarChart data={onboardingData}>
         <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
         <XAxis
@@ -21,8 +21,10 @@ export default function OnboardingChart({ onboardingData }) {
           angle={-45}
           textAnchor="end"
           height={80}
+          style={{ fontSize: "12px" }}
         />
         <YAxis stroke="#6b7280" />
+        <YAxis yAxisId="right" orientation="right" stroke="#6b7280" />
         <Tooltip
           contentStyle={{
             background: "white",
@@ -30,9 +32,15 @@ export default function OnboardingChart({ onboardingData }) {
             borderRadius: "8px",
           }}
         />
-        <Legend />
-        <Bar dataKey="users" fill="#3b82f6" name="Users" />
-        <Bar dataKey="percent" fill="#10b981" name="Completion %" />
+        <Legend iconType="circle" />
+        <Bar dataKey="users" fill="#3b82f6" name="Users" barSize={30} />
+        <Bar
+          dataKey="percent"
+          fill="#10b981"
+          name="Completion %"
+          yAxisId="right"
+          barSize={30}
+        />
       </BarChart>
     </ResponsiveContainer>
   );

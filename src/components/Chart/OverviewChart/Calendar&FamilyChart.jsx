@@ -11,13 +11,14 @@ import {
   YAxis,
 } from "recharts";
 
-export default function FeatureUsageChart({ featureUsageData }) {
+export default function CalendarAndFamilyChart({ calendarDensityData }) {
   return (
     <ResponsiveContainer width="100%" height={300}>
-      <ComposedChart data={featureUsageData} layout="vertical">
+      <ComposedChart data={calendarDensityData}>
         <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-        <XAxis type="number" stroke="#6b7280" />
-        <YAxis dataKey="feature" type="category" width={120} stroke="#6b7280" />
+        <XAxis dataKey="month" stroke="#6b7280" />
+        <YAxis yAxisId="left" stroke="#6b7280" />
+        <YAxis yAxisId="right" orientation="right" stroke="#6b7280" />
         <Tooltip
           contentStyle={{
             background: "white",
@@ -25,17 +26,21 @@ export default function FeatureUsageChart({ featureUsageData }) {
             borderRadius: "8px",
           }}
         />
-        <Legend />
+        <Legend iconType="circle" />
         <Bar
-          dataKey={(d) => d.usageRate * 100}
+          yAxisId="left"
+          dataKey="eventsPerFamily"
           fill="#3b82f6"
-          name="Usage Rate %"
+          name="Events per Family"
+          barSize={30}
         />
         <Line
-          dataKey="users"
+          yAxisId="right"
+          type="monotone"
+          dataKey="avgMembers"
           stroke="#10b981"
-          strokeWidth={2}
-          name="Active Users"
+          strokeWidth={3}
+          name="Avg Members"
         />
       </ComposedChart>
     </ResponsiveContainer>

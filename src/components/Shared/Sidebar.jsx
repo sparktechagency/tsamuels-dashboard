@@ -8,6 +8,7 @@ import { MdOutlineMarkEmailUnread } from "react-icons/md";
 import { BsChatHeart } from "react-icons/bs";
 import { IoSettingsOutline } from "react-icons/io5";
 import { BiDollarCircle } from "react-icons/bi";
+import { GoGraph } from "react-icons/go";
 
 import { Link, NavLink } from "react-router-dom";
 
@@ -36,9 +37,9 @@ export default function Sidebar() {
             label: "Overview",
           },
           {
-            to: "/user-management",
-            icon: <PiUsers fontSize={24} />,
-            label: "User Management",
+            to: "/growth-retention",
+            icon: <GoGraph fontSize={24} />,
+            label: "Growth and Retention",
           },
           {
             to: "/revenue-management",
@@ -47,14 +48,14 @@ export default function Sidebar() {
           },
 
           {
-            to: "/transaction",
+            to: "/notifications",
             icon: <AiOutlineTransaction fontSize={24} />,
-            label: "Transaction",
+            label: "Notifications",
           },
           {
-            to: "/subscription",
+            to: "/reliabilities",
             icon: <MdDiamond fontSize={24} />,
-            label: "Subscription",
+            label: "Reliabilities",
           },
           {
             to: "/support",
@@ -62,9 +63,9 @@ export default function Sidebar() {
             label: "Support",
           },
           {
-            to: "/settings",
+            to: "/admin-controls",
             icon: <IoSettingsOutline fontSize={24} />,
-            label: "Settings",
+            label: "Admin Controls",
           },
 
           // {

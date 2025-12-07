@@ -7,7 +7,6 @@ import Dashboard from "../Dashboard/Dashboard";
 import Notifications from "../Dashboard/Notifications";
 import VerifyOtp from "../../pages/VeryfiOTP";
 import UpdatePassword from "../../pages/UpdatePassword";
-import Settings from "../Dashboard/Settings";
 import Profile from "../Dashboard/Settings/Profile";
 import ChangePassword from "../Dashboard/Settings/ChangePassword";
 import Faq from "../Dashboard/Settings/Faq";
@@ -16,10 +15,11 @@ import AboutUs from "../Dashboard/Settings/AboutUs";
 import PrivacyPolicy from "../Dashboard/Settings/PrivacyPolicy";
 import RevenueManagement from "../Dashboard/RevenueManagement";
 import Transaction from "../Dashboard/Transaction";
-import Subscription from "../Dashboard/Subscription";
 import Support from "../Dashboard/Support";
-import UserManagement from "../Dashboard/UserManagement";
 import AddAvatar from "../Dashboard/Settings/AddAvatar";
+import { GrowthRetention } from "../Dashboard/GrowthAndRetention";
+import Reliability from "../Dashboard/Subscription";
+import AdminControls from "../Dashboard/AdminControls";
 
 const router = createBrowserRouter([
   {
@@ -55,8 +55,8 @@ const router = createBrowserRouter([
             element: <Dashboard />,
           },
           {
-            path: "user-management",
-            element: <UserManagement />,
+            path: "growth-retention",
+            element: <GrowthRetention />,
           },
           {
             path: "revenue-management",
@@ -67,8 +67,8 @@ const router = createBrowserRouter([
             element: <Transaction />,
           },
           {
-            path: "subscription",
-            element: <Subscription />,
+            path: "reliabilities",
+            element: <Reliability />,
           },
 
           {
@@ -76,8 +76,8 @@ const router = createBrowserRouter([
             element: <Support />,
           },
           {
-            path: "settings",
-            element: <Settings />,
+            path: "admin-controls",
+            element: <AdminControls />,
           },
           {
             path: "settings/profile",
