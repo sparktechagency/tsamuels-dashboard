@@ -130,7 +130,7 @@ export default function Support() {
   };
 
   return (
-    <div className="px-10 py-8 bg-[#fbfbfb] h-[92vh]">
+    <div className="px-10 py-8 h-[92vh]">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
         <div>
           <h1 className="text-3xl font-bold text-[#1A1A1A]">Support Emails</h1>

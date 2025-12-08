@@ -56,7 +56,7 @@ import { MetricCard } from "../UI/MetricCard";
 import {
   allAdjustmentsData,
   allConversionData,
-  allFamilyVsIndividualData,
+  // allFamilyVsIndividualData,
   allMrrData,
   allPlanMixData,
   generateRevenueData,
@@ -74,14 +74,14 @@ export default function RevenueManagement() {
   const [conversionYear, setConversionYear] = useState("2025");
   const [planMixYear, setPlanMixYear] = useState("2025");
   const [adjustmentsYear, setAdjustmentsYear] = useState("2025");
-  const [familyVsIndividualYear, setFamilyVsIndividualYear] = useState("2025");
+  // const [familyVsIndividualYear, setFamilyVsIndividualYear] = useState("2025");
 
   const mrrData = allMrrData[mrrYear];
   const conversionData = allConversionData[conversionYear];
   const planMixData = allPlanMixData[planMixYear];
   const adjustmentsData = allAdjustmentsData[adjustmentsYear];
-  const familyVsIndividualData =
-    allFamilyVsIndividualData[familyVsIndividualYear];
+  // const familyVsIndividualData =
+  //   allFamilyVsIndividualData[familyVsIndividualYear];
 
   const COLORS = [
     "#3b82f6", // bright blue
@@ -580,7 +580,7 @@ export default function RevenueManagement() {
           </CardContent>
         </Card>
 
-        <Card
+        {/* <Card
           elevation={2}
           sx={{
             borderRadius: 4,
@@ -630,7 +630,7 @@ export default function RevenueManagement() {
               familyVsIndividualData={familyVsIndividualData}
             />
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
 
       {/* Data Table */}
@@ -641,9 +641,9 @@ export default function RevenueManagement() {
               <TableCell>User</TableCell>
               <TableCell>Plan</TableCell>
               <TableCell>Amount</TableCell>
-              <TableCell>Discount</TableCell>
+              {/* <TableCell>Discount</TableCell> */}
               <TableCell>Status</TableCell>
-              <TableCell>Payment Method</TableCell>
+              {/* <TableCell>Payment Method</TableCell> */}
               <TableCell>Next Billing</TableCell>
               <TableCell align="right">Actions</TableCell>
             </TableRow>
@@ -669,9 +669,9 @@ export default function RevenueManagement() {
                   />
                 </TableCell>
                 <TableCell>${record.amount}</TableCell>
-                <TableCell>
+                {/* <TableCell>
                   {record.discount > 0 ? `$${record.discount}` : "-"}
-                </TableCell>
+                </TableCell> */}
                 <TableCell>
                   <Chip
                     label={record.status}
@@ -685,7 +685,7 @@ export default function RevenueManagement() {
                     }
                   />
                 </TableCell>
-                <TableCell>{record.paymentMethod}</TableCell>
+                {/* <TableCell>{record.paymentMethod}</TableCell> */}
                 <TableCell>{record.nextBilling}</TableCell>
                 <TableCell align="right">
                   <IconButton size="small" onClick={() => handleView(record)}>
