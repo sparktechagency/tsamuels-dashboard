@@ -115,6 +115,7 @@ export default function Profile() {
                 label="Email"
                 fullWidth
                 value={email}
+                disabled
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>

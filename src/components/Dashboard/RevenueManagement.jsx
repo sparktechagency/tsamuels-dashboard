@@ -641,9 +641,9 @@ export default function RevenueManagement() {
               <TableCell>User</TableCell>
               <TableCell>Plan</TableCell>
               <TableCell>Amount</TableCell>
-              <TableCell>Discount</TableCell>
+              {/* <TableCell>Discount</TableCell> */}
               <TableCell>Status</TableCell>
-              <TableCell>Payment Method</TableCell>
+              {/* <TableCell>Payment Method</TableCell> */}
               <TableCell>Next Billing</TableCell>
               <TableCell align="right">Actions</TableCell>
             </TableRow>
@@ -669,9 +669,9 @@ export default function RevenueManagement() {
                   />
                 </TableCell>
                 <TableCell>${record.amount}</TableCell>
-                <TableCell>
+                {/* <TableCell>
                   {record.discount > 0 ? `$${record.discount}` : "-"}
-                </TableCell>
+                </TableCell> */}
                 <TableCell>
                   <Chip
                     label={record.status}
@@ -685,7 +685,7 @@ export default function RevenueManagement() {
                     }
                   />
                 </TableCell>
-                <TableCell>{record.paymentMethod}</TableCell>
+                {/* <TableCell>{record.paymentMethod}</TableCell> */}
                 <TableCell>{record.nextBilling}</TableCell>
                 <TableCell align="right">
                   <IconButton size="small" onClick={() => handleView(record)}>

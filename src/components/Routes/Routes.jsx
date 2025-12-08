@@ -20,6 +20,8 @@ import AddAvatar from "../Dashboard/Settings/AddAvatar";
 import { GrowthRetention } from "../Dashboard/GrowthAndRetention";
 import Reliability from "../Dashboard/Subscription";
 import AdminControls from "../Dashboard/AdminControls";
+import PrivacyCompliance from "../Dashboard/PrivacyCompliance";
+import Settings from "../Dashboard/Settings";
 
 const router = createBrowserRouter([
   {
@@ -78,6 +80,14 @@ const router = createBrowserRouter([
           {
             path: "admin-controls",
             element: <AdminControls />,
+          },
+          {
+            path: "privacy-compliance",
+            element: <PrivacyCompliance />,
+          },
+          {
+            path: "settings",
+            element: <Settings />,
           },
           {
             path: "settings/profile",
