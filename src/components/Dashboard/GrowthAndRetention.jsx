@@ -12,7 +12,7 @@ import {
   allFunnelData,
   allGeoData,
   allInviteData,
-  allRetentionData,
+  // allRetentionData,
 } from "../../../public/data/growthData";
 import ConversionChart from "../Chart/GrowthChart/ConversionChart";
 import CohortChart from "../Chart/GrowthChart/CohortChart";
@@ -22,12 +22,12 @@ import StateUserChart from "../Chart/GrowthChart/StateUserChart";
 export function GrowthRetention() {
   // Year filters for each chart
   const [funnelYear, setFunnelYear] = useState("2025");
-  const [retentionYear, setRetentionYear] = useState("2025");
+  // const [retentionYear, setRetentionYear] = useState("2025");
   const [inviteYear, setInviteYear] = useState("2025");
   const [geoYear, setGeoYear] = useState("2025");
 
   const funnelData = allFunnelData[funnelYear];
-  const retentionData = allRetentionData[retentionYear];
+  // const retentionData = allRetentionData[retentionYear];
   const inviteData = allInviteData[inviteYear];
   const geoData = allGeoData[geoYear];
 
@@ -88,7 +88,7 @@ export function GrowthRetention() {
           </CardContent>
         </Card>
 
-        <Card
+        {/* <Card
           elevation={2}
           sx={{
             borderRadius: 4,
@@ -120,7 +120,7 @@ export function GrowthRetention() {
             </p>
             <CohortChart retentionData={retentionData} />
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
 
       {/* Charts Row 2: Invite Metrics & Geographic Distribution */}

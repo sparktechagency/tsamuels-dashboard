@@ -40,8 +40,8 @@ import {
   allCalendarDensityData,
   allFeatureUsageData,
   allOnboardingData,
-  allSessionData,
-  allTimeToValueData,
+  // allSessionData,
+  // allTimeToValueData,
   allUserTypeData,
 } from "../../../public/data/overviewData";
 import GrowthVsLoyaltyChart from "../Chart/OverviewChart/GrowthVsLoyaltyChart";
@@ -55,16 +55,16 @@ export default function Dashboard() {
   const [userTypeYear, setUserTypeYear] = useState("2025");
   const [featureUsageYear, setFeatureUsageYear] = useState("2025");
   const [onboardingYear, setOnboardingYear] = useState("2025");
-  const [sessionYear, setSessionYear] = useState("2025");
+  // const [sessionYear, setSessionYear] = useState("2025");
   const [calendarDensityYear, setCalendarDensityYear] = useState("2025");
-  const [timeToValueYear, setTimeToValueYear] = useState("2025");
+  // const [timeToValueYear, setTimeToValueYear] = useState("2025");
 
   const userTypeData = allUserTypeData[userTypeYear];
   const featureUsageData = allFeatureUsageData[featureUsageYear];
   const onboardingData = allOnboardingData[onboardingYear];
-  const sessionData = allSessionData[sessionYear];
+  // const sessionData = allSessionData[sessionYear];
   const calendarDensityData = allCalendarDensityData[calendarDensityYear];
-  const timeToValueData = allTimeToValueData[timeToValueYear];
+  // const timeToValueData = allTimeToValueData[timeToValueYear];
 
   const COLORS = [
     "#3b82f6",
@@ -230,7 +230,7 @@ export default function Dashboard() {
           </div>
         </Card>
 
-        <Card
+        {/* <Card
           elevation={2}
           sx={{
             borderRadius: 4,
@@ -265,7 +265,7 @@ export default function Dashboard() {
             </p>
             <SessionChart sessionData={sessionData} />
           </div>
-        </Card>
+        </Card> */}
       </div>
 
       {/* Charts Row 3: Calendar Density & Time to Value */}
@@ -307,7 +307,7 @@ export default function Dashboard() {
           </div>
         </Card>
 
-        <Card
+        {/* <Card
           elevation={2}
           sx={{
             borderRadius: 4,
@@ -372,7 +372,7 @@ export default function Dashboard() {
               </p>
             </div>
           </div>
-        </Card>
+        </Card> */}
       </div>
     </div>
   );

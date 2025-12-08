@@ -52,11 +52,11 @@ export default function Sidebar() {
             icon: <AiOutlineTransaction fontSize={24} />,
             label: "Notifications",
           },
-          {
-            to: "/reliabilities",
-            icon: <MdDiamond fontSize={24} />,
-            label: "Reliabilities",
-          },
+          // {
+          //   to: "/reliabilities",
+          //   icon: <MdDiamond fontSize={24} />,
+          //   label: "Reliabilities",
+          // },
           {
             to: "/support",
             icon: <MdOutlineMarkEmailUnread fontSize={24} />,

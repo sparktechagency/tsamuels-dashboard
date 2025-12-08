@@ -1662,7 +1662,7 @@ export default function Notifications() {
           marginBottom: "24px",
         }}
       >
-        <Card
+        {/* <Card
           elevation={2}
           sx={{
             borderRadius: 4,
@@ -1753,7 +1753,7 @@ export default function Notifications() {
               </LineChart>
             </ResponsiveContainer>
           </CardContent>
-        </Card>
+        </Card> */}
 
         <Card
           elevation={2}
