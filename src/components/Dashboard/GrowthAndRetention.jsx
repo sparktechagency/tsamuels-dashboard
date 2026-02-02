@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { FaMapMarkerAlt } from "react-icons/fa";
 
-import { allGeoData, allInviteData } from "../../../public/data/growthData";
+import { allGeoData } from "../../../public/data/growthData";
 import ConversionChart from "../Chart/GrowthChart/ConversionChart";
 import CohortChart from "../Chart/GrowthChart/CohortChart";
 import InviteMetricsChart from "../Chart/GrowthChart/InviteMetricsChart";
@@ -17,6 +17,7 @@ import StateUserChart from "../Chart/GrowthChart/StateUserChart";
 import {
   useGetCohortRetentionDataQuery,
   useGetConversionFunnelDataQuery,
+  useGetInviteMetricsDataQuery,
 } from "../../Redux/slices/growth&RetentionApi";
 
 export function GrowthRetention() {
@@ -30,14 +31,15 @@ export function GrowthRetention() {
   const { data: conversionFunnelData, isLoading: loadingConversionFunnelData } =
     useGetConversionFunnelDataQuery(funnelYear);
   const conversionFunnel = conversionFunnelData?.data;
-  // console.log("engagement metrics", engagementMetrics);
 
   const { data: cohortRetentionData, isLoading: loadingCohortRetentionData } =
     useGetCohortRetentionDataQuery(retentionYear);
   const cohortRetention = cohortRetentionData?.data;
-  // console.log("engagement metrics", engagementMetrics);
 
-  const inviteData = allInviteData[inviteYear];
+  const { data: inviteMetricsData, isLoading: loadingInviteMetricsData } =
+    useGetInviteMetricsDataQuery(inviteYear);
+  const inviteMetrics = inviteMetricsData?.data;
+
   const geoData = allGeoData[geoYear];
 
   const COLORS = [
@@ -49,7 +51,11 @@ export function GrowthRetention() {
     "#8b5cf6", // bright purple
   ];
 
-  if (loadingConversionFunnelData || loadingCohortRetentionData) {
+  if (
+    loadingConversionFunnelData ||
+    loadingCohortRetentionData ||
+    loadingInviteMetricsData
+  ) {
     return (
       <div className="flex justify-center items-center h-[92vh]">
         <CircularProgress />
@@ -168,16 +174,17 @@ export function GrowthRetention() {
                     },
                   }}
                 >
-                  <MenuItem value="2023">2023</MenuItem>
-                  <MenuItem value="2024">2024</MenuItem>
                   <MenuItem value="2025">2025</MenuItem>
+                  <MenuItem value="2026">2026</MenuItem>
+                  <MenuItem value="2027">2027</MenuItem>
+                  <MenuItem value="2028">2028</MenuItem>
                 </Select>
               </FormControl>
             </div>
             <p className="text-sm text-[#6b7280] mb-6">
               Invites sent and acceptance rates
             </p>
-            <InviteMetricsChart inviteData={inviteData} />
+            <InviteMetricsChart inviteData={inviteMetrics} />
           </CardContent>
         </Card>
 

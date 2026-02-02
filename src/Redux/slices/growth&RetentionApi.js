@@ -28,11 +28,11 @@ const dashboardApi = baseApi.injectEndpoints({
       },
       providesTags: ["growth&Retention"],
     }),
-    getOnboardingCompletionData: builder.query({
+    getInviteMetricsData: builder.query({
       query: (year) => {
         const accessToken = sessionStorage.getItem("accessToken");
         return {
-          url: `/dashboard/onboarding-completion?year=${year}`,
+          url: `/dashboard/invite-metrics?year=${year}`,
           method: "get",
           headers: {
             authorization: `Bearer ${accessToken}`,
@@ -60,4 +60,5 @@ const dashboardApi = baseApi.injectEndpoints({
 export const {
   useGetConversionFunnelDataQuery,
   useGetCohortRetentionDataQuery,
+  useGetInviteMetricsDataQuery,
 } = dashboardApi;
