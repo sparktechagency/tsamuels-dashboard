@@ -41,11 +41,11 @@ const dashboardApi = baseApi.injectEndpoints({
       },
       providesTags: ["growth&Retention"],
     }),
-    getCalendarAndFamilyGrowthData: builder.query({
+    getUsersByStateData: builder.query({
       query: (year) => {
         const accessToken = sessionStorage.getItem("accessToken");
         return {
-          url: `/dashboard/calendar-density-and-family-growth?year=${year}`,
+          url: `/dashboard/users-by-state?year=${year}`,
           method: "get",
           headers: {
             authorization: `Bearer ${accessToken}`,
@@ -61,4 +61,5 @@ export const {
   useGetConversionFunnelDataQuery,
   useGetCohortRetentionDataQuery,
   useGetInviteMetricsDataQuery,
+  useGetUsersByStateDataQuery,
 } = dashboardApi;

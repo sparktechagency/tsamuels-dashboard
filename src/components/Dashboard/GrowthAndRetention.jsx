@@ -18,6 +18,7 @@ import {
   useGetCohortRetentionDataQuery,
   useGetConversionFunnelDataQuery,
   useGetInviteMetricsDataQuery,
+  useGetUsersByStateDataQuery,
 } from "../../Redux/slices/growth&RetentionApi";
 
 export function GrowthRetention() {
@@ -25,8 +26,8 @@ export function GrowthRetention() {
   // Year filters for each chart
   const [funnelYear, setFunnelYear] = useState(currentYear);
   const [retentionYear, setRetentionYear] = useState(currentYear);
-  const [inviteYear, setInviteYear] = useState("2025");
-  const [geoYear, setGeoYear] = useState("2025");
+  const [inviteYear, setInviteYear] = useState(currentYear);
+  const [geoYear, setGeoYear] = useState(currentYear);
 
   const { data: conversionFunnelData, isLoading: loadingConversionFunnelData } =
     useGetConversionFunnelDataQuery(funnelYear);
@@ -40,7 +41,9 @@ export function GrowthRetention() {
     useGetInviteMetricsDataQuery(inviteYear);
   const inviteMetrics = inviteMetricsData?.data;
 
-  const geoData = allGeoData[geoYear];
+  const { data: usersByStateData, isLoading: loadingUsersByStateData } =
+    useGetUsersByStateDataQuery(geoYear);
+  const usersByState = usersByStateData?.data;
 
   const COLORS = [
     "#2563eb", // vibrant blue
@@ -54,7 +57,8 @@ export function GrowthRetention() {
   if (
     loadingConversionFunnelData ||
     loadingCohortRetentionData ||
-    loadingInviteMetricsData
+    loadingInviteMetricsData ||
+    loadingUsersByStateData
   ) {
     return (
       <div className="flex justify-center items-center h-[92vh]">
@@ -209,22 +213,23 @@ export function GrowthRetention() {
                     },
                   }}
                 >
-                  <MenuItem value="2023">2023</MenuItem>
-                  <MenuItem value="2024">2024</MenuItem>
                   <MenuItem value="2025">2025</MenuItem>
+                  <MenuItem value="2026">2026</MenuItem>
+                  <MenuItem value="2027">2027</MenuItem>
+                  <MenuItem value="2028">2028</MenuItem>
                 </Select>
               </FormControl>
             </div>
             <p className="text-sm text-[#6b7280] mb-6">
               Geographic distribution of users
             </p>
-            <StateUserChart geoData={geoData} COLORS={COLORS} />
+            <StateUserChart geoData={usersByState} COLORS={COLORS} />
           </CardContent>
         </Card>
       </div>
 
       {/* Top Zip Codes Card */}
-      <Card
+      {/* <Card
         elevation={2}
         sx={{
           borderRadius: 4,
@@ -256,7 +261,7 @@ export function GrowthRetention() {
             ))}
           </div>
         </CardContent>
-      </Card>
+      </Card> */}
     </div>
   );
 }

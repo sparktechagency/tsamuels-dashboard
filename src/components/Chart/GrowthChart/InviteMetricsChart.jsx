@@ -11,7 +11,7 @@ import {
 } from "recharts";
 
 export default function InviteMetricsChart({ inviteData }) {
-  console.log(inviteData);
+  // console.log(inviteData);
   return (
     <ResponsiveContainer width="100%" height={320}>
       <ComposedChart data={inviteData}>
