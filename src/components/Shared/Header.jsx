@@ -3,10 +3,11 @@ import { PiBellSimpleRingingBold } from "react-icons/pi";
 
 import { Link, useNavigate } from "react-router-dom";
 import { Menu, MenuItem, Button } from "@mui/material";
-import { IoIosArrowDown } from "react-icons/io";
+import { IoIosArrowDown, IoMdMenu } from "react-icons/io";
 import profileImg from "../../../public/Images/profile.png";
+import { IconButton } from "@mui/material";
 
-export default function Header() {
+export default function Header({ handleDrawerToggle, isMobile }) {
   const [dropdownMenu, setDropdownMenu] = useState(null);
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
@@ -27,8 +28,20 @@ export default function Header() {
   };
 
   return (
-    <div className="flex items-center justify-end w-full px-10 py-4  bg-white shadow-lg">
-      <div className="flex items-center gap-4">
+    <div className="flex items-center justify-between w-full px-4 lg:px-10 py-4 bg-linear-to-r to-[#EFF6FF] from-[#ECFEFF] shadow-lg sticky top-0 z-50">
+      {isMobile && (
+        <div className="lg:hidden">
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            edge="start"
+            onClick={handleDrawerToggle}
+          >
+            <IoMdMenu fontSize={28} />
+          </IconButton>
+        </div>
+      )}
+      <div className="flex items-center justify-end w-full gap-4">
         {/* <div className="text-white">
           <Link to="/notifications">
             <PiBellSimpleRingingBold fontSize={24} />
@@ -39,7 +52,7 @@ export default function Header() {
             bgcolor: "#2B7FFF",
             textTransform: "none",
             padding: "5px",
-            width: "100%",
+
             float: "right",
           }}
           onClick={handleProfileClick}

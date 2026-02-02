@@ -66,6 +66,12 @@ const UpdatePassword = () => {
         toast.success("Password Updated Successfully");
         setNewPassword("");
         setConfirmPassword("");
+        sessionStorage.removeItem("accessToken");
+        sessionStorage.removeItem("otpSentTime");
+        sessionStorage.removeItem("otpToken");
+        sessionStorage.removeItem("refreshToken");
+        sessionStorage.removeItem("userEmail");
+        sessionStorage.removeItem("verifyToken");
 
         navigate("/sign-in", { replace: true });
       }

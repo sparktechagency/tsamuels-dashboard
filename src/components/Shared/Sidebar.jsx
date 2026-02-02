@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { IconButton } from "@mui/material";
+import { IoClose } from "react-icons/io5";
 
 import { MdOutlineDashboard } from "react-icons/md";
 import { PiUsers } from "react-icons/pi";
@@ -16,19 +18,27 @@ import { Link, NavLink } from "react-router-dom";
 
 import logo from "../../../public/Images/logo.png";
 
-export default function Sidebar() {
+export default function Sidebar({ closeSidebar }) {
   const [selected, setSelected] = useState(null);
 
   const handleSelect = (path) => {
     setSelected(path);
+    if (closeSidebar) closeSidebar();
   };
 
   return (
-    <div className="bg-[#ffffff] h-screen w-full shadow-2xl">
+    <div className="bg-linear-to-r from-[#EFF6FF] to-[#ECFEFF] h-screen w-full shadow-2xl">
       <div className="flex flex-col items-center gap-4 py-5">
         <Link to="/" className="">
           <img src={logo} alt="" className="h-12 mx-auto" />
         </Link>
+        {closeSidebar && (
+          <div className="absolute top-4 right-4 lg:hidden">
+            <IconButton onClick={closeSidebar}>
+              <IoClose size={24} />
+            </IconButton>
+          </div>
+        )}
         <hr className="w-24 border border-[#E0E1E2]" />
       </div>
       <div className="flex flex-col px-4 py-3 gap-1">
@@ -91,8 +101,8 @@ export default function Sidebar() {
                 isActive
                   ? "bg-gradient-to-r from-[#2B7FFF] to-[#00D3F2]  text-[#fff]"
                   : selected === to
-                  ? "bg-[#2B7FFF] text-black"
-                  : "text-black"
+                    ? "bg-[#2B7FFF] text-black"
+                    : "text-black"
               }
               hover:bg-[#2B7FFF] hover:text-[#fff]`
             }

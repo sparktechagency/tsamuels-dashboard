@@ -18,6 +18,7 @@ export function MetricCard({
         borderRadius: 4,
         transition: "all 0.25s ease-in-out",
         transform: "scale(1)",
+        // background: "linear-gradient(135deg,#EFF6FF 0%, #ECFEFF 100%)",
         "&:hover": {
           boxShadow: 4,
           transform: "scale(1.03)",
@@ -43,11 +44,11 @@ export function MetricCard({
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  background:
-                    "linear-gradient(135deg, rgb(219, 234, 254) 0%, rgb(191, 219, 254) 100%)",
+                  background: "rgb(37, 99, 235)",
+                  // "linear-gradient(135deg,  0%, rgb(191, 219, 254) 100%)",
                 }}
               >
-                <Icon size={16} color="rgb(37, 99, 235)" />
+                <Icon size={16} color="rgb(219, 234, 254)" />
               </Box>
             )}
             <p className="font-medium">{title}</p>
