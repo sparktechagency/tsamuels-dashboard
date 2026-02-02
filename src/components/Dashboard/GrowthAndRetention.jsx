@@ -9,22 +9,21 @@ import {
 } from "@mui/material";
 import { FaMapMarkerAlt } from "react-icons/fa";
 
-import {
-  allGeoData,
-  allInviteData,
-  allRetentionData,
-} from "../../../public/data/growthData";
+import { allGeoData, allInviteData } from "../../../public/data/growthData";
 import ConversionChart from "../Chart/GrowthChart/ConversionChart";
 import CohortChart from "../Chart/GrowthChart/CohortChart";
 import InviteMetricsChart from "../Chart/GrowthChart/InviteMetricsChart";
 import StateUserChart from "../Chart/GrowthChart/StateUserChart";
-import { useGetConversionFunnelDataQuery } from "../../Redux/slices/growth&RetentionApi";
+import {
+  useGetCohortRetentionDataQuery,
+  useGetConversionFunnelDataQuery,
+} from "../../Redux/slices/growth&RetentionApi";
 
 export function GrowthRetention() {
   const currentYear = new Date().getFullYear().toString();
   // Year filters for each chart
   const [funnelYear, setFunnelYear] = useState(currentYear);
-  const [retentionYear, setRetentionYear] = useState("2025");
+  const [retentionYear, setRetentionYear] = useState(currentYear);
   const [inviteYear, setInviteYear] = useState("2025");
   const [geoYear, setGeoYear] = useState("2025");
 
@@ -33,7 +32,11 @@ export function GrowthRetention() {
   const conversionFunnel = conversionFunnelData?.data;
   // console.log("engagement metrics", engagementMetrics);
 
-  const retentionData = allRetentionData[retentionYear];
+  const { data: cohortRetentionData, isLoading: loadingCohortRetentionData } =
+    useGetCohortRetentionDataQuery(retentionYear);
+  const cohortRetention = cohortRetentionData?.data;
+  // console.log("engagement metrics", engagementMetrics);
+
   const inviteData = allInviteData[inviteYear];
   const geoData = allGeoData[geoYear];
 
@@ -46,7 +49,7 @@ export function GrowthRetention() {
     "#8b5cf6", // bright purple
   ];
 
-  if (loadingConversionFunnelData) {
+  if (loadingConversionFunnelData || loadingCohortRetentionData) {
     return (
       <div className="flex justify-center items-center h-[92vh]">
         <CircularProgress />
@@ -124,16 +127,17 @@ export function GrowthRetention() {
                     },
                   }}
                 >
-                  <MenuItem value="2023">2023</MenuItem>
-                  <MenuItem value="2024">2024</MenuItem>
                   <MenuItem value="2025">2025</MenuItem>
+                  <MenuItem value="2026">2026</MenuItem>
+                  <MenuItem value="2027">2027</MenuItem>
+                  <MenuItem value="2028">2028</MenuItem>
                 </Select>
               </FormControl>
             </div>
             <p className="text-sm text-[#6b7280] mb-6">
               Retention rates at day 7, 30, and 60 days
             </p>
-            <CohortChart retentionData={retentionData} />
+            <CohortChart retentionData={cohortRetention} />
           </CardContent>
         </Card>
       </div>

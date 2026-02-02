@@ -15,18 +15,18 @@ const dashboardApi = baseApi.injectEndpoints({
       },
       providesTags: ["growth&Retention"],
     }),
-    getFeatureUsageData: builder.query({
+    getCohortRetentionData: builder.query({
       query: (year) => {
         const accessToken = sessionStorage.getItem("accessToken");
         return {
-          url: `/dashboard/feature-usage-rates?year=${year}`,
+          url: `/dashboard/cohort-retention?year=${year}`,
           method: "get",
           headers: {
             authorization: `Bearer ${accessToken}`,
           },
         };
       },
-      providesTags: ["user"],
+      providesTags: ["growth&Retention"],
     }),
     getOnboardingCompletionData: builder.query({
       query: (year) => {
@@ -39,7 +39,7 @@ const dashboardApi = baseApi.injectEndpoints({
           },
         };
       },
-      providesTags: ["user"],
+      providesTags: ["growth&Retention"],
     }),
     getCalendarAndFamilyGrowthData: builder.query({
       query: (year) => {
@@ -52,9 +52,12 @@ const dashboardApi = baseApi.injectEndpoints({
           },
         };
       },
-      providesTags: ["user"],
+      providesTags: ["growth&Retention"],
     }),
   }),
 });
 
-export const { useGetConversionFunnelDataQuery } = dashboardApi;
+export const {
+  useGetConversionFunnelDataQuery,
+  useGetCohortRetentionDataQuery,
+} = dashboardApi;

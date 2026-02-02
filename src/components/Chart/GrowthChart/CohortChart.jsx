@@ -10,11 +10,12 @@ import {
 } from "recharts";
 
 export default function CohortChart({ retentionData }) {
+  // console.log(retentionData);
   return (
     <ResponsiveContainer width="100%" height={350}>
       <LineChart data={retentionData}>
         <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-        <XAxis dataKey="cohort" stroke="#6b7280" />
+        <XAxis dataKey="month" stroke="#6b7280" />
         <YAxis stroke="#6b7280" />
         <Tooltip
           contentStyle={{
@@ -28,22 +29,22 @@ export default function CohortChart({ retentionData }) {
           type="monotone"
           dataKey="day7"
           stroke="#3b82f6"
-          strokeWidth={3}
-          name="Day 7 %"
+          strokeWidth={2}
+          name="Day 7%"
         />
         <Line
           type="monotone"
           dataKey="day30"
           stroke="#10b981"
-          strokeWidth={3}
-          name="Day 30 %"
+          strokeWidth={2}
+          name="Day 30%"
         />
         <Line
           type="monotone"
           dataKey="day60"
           stroke="#f59e0b"
-          strokeWidth={3}
-          name="Day 60 %"
+          strokeWidth={2}
+          name="Day 60%"
         />
       </LineChart>
     </ResponsiveContainer>
