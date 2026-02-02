@@ -21,6 +21,12 @@ import {
   useGetUsersByStateDataQuery,
 } from "../../Redux/slices/growth&RetentionApi";
 
+const NoDataFallback = () => (
+  <div className="flex flex-col items-center justify-center h-[300px] bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
+    <p className="text-gray-400 font-medium">No data available for this period</p>
+  </div>
+);
+
 export function GrowthRetention() {
   const currentYear = new Date().getFullYear().toString();
   // Year filters for each chart
@@ -118,7 +124,11 @@ export function GrowthRetention() {
             <p className="text-sm text-[#6b7280] mb-6">
               Signup to paid user journey
             </p>
-            <ConversionChart funnelData={conversionFunnel} />
+            {conversionFunnel && conversionFunnel.length > 0 ? (
+              <ConversionChart funnelData={conversionFunnel} />
+            ) : (
+              <NoDataFallback />
+            )}
           </CardContent>
         </Card>
 
@@ -153,7 +163,11 @@ export function GrowthRetention() {
             <p className="text-sm text-[#6b7280] mb-6">
               Retention rates at day 7, 30, and 60 days
             </p>
-            <CohortChart retentionData={cohortRetention} />
+            {cohortRetention && cohortRetention.length > 0 ? (
+              <CohortChart retentionData={cohortRetention} />
+            ) : (
+              <NoDataFallback />
+            )}
           </CardContent>
         </Card>
       </div>
@@ -194,7 +208,11 @@ export function GrowthRetention() {
             <p className="text-sm text-[#6b7280] mb-6">
               Invites sent and acceptance rates
             </p>
-            <InviteMetricsChart inviteData={inviteMetrics} />
+            {inviteMetrics && inviteMetrics.length > 0 ? (
+              <InviteMetricsChart inviteData={inviteMetrics} />
+            ) : (
+              <NoDataFallback />
+            )}
           </CardContent>
         </Card>
 
@@ -229,7 +247,11 @@ export function GrowthRetention() {
             <p className="text-sm text-[#6b7280] mb-6">
               Geographic distribution of users
             </p>
-            <StateUserChart geoData={usersByState} COLORS={COLORS} />
+            {usersByState && usersByState.length > 0 ? (
+              <StateUserChart geoData={usersByState} COLORS={COLORS} />
+            ) : (
+              <NoDataFallback />
+            )}
           </CardContent>
         </Card>
       </div>
@@ -247,25 +269,31 @@ export function GrowthRetention() {
           <p className="text-sm text-[#6b7280] mb-6">
             Highest user concentration areas
           </p>
-          <div className="grid grid-cols-5 gap-5">
-            {topZipCodes.map((item, index) => (
-              <div
-                key={item.zipCode}
-                className="p-4 rounded-lg border border-[#e5e7eb]"
-              >
-                <div className="flex items-center gap-2 mb-2">
-                  <FaMapMarkerAlt
-                    style={{ color: COLORS[index], fontSize: "20px" }}
-                  />
-                  <p className="text-lg font-bold">{item.zipCode}</p>
+          {topZipCodes && topZipCodes.length > 0 ? (
+            <div className="grid grid-cols-5 gap-5">
+              {topZipCodes.map((item, index) => (
+                <div
+                  key={item.zipCode}
+                  className="p-4 rounded-lg border border-[#e5e7eb]"
+                >
+                  <div className="flex items-center gap-2 mb-2">
+                    <FaMapMarkerAlt
+                      style={{ color: COLORS[index], fontSize: "20px" }}
+                    />
+                    <p className="text-lg font-bold">{item.zipCode}</p>
+                  </div>
+                  <p className="text-sm text-[#6b7280] mb-1">{item.country}</p>
+                  <p className="text-lg font-semibold text-[#3b82f6]">
+                    {item.userCount} users
+                  </p>
                 </div>
-                <p className="text-sm text-[#6b7280] mb-1">{item.country}</p>
-                <p className="text-lg font-semibold text-[#3b82f6]">
-                  {item.userCount} users
-                </p>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="p-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200 text-center">
+              <p className="text-gray-400 font-medium">No zip code data found</p>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
