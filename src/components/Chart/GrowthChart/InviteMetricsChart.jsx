@@ -11,6 +11,7 @@ import {
 } from "recharts";
 
 export default function InviteMetricsChart({ inviteData }) {
+  // console.log(inviteData);
   return (
     <ResponsiveContainer width="100%" height={320}>
       <ComposedChart data={inviteData}>
@@ -28,22 +29,22 @@ export default function InviteMetricsChart({ inviteData }) {
         <Legend />
         <Bar
           yAxisId="left"
-          dataKey="sent"
+          dataKey="invitesSent"
           fill="#93c5fd"
           name="Invites Sent"
-          barSize={30}
+          barSize={15}
         />
         <Bar
           yAxisId="left"
-          dataKey="accepted"
+          dataKey="invitesAccepted"
           fill="#3b82f6"
           name="Accepted"
-          barSize={30}
+          barSize={15}
         />
         <Line
           yAxisId="right"
           type="monotone"
-          dataKey="rate"
+          dataKey="acceptRate"
           stroke="#10b981"
           strokeWidth={3}
           name="Accept Rate %"

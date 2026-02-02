@@ -22,6 +22,7 @@ import { MetricCard } from "../UI/MetricCard";
 import FeatureUsageChart from "../Chart/OverviewChart/FeatureUsageChart";
 import OnboardingChart from "../Chart/OverviewChart/OnboardingChart";
 import NewVsReturningChart from "../Chart/OverviewChart/NewVsReturningChart";
+import CalendarAndFamilyChart from "../Chart/OverviewChart/Calendar&FamilyChart";
 import {
   useGetCalendarAndFamilyGrowthDataQuery,
   useGetEngagementMetricsQuery,
@@ -29,7 +30,6 @@ import {
   useGetOnboardingCompletionDataQuery,
   useGetUsersComparisonDataQuery,
 } from "../../Redux/slices/dashboardApi";
-import CalendarAndFamilyChart from "../Chart/OverviewChart/Calendar&FamilyChart";
 
 export default function Dashboard() {
   const currentYear = new Date().getFullYear().toString();
@@ -39,38 +39,31 @@ export default function Dashboard() {
   const [userTypeYear, setUserTypeYear] = useState(currentYear);
   const [featureUsageYear, setFeatureUsageYear] = useState(currentYear);
   const [onboardingYear, setOnboardingYear] = useState(currentYear);
-  // const [sessionYear, setSessionYear] = useState("2025");
   const [calendarDensityYear, setCalendarDensityYear] = useState(currentYear);
-  // const [timeToValueYear, setTimeToValueYear] = useState("2025");
 
   const { data: engagementMetricsData, isLoading: loadingMetricsData } =
     useGetEngagementMetricsQuery();
   const engagementMetrics = engagementMetricsData?.data;
-  // console.log("engagement metrics", engagementMetrics);
 
   const { data: usersComparisonData, isLoading: loadingComparisonData } =
     useGetUsersComparisonDataQuery(userTypeYear);
   const comparisonChartData = usersComparisonData?.data;
-  // console.log("comparisonChartData", comparisonChartData);
 
   const { data: allFeatureUsageData, isLoading: loadingFeatureUsageData } =
     useGetFeatureUsageDataQuery(featureUsageYear);
   const featureUsageData = allFeatureUsageData?.data;
-  // console.log("featureUsageData", featureUsageData);
 
   const {
     data: allOnboardingCompletionData,
     isLoading: loadingOnboardingCompletionData,
   } = useGetOnboardingCompletionDataQuery(onboardingYear);
   const onboardingCompletionData = allOnboardingCompletionData?.data;
-  // console.log("onboardingCompletionData", onboardingCompletionData);
 
   const {
     data: allCalendarAndFamilyGrowthData,
     isLoading: loadingCalendarAndFamilyGrowthData,
   } = useGetCalendarAndFamilyGrowthDataQuery(calendarDensityYear);
   const calendarAndFamilyGrowthData = allCalendarAndFamilyGrowthData?.data;
-  // console.log("onboardingCompletionData", onboardingCompletionData);
 
   if (
     loadingMetricsData ||

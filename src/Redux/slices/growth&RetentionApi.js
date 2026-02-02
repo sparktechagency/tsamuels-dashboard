@@ -2,78 +2,78 @@ import { baseApi } from "../baseApi";
 
 const dashboardApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getEngagementMetrics: builder.query({
+    getConversionFunnelData: builder.query({
+      query: (year) => {
+        const accessToken = sessionStorage.getItem("accessToken");
+        return {
+          url: `/dashboard/conversion-funnel?year=${year}`,
+          method: "get",
+          headers: {
+            authorization: `Bearer ${accessToken}`,
+          },
+        };
+      },
+      providesTags: ["growth&Retention"],
+    }),
+    getCohortRetentionData: builder.query({
+      query: (year) => {
+        const accessToken = sessionStorage.getItem("accessToken");
+        return {
+          url: `/dashboard/cohort-retention?year=${year}`,
+          method: "get",
+          headers: {
+            authorization: `Bearer ${accessToken}`,
+          },
+        };
+      },
+      providesTags: ["growth&Retention"],
+    }),
+    getInviteMetricsData: builder.query({
+      query: (year) => {
+        const accessToken = sessionStorage.getItem("accessToken");
+        return {
+          url: `/dashboard/invite-metrics?year=${year}`,
+          method: "get",
+          headers: {
+            authorization: `Bearer ${accessToken}`,
+          },
+        };
+      },
+      providesTags: ["growth&Retention"],
+    }),
+    getUsersByStateData: builder.query({
+      query: (year) => {
+        const accessToken = sessionStorage.getItem("accessToken");
+        return {
+          url: `/dashboard/users-by-state?year=${year}`,
+          method: "get",
+          headers: {
+            authorization: `Bearer ${accessToken}`,
+          },
+        };
+      },
+      providesTags: ["growth&Retention"],
+    }),
+    getTopZipCodesData: builder.query({
       query: () => {
         const accessToken = sessionStorage.getItem("accessToken");
         return {
-          url: "/dashboard/engagement-metrics",
+          url: "/dashboard/top-zip-codes",
           method: "get",
           headers: {
             authorization: `Bearer ${accessToken}`,
           },
         };
       },
-      providesTags: ["metrics"],
-    }),
-    getUsersComparisonData: builder.query({
-      query: (year) => {
-        const accessToken = sessionStorage.getItem("accessToken");
-        return {
-          url: `/dashboard/new-vs-returning-users?year=${year}`,
-          method: "get",
-          headers: {
-            authorization: `Bearer ${accessToken}`,
-          },
-        };
-      },
-      providesTags: ["overview"],
-    }),
-    getFeatureUsageData: builder.query({
-      query: (year) => {
-        const accessToken = sessionStorage.getItem("accessToken");
-        return {
-          url: `/dashboard/feature-usage-rates?year=${year}`,
-          method: "get",
-          headers: {
-            authorization: `Bearer ${accessToken}`,
-          },
-        };
-      },
-      providesTags: ["overview"],
-    }),
-    getOnboardingCompletionData: builder.query({
-      query: (year) => {
-        const accessToken = sessionStorage.getItem("accessToken");
-        return {
-          url: `/dashboard/onboarding-completion?year=${year}`,
-          method: "get",
-          headers: {
-            authorization: `Bearer ${accessToken}`,
-          },
-        };
-      },
-      providesTags: ["overview"],
-    }),
-    getCalendarAndFamilyGrowthData: builder.query({
-      query: (year) => {
-        const accessToken = sessionStorage.getItem("accessToken");
-        return {
-          url: `/dashboard/calendar-density-and-family-growth?year=${year}`,
-          method: "get",
-          headers: {
-            authorization: `Bearer ${accessToken}`,
-          },
-        };
-      },
-      providesTags: ["overview"],
+      providesTags: ["growth&Retention"],
     }),
   }),
 });
 
 export const {
-  useGetEngagementMetricsQuery,
-  useGetUsersComparisonDataQuery,
-  useGetFeatureUsageDataQuery,
-  useGetOnboardingCompletionDataQuery,
-  useGetCalendarAndFamilyGrowthDataQuery,
+  useGetConversionFunnelDataQuery,
+  useGetCohortRetentionDataQuery,
+  useGetInviteMetricsDataQuery,
+  useGetUsersByStateDataQuery,
+  useGetTopZipCodesDataQuery,
 } = dashboardApi;

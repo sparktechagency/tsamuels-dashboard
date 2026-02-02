@@ -5,31 +5,56 @@ import {
   Select,
   MenuItem,
   FormControl,
+  CircularProgress,
 } from "@mui/material";
 import { FaMapMarkerAlt } from "react-icons/fa";
 
-import {
-  allFunnelData,
-  allGeoData,
-  allInviteData,
-  allRetentionData,
-} from "../../../public/data/growthData";
 import ConversionChart from "../Chart/GrowthChart/ConversionChart";
 import CohortChart from "../Chart/GrowthChart/CohortChart";
 import InviteMetricsChart from "../Chart/GrowthChart/InviteMetricsChart";
 import StateUserChart from "../Chart/GrowthChart/StateUserChart";
+import {
+  useGetCohortRetentionDataQuery,
+  useGetConversionFunnelDataQuery,
+  useGetInviteMetricsDataQuery,
+  useGetTopZipCodesDataQuery,
+  useGetUsersByStateDataQuery,
+} from "../../Redux/slices/growth&RetentionApi";
+
+const NoDataFallback = () => (
+  <div className="flex flex-col items-center justify-center h-[300px] bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
+    <p className="text-gray-400 font-medium">No data available for this period</p>
+  </div>
+);
 
 export function GrowthRetention() {
+  const currentYear = new Date().getFullYear().toString();
   // Year filters for each chart
-  const [funnelYear, setFunnelYear] = useState("2025");
-  const [retentionYear, setRetentionYear] = useState("2025");
-  const [inviteYear, setInviteYear] = useState("2025");
-  const [geoYear, setGeoYear] = useState("2025");
+  const [funnelYear, setFunnelYear] = useState(currentYear);
+  const [retentionYear, setRetentionYear] = useState(currentYear);
+  const [inviteYear, setInviteYear] = useState(currentYear);
+  const [geoYear, setGeoYear] = useState(currentYear);
 
-  const funnelData = allFunnelData[funnelYear];
-  const retentionData = allRetentionData[retentionYear];
-  const inviteData = allInviteData[inviteYear];
-  const geoData = allGeoData[geoYear];
+  const { data: conversionFunnelData, isLoading: loadingConversionFunnelData } =
+    useGetConversionFunnelDataQuery(funnelYear);
+  const conversionFunnel = conversionFunnelData?.data;
+
+  const { data: cohortRetentionData, isLoading: loadingCohortRetentionData } =
+    useGetCohortRetentionDataQuery(retentionYear);
+  const cohortRetention = cohortRetentionData?.data;
+
+  const { data: inviteMetricsData, isLoading: loadingInviteMetricsData } =
+    useGetInviteMetricsDataQuery(inviteYear);
+  const inviteMetrics = inviteMetricsData?.data;
+
+  const { data: usersByStateData, isLoading: loadingUsersByStateData } =
+    useGetUsersByStateDataQuery(geoYear);
+  const usersByState = usersByStateData?.data;
+
+  const { data: topZipCodesData, isLoading: loadingTopZipCodesData } =
+    useGetTopZipCodesDataQuery();
+  const topZipCodes = topZipCodesData?.data;
+  // console.log("topZipCodes", topZipCodes);
 
   const COLORS = [
     "#2563eb", // vibrant blue
@@ -39,6 +64,20 @@ export function GrowthRetention() {
     "#10b981", // bright green
     "#8b5cf6", // bright purple
   ];
+
+  if (
+    loadingConversionFunnelData ||
+    loadingCohortRetentionData ||
+    loadingInviteMetricsData ||
+    loadingUsersByStateData ||
+    loadingTopZipCodesData
+  ) {
+    return (
+      <div className="flex justify-center items-center h-[92vh]">
+        <CircularProgress />
+      </div>
+    );
+  }
 
   return (
     <div style={{ padding: "32px" }}>
@@ -75,16 +114,21 @@ export function GrowthRetention() {
                     },
                   }}
                 >
-                  <MenuItem value="2023">2023</MenuItem>
-                  <MenuItem value="2024">2024</MenuItem>
                   <MenuItem value="2025">2025</MenuItem>
+                  <MenuItem value="2026">2026</MenuItem>
+                  <MenuItem value="2027">2027</MenuItem>
+                  <MenuItem value="2028">2028</MenuItem>
                 </Select>
               </FormControl>
             </div>
             <p className="text-sm text-[#6b7280] mb-6">
               Signup to paid user journey
             </p>
-            <ConversionChart funnelData={funnelData} />
+            {conversionFunnel && conversionFunnel.length > 0 ? (
+              <ConversionChart funnelData={conversionFunnel} />
+            ) : (
+              <NoDataFallback />
+            )}
           </CardContent>
         </Card>
 
@@ -109,16 +153,21 @@ export function GrowthRetention() {
                     },
                   }}
                 >
-                  <MenuItem value="2023">2023</MenuItem>
-                  <MenuItem value="2024">2024</MenuItem>
                   <MenuItem value="2025">2025</MenuItem>
+                  <MenuItem value="2026">2026</MenuItem>
+                  <MenuItem value="2027">2027</MenuItem>
+                  <MenuItem value="2028">2028</MenuItem>
                 </Select>
               </FormControl>
             </div>
             <p className="text-sm text-[#6b7280] mb-6">
               Retention rates at day 7, 30, and 60 days
             </p>
-            <CohortChart retentionData={retentionData} />
+            {cohortRetention && cohortRetention.length > 0 ? (
+              <CohortChart retentionData={cohortRetention} />
+            ) : (
+              <NoDataFallback />
+            )}
           </CardContent>
         </Card>
       </div>
@@ -149,16 +198,21 @@ export function GrowthRetention() {
                     },
                   }}
                 >
-                  <MenuItem value="2023">2023</MenuItem>
-                  <MenuItem value="2024">2024</MenuItem>
                   <MenuItem value="2025">2025</MenuItem>
+                  <MenuItem value="2026">2026</MenuItem>
+                  <MenuItem value="2027">2027</MenuItem>
+                  <MenuItem value="2028">2028</MenuItem>
                 </Select>
               </FormControl>
             </div>
             <p className="text-sm text-[#6b7280] mb-6">
               Invites sent and acceptance rates
             </p>
-            <InviteMetricsChart inviteData={inviteData} />
+            {inviteMetrics && inviteMetrics.length > 0 ? (
+              <InviteMetricsChart inviteData={inviteMetrics} />
+            ) : (
+              <NoDataFallback />
+            )}
           </CardContent>
         </Card>
 
@@ -183,16 +237,21 @@ export function GrowthRetention() {
                     },
                   }}
                 >
-                  <MenuItem value="2023">2023</MenuItem>
-                  <MenuItem value="2024">2024</MenuItem>
                   <MenuItem value="2025">2025</MenuItem>
+                  <MenuItem value="2026">2026</MenuItem>
+                  <MenuItem value="2027">2027</MenuItem>
+                  <MenuItem value="2028">2028</MenuItem>
                 </Select>
               </FormControl>
             </div>
             <p className="text-sm text-[#6b7280] mb-6">
               Geographic distribution of users
             </p>
-            <StateUserChart geoData={geoData} COLORS={COLORS} />
+            {usersByState && usersByState.length > 0 ? (
+              <StateUserChart geoData={usersByState} COLORS={COLORS} />
+            ) : (
+              <NoDataFallback />
+            )}
           </CardContent>
         </Card>
       </div>
@@ -210,25 +269,31 @@ export function GrowthRetention() {
           <p className="text-sm text-[#6b7280] mb-6">
             Highest user concentration areas
           </p>
-          <div className="grid grid-cols-5 gap-5">
-            {geoData.byZip.map((item, index) => (
-              <div
-                key={item.zip}
-                className="p-4 rounded-lg border border-[#e5e7eb]"
-              >
-                <div className="flex items-center gap-2 mb-2">
-                  <FaMapMarkerAlt
-                    style={{ color: COLORS[index], fontSize: "20px" }}
-                  />
-                  <p className="text-lg font-bold">{item.zip}</p>
+          {topZipCodes && topZipCodes.length > 0 ? (
+            <div className="grid grid-cols-5 gap-5">
+              {topZipCodes.map((item, index) => (
+                <div
+                  key={item.zipCode}
+                  className="p-4 rounded-lg border border-[#e5e7eb]"
+                >
+                  <div className="flex items-center gap-2 mb-2">
+                    <FaMapMarkerAlt
+                      style={{ color: COLORS[index], fontSize: "20px" }}
+                    />
+                    <p className="text-lg font-bold">{item.zipCode}</p>
+                  </div>
+                  <p className="text-sm text-[#6b7280] mb-1">{item.country}</p>
+                  <p className="text-lg font-semibold text-[#3b82f6]">
+                    {item.userCount} users
+                  </p>
                 </div>
-                <p className="text-sm text-[#6b7280] mb-1">{item.city}</p>
-                <p className="text-lg font-semibold text-[#3b82f6]">
-                  {item.users} users
-                </p>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="p-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200 text-center">
+              <p className="text-gray-400 font-medium">No zip code data found</p>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

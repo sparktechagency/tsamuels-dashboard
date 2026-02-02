@@ -10,6 +10,7 @@ import {
 } from "recharts";
 
 export default function ConversionChart({ funnelData }) {
+  // console.log(funnelData);
   return (
     <ResponsiveContainer width="100%" height={350}>
       <BarChart data={funnelData}>
@@ -22,8 +23,8 @@ export default function ConversionChart({ funnelData }) {
           height={50}
           style={{ fontSize: "12px" }}
         />
-        <YAxis stroke="#6b7280" />
-        <YAxis yAxisId="right" orientation="right" stroke="#6b7280" />
+        <YAxis stroke="#3b82f6" />
+        <YAxis yAxisId="right" orientation="right" stroke="#10b981" />
         <Tooltip
           contentStyle={{
             background: "white",
@@ -32,12 +33,12 @@ export default function ConversionChart({ funnelData }) {
           }}
         />
         <Legend iconType="circle" />
-        <Bar dataKey="users" fill="#3b82f6" name="Users" barSize={30} />
+        <Bar dataKey="users" fill="#3b82f6" name="Users" barSize={15} />
         <Bar
-          dataKey="percent"
+          dataKey="conversionRate"
           fill="#10b981"
           name="Conversion %"
-          barSize={30}
+          barSize={15}
           yAxisId="right"
         />
       </BarChart>
