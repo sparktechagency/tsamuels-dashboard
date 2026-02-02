@@ -15,7 +15,37 @@ const dashboardApi = baseApi.injectEndpoints({
       },
       providesTags: ["metrics"],
     }),
+    getUsersComparisonData: builder.query({
+      query: (year) => {
+        const accessToken = sessionStorage.getItem("accessToken");
+        return {
+          url: `/dashboard/new-vs-returning-users?year=${year}`,
+          method: "get",
+          headers: {
+            authorization: `Bearer ${accessToken}`,
+          },
+        };
+      },
+      providesTags: ["user"],
+    }),
+    getFeatureUsageData: builder.query({
+      query: (year) => {
+        const accessToken = sessionStorage.getItem("accessToken");
+        return {
+          url: `/dashboard/feature-usage-rates?year=${year}`,
+          method: "get",
+          headers: {
+            authorization: `Bearer ${accessToken}`,
+          },
+        };
+      },
+      providesTags: ["user"],
+    }),
   }),
 });
 
-export const { useGetEngagementMetricsQuery } = dashboardApi;
+export const {
+  useGetEngagementMetricsQuery,
+  useGetUsersComparisonDataQuery,
+  useGetFeatureUsageDataQuery,
+} = dashboardApi;

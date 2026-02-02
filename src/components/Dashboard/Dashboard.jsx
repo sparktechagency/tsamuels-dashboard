@@ -19,26 +19,20 @@ import {
 } from "react-icons/fa";
 import { useState } from "react";
 import { MetricCard } from "../UI/MetricCard";
-import {
-  allCalendarDensityData,
-  allFeatureUsageData,
-  allOnboardingData,
-  allUserTypeData,
-} from "../../../public/data/overviewData";
-import GrowthVsLoyaltyChart from "../Chart/OverviewChart/GrowthVsLoyaltyChart";
+import GrowthVsLoyaltyChart from "../Chart/OverviewChart/NewVsReturningChart";
 import FeatureUsageChart from "../Chart/OverviewChart/FeatureUsageChart";
 import OnboardingChart from "../Chart/OverviewChart/OnboardingChart";
 import CalendarAndFamilyChart from "../Chart/OverviewChart/Calendar&FamilyChart";
-import { useGetEngagementMetricsQuery } from "../../Redux/slices/dashboardApi";
+import NewVsReturningChart from "../Chart/OverviewChart/NewVsReturningChart";
+import {
+  useGetEngagementMetricsQuery,
+  useGetFeatureUsageDataQuery,
+  useGetUsersComparisonDataQuery,
+} from "../../Redux/slices/dashboardApi";
 
 export default function Dashboard() {
   const currentYear = new Date().getFullYear().toString();
   // console.log(currentYear);
-
-  const { data: engagementMetricsData, isLoading } =
-    useGetEngagementMetricsQuery();
-  const engagementMetrics = engagementMetricsData?.data;
-  // console.log("engagement metrics", engagementMetrics);
 
   // Individual year filters for each chart
   const [userTypeYear, setUserTypeYear] = useState(currentYear);
@@ -48,14 +42,22 @@ export default function Dashboard() {
   const [calendarDensityYear, setCalendarDensityYear] = useState(currentYear);
   // const [timeToValueYear, setTimeToValueYear] = useState("2025");
 
-  const userTypeData = allUserTypeData[userTypeYear];
-  const featureUsageData = allFeatureUsageData[featureUsageYear];
-  const onboardingData = allOnboardingData[onboardingYear];
-  // const sessionData = allSessionData[sessionYear];
-  const calendarDensityData = allCalendarDensityData[calendarDensityYear];
-  // const timeToValueData = allTimeToValueData[timeToValueYear];
+  const { data: engagementMetricsData, isLoading: loadingMetricsData } =
+    useGetEngagementMetricsQuery();
+  const engagementMetrics = engagementMetricsData?.data;
+  // console.log("engagement metrics", engagementMetrics);
 
-  if (isLoading) {
+  const { data: usersComparisonData, isLoading: loadingComparisonData } =
+    useGetUsersComparisonDataQuery(userTypeYear);
+  const comparisonChartData = usersComparisonData?.data;
+  // console.log("comparisonChartData", comparisonChartData);
+
+  const { data: allFeatureUsageData, isLoading: loadingFeatureUsageData } =
+    useGetFeatureUsageDataQuery(featureUsageYear);
+  const featureUsageData = allFeatureUsageData?.data;
+  console.log("featureUsageData", featureUsageData);
+
+  if (loadingMetricsData || loadingComparisonData || loadingFeatureUsageData) {
     return (
       <div className="flex justify-center items-center h-[92vh]">
         <CircularProgress />
@@ -157,7 +159,7 @@ export default function Dashboard() {
           <p className="text-sm text-[#6b7280] mb-6">
             Growth vs loyalty trends
           </p>
-          <GrowthVsLoyaltyChart userTypeData={userTypeData} />
+          <NewVsReturningChart userTypeData={comparisonChartData} />
         </div>
 
         <div className="p-4 bg-white rounded-lg shadow-lg">
@@ -193,7 +195,7 @@ export default function Dashboard() {
 
       {/* Charts Row 2: Onboarding Funnel & Session Metrics */}
       <div className="grid gap-6 mb-6 [grid-template-columns:repeat(auto-fit,minmax(500px,1fr))]">
-        <Card
+        {/* <Card
           elevation={2}
           sx={{
             borderRadius: 4,
@@ -229,7 +231,7 @@ export default function Dashboard() {
             </p>
             <OnboardingChart onboardingData={onboardingData} />
           </div>
-        </Card>
+        </Card> */}
 
         {/* <Card
           elevation={2}
@@ -271,7 +273,7 @@ export default function Dashboard() {
 
       {/* Charts Row 3: Calendar Density & Time to Value */}
       <div className="flex gap-6">
-        <Card
+        {/* <Card
           elevation={2}
           sx={{
             flex: 1,
@@ -307,7 +309,7 @@ export default function Dashboard() {
             </p>
             <CalendarAndFamilyChart calendarDensityData={calendarDensityData} />
           </div>
-        </Card>
+        </Card> */}
 
         {/* <Card
           elevation={2}
