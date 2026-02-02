@@ -12,7 +12,7 @@ import {
 } from "recharts";
 
 export default function FeatureUsageChart({ featureUsageData }) {
-  console.log("featureUsageData", featureUsageData);
+  // console.log("featureUsageData", featureUsageData);
   return (
     <ResponsiveContainer width="100%" height={300}>
       <ComposedChart data={featureUsageData} layout="vertical">

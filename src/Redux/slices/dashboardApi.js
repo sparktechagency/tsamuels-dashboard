@@ -41,6 +41,32 @@ const dashboardApi = baseApi.injectEndpoints({
       },
       providesTags: ["user"],
     }),
+    getOnboardingCompletionData: builder.query({
+      query: (year) => {
+        const accessToken = sessionStorage.getItem("accessToken");
+        return {
+          url: `/dashboard/onboarding-completion?year=${year}`,
+          method: "get",
+          headers: {
+            authorization: `Bearer ${accessToken}`,
+          },
+        };
+      },
+      providesTags: ["user"],
+    }),
+    getCalendarAndFamilyGrowthData: builder.query({
+      query: (year) => {
+        const accessToken = sessionStorage.getItem("accessToken");
+        return {
+          url: `/dashboard/calendar-density-and-family-growth?year=${year}`,
+          method: "get",
+          headers: {
+            authorization: `Bearer ${accessToken}`,
+          },
+        };
+      },
+      providesTags: ["user"],
+    }),
   }),
 });
 
@@ -48,4 +74,6 @@ export const {
   useGetEngagementMetricsQuery,
   useGetUsersComparisonDataQuery,
   useGetFeatureUsageDataQuery,
+  useGetOnboardingCompletionDataQuery,
+  useGetCalendarAndFamilyGrowthDataQuery,
 } = dashboardApi;

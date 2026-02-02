@@ -19,16 +19,17 @@ import {
 } from "react-icons/fa";
 import { useState } from "react";
 import { MetricCard } from "../UI/MetricCard";
-import GrowthVsLoyaltyChart from "../Chart/OverviewChart/NewVsReturningChart";
 import FeatureUsageChart from "../Chart/OverviewChart/FeatureUsageChart";
 import OnboardingChart from "../Chart/OverviewChart/OnboardingChart";
-import CalendarAndFamilyChart from "../Chart/OverviewChart/Calendar&FamilyChart";
 import NewVsReturningChart from "../Chart/OverviewChart/NewVsReturningChart";
 import {
+  useGetCalendarAndFamilyGrowthDataQuery,
   useGetEngagementMetricsQuery,
   useGetFeatureUsageDataQuery,
+  useGetOnboardingCompletionDataQuery,
   useGetUsersComparisonDataQuery,
 } from "../../Redux/slices/dashboardApi";
+import CalendarAndFamilyChart from "../Chart/OverviewChart/Calendar&FamilyChart";
 
 export default function Dashboard() {
   const currentYear = new Date().getFullYear().toString();
@@ -55,9 +56,29 @@ export default function Dashboard() {
   const { data: allFeatureUsageData, isLoading: loadingFeatureUsageData } =
     useGetFeatureUsageDataQuery(featureUsageYear);
   const featureUsageData = allFeatureUsageData?.data;
-  console.log("featureUsageData", featureUsageData);
+  // console.log("featureUsageData", featureUsageData);
 
-  if (loadingMetricsData || loadingComparisonData || loadingFeatureUsageData) {
+  const {
+    data: allOnboardingCompletionData,
+    isLoading: loadingOnboardingCompletionData,
+  } = useGetOnboardingCompletionDataQuery(onboardingYear);
+  const onboardingCompletionData = allOnboardingCompletionData?.data;
+  // console.log("onboardingCompletionData", onboardingCompletionData);
+
+  const {
+    data: allCalendarAndFamilyGrowthData,
+    isLoading: loadingCalendarAndFamilyGrowthData,
+  } = useGetCalendarAndFamilyGrowthDataQuery(calendarDensityYear);
+  const calendarAndFamilyGrowthData = allCalendarAndFamilyGrowthData?.data;
+  // console.log("onboardingCompletionData", onboardingCompletionData);
+
+  if (
+    loadingMetricsData ||
+    loadingComparisonData ||
+    loadingFeatureUsageData ||
+    loadingOnboardingCompletionData ||
+    loadingCalendarAndFamilyGrowthData
+  ) {
     return (
       <div className="flex justify-center items-center h-[92vh]">
         <CircularProgress />
@@ -195,7 +216,7 @@ export default function Dashboard() {
 
       {/* Charts Row 2: Onboarding Funnel & Session Metrics */}
       <div className="grid gap-6 mb-6 [grid-template-columns:repeat(auto-fit,minmax(500px,1fr))]">
-        {/* <Card
+        <Card
           elevation={2}
           sx={{
             borderRadius: 4,
@@ -229,51 +250,14 @@ export default function Dashboard() {
             <p className="text-sm text-[#6b7280] mb-6">
               User progression and drop-off points
             </p>
-            <OnboardingChart onboardingData={onboardingData} />
+            <OnboardingChart onboardingData={onboardingCompletionData} />
           </div>
-        </Card> */}
-
-        {/* <Card
-          elevation={2}
-          sx={{
-            borderRadius: 4,
-            background: "linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%)",
-          }}
-        >
-          <div className="p-4 bg-white rounded-lg shadow-lg">
-            <div className="flex items-center justify-between mb-1">
-              <p style={{ margin: 0, fontSize: "1.25rem", fontWeight: 600 }}>
-                Session Metrics
-              </p>
-              <FormControl sx={{ minWidth: 100 }} size="small">
-                <Select
-                  value={sessionYear}
-                  onChange={(e) => setSessionYear(e.target.value)}
-                  sx={{
-                    borderRadius: 2,
-                    background: "white",
-                    "& .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "rgb(59, 130, 246)",
-                    },
-                  }}
-                >
-                  <MenuItem value="2023">2023</MenuItem>
-                  <MenuItem value="2024">2024</MenuItem>
-                  <MenuItem value="2025">2025</MenuItem>
-                </Select>
-              </FormControl>
-            </div>
-            <p className="text-sm text-[#6b7280] mb-4">
-              Track session duration and frequency to measure user engagement
-            </p>
-            <SessionChart sessionData={sessionData} />
-          </div>
-        </Card> */}
+        </Card>
       </div>
 
       {/* Charts Row 3: Calendar Density & Time to Value */}
       <div className="flex gap-6">
-        {/* <Card
+        <Card
           elevation={2}
           sx={{
             flex: 1,
@@ -307,76 +291,11 @@ export default function Dashboard() {
             <p className="text-sm text-[#6b7280] mb-6">
               Events per family and average members
             </p>
-            <CalendarAndFamilyChart calendarDensityData={calendarDensityData} />
+            <CalendarAndFamilyChart
+              calendarDensityData={calendarAndFamilyGrowthData}
+            />
           </div>
-        </Card> */}
-
-        {/* <Card
-          elevation={2}
-          sx={{
-            borderRadius: 4,
-            height: "100%",
-            background: "linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%)",
-          }}
-        >
-          <div className="p-4 bg-white rounded-lg shadow-lg">
-            <div className="flex items-center justify-between mb-1">
-              <p style={{ margin: 0, fontSize: "1.25rem", fontWeight: 600 }}>
-                Time to Value
-              </p>
-              <FormControl sx={{ minWidth: 100 }} size="small">
-                <Select
-                  value={timeToValueYear}
-                  onChange={(e) => setTimeToValueYear(e.target.value)}
-                  sx={{
-                    borderRadius: 2,
-                    background: "white",
-                    "& .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "rgb(59, 130, 246)",
-                    },
-                  }}
-                >
-                  <MenuItem value="2023">2023</MenuItem>
-                  <MenuItem value="2024">2024</MenuItem>
-                  <MenuItem value="2025">2025</MenuItem>
-                </Select>
-              </FormControl>
-            </div>
-            <p className="text-sm text-[#6b7280] mb-6">
-              Median days from signup
-            </p>
-            <div className="flex flex-col gap-4 mt-2">
-              {timeToValueData.map((item, index) => (
-                <div key={item.metric}>
-                  <div className="flex justify-between mb-2">
-                    <p className="text-sm font-semibold">{item.metric}</p>
-                    <p className="text-sm text-[#3b82f6] font-bold">
-                      {item.days} days
-                    </p>
-                  </div>
-                  <div className="h-2 rounded-sm bg-[#e5e7eb] overflow-hidden">
-                    <div
-                      style={{
-                        height: "100%",
-                        width: `${((7 - item.days) / 7) * 100}%`,
-                        background: `linear-gradient(90deg, ${
-                          COLORS[index]
-                        } 0%, ${COLORS[index + 1] || COLORS[index]} 100%)`,
-                        transition: "width 0.3s ease",
-                      }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="mt-8 p-4 rounded-lg border border-[#3B82F633] bg-[#3b82f619]">
-              <p className="text-sm text-[#1e40af] font-semibold">
-                💡 Lower is better - faster time to value means users see the
-                benefit sooner
-              </p>
-            </div>
-          </div>
-        </Card> */}
+        </Card>
       </div>
     </div>
   );

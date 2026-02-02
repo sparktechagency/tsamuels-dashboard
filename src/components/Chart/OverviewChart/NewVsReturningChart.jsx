@@ -10,7 +10,7 @@ import {
 } from "recharts";
 
 export default function NewVsReturningChart({ userTypeData }) {
-  console.log(userTypeData);
+  // console.log(userTypeData);
   return (
     <ResponsiveContainer width="100%" height={300}>
       <AreaChart data={userTypeData}>
