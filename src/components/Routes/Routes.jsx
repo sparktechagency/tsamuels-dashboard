@@ -22,6 +22,7 @@ import Reliability from "../Dashboard/Subscription";
 import AdminControls from "../Dashboard/AdminControls";
 import PrivacyCompliance from "../Dashboard/PrivacyCompliance";
 import Settings from "../Dashboard/Settings";
+import ProtectedRoute from "../../utils/ProtectedRoute";
 
 const router = createBrowserRouter([
   {
@@ -46,7 +47,11 @@ const router = createBrowserRouter([
       },
       {
         path: "",
-        element: <DashboardLayout />,
+        element: (
+          <ProtectedRoute>
+            <DashboardLayout />
+          </ProtectedRoute>
+        ),
         children: [
           {
             path: "/",
