@@ -4,12 +4,12 @@ import { IoMdTrendingDown } from "react-icons/io";
 export function MetricCard({
   title,
   value,
-  change,
+  growth,
   inverse = false,
   icon: Icon,
   subtitle,
 }) {
-  const isPositive = inverse ? (change ?? 0) < 0 : (change ?? 0) > 0;
+  const isPositive = inverse ? (growth ?? 0) < 0 : (growth ?? 0) > 0;
 
   return (
     <Card
@@ -18,7 +18,6 @@ export function MetricCard({
         borderRadius: 4,
         transition: "all 0.25s ease-in-out",
         transform: "scale(1)",
-        // background: "linear-gradient(135deg,#EFF6FF 0%, #ECFEFF 100%)",
         "&:hover": {
           boxShadow: 4,
           transform: "scale(1.03)",
@@ -44,11 +43,11 @@ export function MetricCard({
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  background: "rgb(37, 99, 235)",
-                  // "linear-gradient(135deg,  0%, rgb(191, 219, 254) 100%)",
+                  background:
+                    "linear-gradient(135deg, rgb(219, 234, 254) 0%, rgb(191, 219, 254) 100%)",
                 }}
               >
-                <Icon size={16} color="rgb(219, 234, 254)" />
+                <Icon size={16} color="rgb(37, 99, 235)" />
               </Box>
             )}
             <p className="font-medium">{title}</p>
@@ -60,7 +59,7 @@ export function MetricCard({
 
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             {subtitle && <p className="text-sm text-[#6d7075]">{subtitle}</p>}
-            {change !== undefined && (
+            {growth !== undefined && (
               <Box
                 sx={{
                   display: "flex",
@@ -76,7 +75,7 @@ export function MetricCard({
                   <IoMdTrendingDown size={16} />
                 )}
                 <p className="text-sm font-semibold">
-                  {Math.abs(change).toFixed(2)}%
+                  {Math.abs(growth).toFixed(2)}%
                 </p>
               </Box>
             )}

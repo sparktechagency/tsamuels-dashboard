@@ -5,6 +5,7 @@ import {
   Select,
   MenuItem,
   FormControl,
+  CircularProgress,
 } from "@mui/material";
 import {
   FaUsers,
@@ -16,47 +17,35 @@ import {
   FaBolt,
   FaChartLine,
 } from "react-icons/fa";
-import {
-  BarChart,
-  Bar,
-  LineChart,
-  Line,
-  PieChart,
-  Pie,
-  Cell,
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  ComposedChart,
-} from "recharts";
 import { useState } from "react";
 import { MetricCard } from "../UI/MetricCard";
 import {
   allCalendarDensityData,
   allFeatureUsageData,
   allOnboardingData,
-  // allSessionData,
-  // allTimeToValueData,
   allUserTypeData,
 } from "../../../public/data/overviewData";
 import GrowthVsLoyaltyChart from "../Chart/OverviewChart/GrowthVsLoyaltyChart";
 import FeatureUsageChart from "../Chart/OverviewChart/FeatureUsageChart";
-import SessionChart from "../Chart/OverviewChart/SessionChart";
 import OnboardingChart from "../Chart/OverviewChart/OnboardingChart";
 import CalendarAndFamilyChart from "../Chart/OverviewChart/Calendar&FamilyChart";
+import { useGetEngagementMetricsQuery } from "../../Redux/slices/dashboardApi";
 
 export default function Dashboard() {
+  const currentYear = new Date().getFullYear().toString();
+  // console.log(currentYear);
+
+  const { data: engagementMetricsData, isLoading } =
+    useGetEngagementMetricsQuery();
+  const engagementMetrics = engagementMetricsData?.data;
+  // console.log("engagement metrics", engagementMetrics);
+
   // Individual year filters for each chart
-  const [userTypeYear, setUserTypeYear] = useState("2025");
-  const [featureUsageYear, setFeatureUsageYear] = useState("2025");
-  const [onboardingYear, setOnboardingYear] = useState("2025");
+  const [userTypeYear, setUserTypeYear] = useState(currentYear);
+  const [featureUsageYear, setFeatureUsageYear] = useState(currentYear);
+  const [onboardingYear, setOnboardingYear] = useState(currentYear);
   // const [sessionYear, setSessionYear] = useState("2025");
-  const [calendarDensityYear, setCalendarDensityYear] = useState("2025");
+  const [calendarDensityYear, setCalendarDensityYear] = useState(currentYear);
   // const [timeToValueYear, setTimeToValueYear] = useState("2025");
 
   const userTypeData = allUserTypeData[userTypeYear];
@@ -66,14 +55,13 @@ export default function Dashboard() {
   const calendarDensityData = allCalendarDensityData[calendarDensityYear];
   // const timeToValueData = allTimeToValueData[timeToValueYear];
 
-  const COLORS = [
-    "#3b82f6",
-    "#60a5fa",
-    "#93c5fd",
-    "#dbeafe",
-    "#eff6ff",
-    "#bfdbfe",
-  ];
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-[92vh]">
+        <CircularProgress />
+      </div>
+    );
+  }
 
   return (
     <div className="p-8">
@@ -88,45 +76,55 @@ export default function Dashboard() {
       >
         <MetricCard
           title="Daily Active Users"
-          value="12,458"
-          change={5.2}
+          value={engagementMetrics?.dau?.count ?? "N/A"}
+          growth={engagementMetrics?.dau?.growth ?? 0}
           icon={FaUsers}
-          subtitle="DAU"
+          subtitle={engagementMetrics?.dau ? "DAU" : "N/A"}
         />
         <MetricCard
           title="Weekly Active Users"
-          value="32,145"
-          change={8.7}
+          value={engagementMetrics?.wau?.count ?? "N/A"}
+          growth={engagementMetrics?.wau?.growth ?? 0}
           icon={FaChartLine}
-          subtitle="WAU"
+          subtitle={engagementMetrics?.wau ? "WAU" : "N/A"}
         />
+
         <MetricCard
           title="Monthly Active Users"
-          value="48,392"
-          change={12.3}
+          value={engagementMetrics?.mau?.count ?? "N/A"}
+          growth={engagementMetrics?.mau?.growth ?? 0}
           icon={FaChartBar}
-          subtitle="MAU"
+          subtitle={engagementMetrics?.mau ? "MAU" : "N/A"}
         />
+
         <MetricCard
           title="Stickiness"
-          value="25.7%"
-          change={3.1}
+          value={engagementMetrics?.stickiness?.ratio ?? "N/A"}
+          growth={engagementMetrics?.stickiness?.growth ?? 0}
           icon={FaBolt}
-          subtitle="DAU/MAU Ratio"
-        />{" "}
+          subtitle={engagementMetrics?.stickiness ? "DAU/MAU Ratio" : "N/A"}
+        />
+
         <MetricCard
           title="Active Families"
-          value="8,942"
-          change={7.4}
+          value={engagementMetrics?.activeFamilies?.count ?? "N/A"}
+          growth={engagementMetrics?.activeFamilies?.growth ?? 0}
           icon={FaUserFriends}
-          subtitle="Of 11,235 total"
+          subtitle={
+            engagementMetrics?.activeFamilies
+              ? `Of ${engagementMetrics.activeFamilies.total} total`
+              : "N/A"
+          }
         />
+
         <MetricCard
           title="Members/Family"
-          value="4.3"
-          change={4.2}
+          value={engagementMetrics?.membersPerFamily?.average ?? "N/A"}
+          growth={engagementMetrics?.membersPerFamily?.growth ?? 0}
           icon={FaUsers}
-          subtitle="Average family size"
+          subtitle={
+            engagementMetrics?.membersPerFamily ? "Average family size" : "N/A"
+          }
         />
       </div>
 
@@ -149,9 +147,10 @@ export default function Dashboard() {
                   },
                 }}
               >
-                <MenuItem value="2023">2023</MenuItem>
-                <MenuItem value="2024">2024</MenuItem>
                 <MenuItem value="2025">2025</MenuItem>
+                <MenuItem value="2026">2026</MenuItem>
+                <MenuItem value="2027">2027</MenuItem>
+                <MenuItem value="2028">2028</MenuItem>
               </Select>
             </FormControl>
           </div>
@@ -178,9 +177,10 @@ export default function Dashboard() {
                   },
                 }}
               >
-                <MenuItem value="2023">2023</MenuItem>
-                <MenuItem value="2024">2024</MenuItem>
                 <MenuItem value="2025">2025</MenuItem>
+                <MenuItem value="2026">2026</MenuItem>
+                <MenuItem value="2027">2027</MenuItem>
+                <MenuItem value="2028">2028</MenuItem>
               </Select>
             </FormControl>
           </div>
@@ -217,9 +217,10 @@ export default function Dashboard() {
                     },
                   }}
                 >
-                  <MenuItem value="2023">2023</MenuItem>
-                  <MenuItem value="2024">2024</MenuItem>
                   <MenuItem value="2025">2025</MenuItem>
+                  <MenuItem value="2026">2026</MenuItem>
+                  <MenuItem value="2027">2027</MenuItem>
+                  <MenuItem value="2028">2028</MenuItem>
                 </Select>
               </FormControl>
             </div>
@@ -294,9 +295,10 @@ export default function Dashboard() {
                     },
                   }}
                 >
-                  <MenuItem value="2023">2023</MenuItem>
-                  <MenuItem value="2024">2024</MenuItem>
                   <MenuItem value="2025">2025</MenuItem>
+                  <MenuItem value="2026">2026</MenuItem>
+                  <MenuItem value="2027">2027</MenuItem>
+                  <MenuItem value="2028">2028</MenuItem>
                 </Select>
               </FormControl>
             </div>
