@@ -22,6 +22,7 @@ import { MetricCard } from "../UI/MetricCard";
 import FeatureUsageChart from "../Chart/OverviewChart/FeatureUsageChart";
 import OnboardingChart from "../Chart/OverviewChart/OnboardingChart";
 import NewVsReturningChart from "../Chart/OverviewChart/NewVsReturningChart";
+import CalendarAndFamilyChart from "../Chart/OverviewChart/Calendar&FamilyChart";
 import {
   useGetCalendarAndFamilyGrowthDataQuery,
   useGetEngagementMetricsQuery,
@@ -29,7 +30,6 @@ import {
   useGetOnboardingCompletionDataQuery,
   useGetUsersComparisonDataQuery,
 } from "../../Redux/slices/dashboardApi";
-import CalendarAndFamilyChart from "../Chart/OverviewChart/Calendar&FamilyChart";
 
 export default function Dashboard() {
   const currentYear = new Date().getFullYear().toString();
