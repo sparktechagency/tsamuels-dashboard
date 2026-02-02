@@ -1,48 +1,119 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Grid, Typography, Container } from "@mui/material";
 import OTPInput from "react-otp-input";
 import { HiArrowLeft } from "react-icons/hi";
 import { Link, useNavigate } from "react-router-dom";
-// import { useVerifyOtpMutation } from "../../Redux/api/authApi";
-// import { toast } from "sonner";
+import {
+  useVerifyOtpMutation,
+  useResendOtpMutation,
+} from "../Redux/slices/authApi";
+import { toast } from "sonner";
 
 const VerifyOtp = () => {
   const [otp, setOtp] = useState("");
   const navigate = useNavigate();
-  //   const [verifyOtp] = useVerifyOtpMutation();
+  const [verifyOtp] = useVerifyOtpMutation();
+  const [resendOtp] = useResendOtpMutation();
+  const [timer, setTimer] = useState(180);
+  const [canResend, setCanResend] = useState(false);
 
-  const handleOTPSubmit = async () => {
-    navigate("/update-password");
+  useEffect(() => {
+    const calculateTimer = () => {
+      const sentTime = sessionStorage.getItem("otpSentTime");
+      if (sentTime) {
+        const elapsed = Math.floor((Date.now() - parseInt(sentTime)) / 1000);
+        const remaining = 180 - elapsed;
+        if (remaining > 0) {
+          setTimer(remaining);
+          setCanResend(false);
+        } else {
+          setTimer(0);
+          setCanResend(true);
+        }
+      } else {
+        // Fallback or fresh start if no timestamp found
+        sessionStorage.setItem("otpSentTime", Date.now().toString());
+        setTimer(180);
+        setCanResend(false);
+      }
+    };
 
-    if (otp.length < 6) {
-      alert("Please fill in all OTP fields");
+    calculateTimer();
+
+    const interval = setInterval(() => {
+      setTimer((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          setCanResend(true);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleResendOtp = async () => {
+    const email = sessionStorage.getItem("userEmail");
+    if (!email) {
+      toast.error("Email not found. Please try again.");
       return;
     }
-    // const token = localStorage.getItem("otpToken");
+
+    try {
+      const response = await resendOtp({ email }).unwrap();
+      if (response.success) {
+        toast.success("OTP Resent Successfully!");
+        setTimer(180);
+        setCanResend(false);
+        sessionStorage.setItem("otpSentTime", Date.now().toString());
+        // Optionally update sessionStorage with new token if needed,
+        // though usually verify checks against the latest one sent to email/db.
+        if (response?.data?.verifyToken) {
+          sessionStorage.setItem("otpToken", response.data.verifyToken);
+        }
+      }
+    } catch (error) {
+      console.error("Error resending OTP:", error);
+      toast.error("Failed to resend OTP. Please try again.");
+    }
+  };
+
+  const handleOTPSubmit = async () => {
+    if (otp.length < 4) {
+      toast.error("Please fill in all OTP fields");
+      return;
+    }
+    const userEmail = sessionStorage.getItem("userEmail");
+    if (!userEmail) {
+      toast.warning("Error! Please start the reset process again.");
+      navigate("/forgot-password");
+      return;
+    }
+    // const token = sessionStorage.getItem("otpToken");
     // if (!token) {
-    //   alert("Error! Please start the reset process again.");
+    //   toast.error("Error! Please start the reset process again.");
     //   navigate("/forgot-password");
     //   return;
     // }
-    // try {
-    //   const data = { token, otp };
-    //   const response = await verifyOtp(data).unwrap();
-    //   if (response.success === true) {
-    //     localStorage.setItem(
-    //       "verifiedOtpToken",
-    //       response?.data?.forgetOtpMatchToken
-    //     );
-    //     toast.success("OTP verified successfully!");
-    //     navigate("/reset-password");
-    //   }
-    // } catch (error) {
-    //   console.error("Error verifying OTP:", error);
-    //   if (error.data?.message === "Invalid OTP") {
-    //     toast.error("Invalid OTP. Please try again.");
-    //   } else {
-    //     toast.error("Failed to verify OTP. Please try again.");
-    //   }
-    // }
+    try {
+      const data = { oneTimeCode: Number(otp), email: userEmail };
+      const response = await verifyOtp(data).unwrap();
+      console.log("response", response);
+      if (response.success === true) {
+        sessionStorage.setItem("verifyToken", response?.data?.verifyToken);
+        toast.success("OTP verified successfully!");
+        navigate("/update-password");
+      }
+    } catch (error) {
+      console.error("Error verifying OTP:", error);
+      if (error.data?.message === "Invalid OTP") {
+        toast.error("Invalid OTP. Please try again.");
+      } else {
+        toast.error("Failed to verify OTP. Please try again.");
+      }
+    }
   };
 
   return (
@@ -88,7 +159,7 @@ const VerifyOtp = () => {
                 }}
                 value={otp}
                 onChange={setOtp}
-                numInputs={6}
+                numInputs={4}
                 renderInput={(props) => <input {...props} required />}
               />
             </div>
@@ -109,6 +180,26 @@ const VerifyOtp = () => {
             >
               Verify
             </Button>
+
+            <div className="flex justify-center mt-4">
+              <Button
+                disabled={!canResend}
+                onClick={handleResendOtp}
+                style={{
+                  textTransform: "none",
+                  fontWeight: "bold",
+                  color: canResend ? "#2B7FFF" : "#A0A0A0",
+                }}
+              >
+                {canResend
+                  ? "Resend OTP"
+                  : `Resend OTP in ${Math.floor(timer / 60)
+                      .toString()
+                      .padStart(2, "0")}:${(timer % 60)
+                      .toString()
+                      .padStart(2, "0")}`}
+              </Button>
+            </div>
           </div>
         </Grid>
       </Container>

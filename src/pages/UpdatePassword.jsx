@@ -9,12 +9,15 @@ import {
   InputAdornment,
   IconButton,
   InputLabel,
+  CircularProgress,
 } from "@mui/material";
 import { MdOutlineLock } from "react-icons/md";
 import { HiArrowLeft } from "react-icons/hi";
 import { Link, useNavigate } from "react-router-dom";
 import { IoMdEye } from "react-icons/io";
 import { IoIosEyeOff } from "react-icons/io";
+import { useResetPasswordMutation } from "../Redux/slices/authApi";
+import { toast } from "sonner";
 
 const UpdatePassword = () => {
   const navigate = useNavigate();
@@ -23,6 +26,9 @@ const UpdatePassword = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
 
+  const [resetPassword, { isLoading: updatingPassword }] =
+    useResetPasswordMutation();
+
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -30,18 +36,60 @@ const UpdatePassword = () => {
   const handleShowConfirmPassword = () =>
     setShowConfirmPassword((prev) => !prev);
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
+    // const token = sessionStorage.getItem("verifyToken");
+
+    if (!newPassword || !confirmPassword) {
+      setError("Please fill out both password fields.");
+      toast.warning("Please fill out both password fields.");
+      return;
+    }
 
     // Validation for password match
     if (newPassword !== confirmPassword) {
       setError("Passwords do not match.");
+      toast.error("Passwords do not match.");
       return;
     }
-    setError("");
-    console.log("Password change request submitted");
-    navigate("/sign-in", { replace: true });
+
+    const data = {
+      // token: token,
+      newPassword: newPassword,
+      confirmPassword: confirmPassword,
+    };
+    try {
+      const response = await resetPassword(data).unwrap();
+      console.log("update pass response", response);
+
+      if (response.success) {
+        toast.success("Password Updated Successfully");
+        setNewPassword("");
+        setConfirmPassword("");
+        sessionStorage.removeItem("accessToken");
+        sessionStorage.removeItem("otpSentTime");
+        sessionStorage.removeItem("otpToken");
+        sessionStorage.removeItem("refreshToken");
+        sessionStorage.removeItem("userEmail");
+        sessionStorage.removeItem("verifyToken");
+
+        navigate("/sign-in", { replace: true });
+      }
+    } catch (err) {
+      if (err) {
+        console.log(err);
+        toast.error("Failed to reset password.");
+      }
+    }
   };
+
+  if (updatingPassword) {
+    return (
+      <div className="flex justify-center items-center h-[92vh]">
+        <CircularProgress />
+      </div>
+    );
+  }
 
   return (
     <div className="bg-[#a9e9f3] min-h-[100vh]">

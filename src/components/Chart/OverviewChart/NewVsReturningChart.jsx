@@ -9,7 +9,8 @@ import {
   YAxis,
 } from "recharts";
 
-export default function GrowthVsLoyaltyChart({ userTypeData }) {
+export default function NewVsReturningChart({ userTypeData }) {
+  // console.log(userTypeData);
   return (
     <ResponsiveContainer width="100%" height={300}>
       <AreaChart data={userTypeData}>
@@ -26,7 +27,7 @@ export default function GrowthVsLoyaltyChart({ userTypeData }) {
         <Legend iconType="circle" />
         <Area
           type="monotone"
-          dataKey="new"
+          dataKey="newUsers"
           stackId="1"
           stroke="#2B7FFF"
           fill="#2B7FFF"
@@ -34,7 +35,7 @@ export default function GrowthVsLoyaltyChart({ userTypeData }) {
         />
         <Area
           type="monotone"
-          dataKey="returning"
+          dataKey="returningUsers"
           stackId="1"
           stroke="#10b981"
           fill="#10b981"

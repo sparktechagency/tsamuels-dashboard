@@ -12,13 +12,14 @@ import {
 } from "recharts";
 
 export default function CalendarAndFamilyChart({ calendarDensityData }) {
+  // console.log(calendarDensityData);
   return (
     <ResponsiveContainer width="100%" height={300}>
       <ComposedChart data={calendarDensityData}>
         <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
         <XAxis dataKey="month" stroke="#6b7280" />
-        <YAxis yAxisId="left" stroke="#6b7280" />
-        <YAxis yAxisId="right" orientation="right" stroke="#6b7280" />
+        <YAxis yAxisId="left" stroke="#3b82f6" />
+        <YAxis yAxisId="right" orientation="right" stroke="#10b981" />
         <Tooltip
           contentStyle={{
             background: "white",
@@ -32,7 +33,7 @@ export default function CalendarAndFamilyChart({ calendarDensityData }) {
           dataKey="eventsPerFamily"
           fill="#3b82f6"
           name="Events per Family"
-          barSize={30}
+          barSize={15}
         />
         <Line
           yAxisId="right"
