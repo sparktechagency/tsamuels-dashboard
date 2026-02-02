@@ -1,7 +1,7 @@
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 
 export default function StateUserChart({ geoData, COLORS }) {
-  console.log(geoData);
+  // console.log(geoData);
   return (
     <ResponsiveContainer width="100%" height={320}>
       <PieChart>

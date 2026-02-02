@@ -54,6 +54,19 @@ const dashboardApi = baseApi.injectEndpoints({
       },
       providesTags: ["growth&Retention"],
     }),
+    getTopZipCodesData: builder.query({
+      query: () => {
+        const accessToken = sessionStorage.getItem("accessToken");
+        return {
+          url: "/dashboard/top-zip-codes",
+          method: "get",
+          headers: {
+            authorization: `Bearer ${accessToken}`,
+          },
+        };
+      },
+      providesTags: ["growth&Retention"],
+    }),
   }),
 });
 
@@ -62,4 +75,5 @@ export const {
   useGetCohortRetentionDataQuery,
   useGetInviteMetricsDataQuery,
   useGetUsersByStateDataQuery,
+  useGetTopZipCodesDataQuery,
 } = dashboardApi;

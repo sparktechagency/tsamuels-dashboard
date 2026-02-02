@@ -9,7 +9,6 @@ import {
 } from "@mui/material";
 import { FaMapMarkerAlt } from "react-icons/fa";
 
-import { allGeoData } from "../../../public/data/growthData";
 import ConversionChart from "../Chart/GrowthChart/ConversionChart";
 import CohortChart from "../Chart/GrowthChart/CohortChart";
 import InviteMetricsChart from "../Chart/GrowthChart/InviteMetricsChart";
@@ -18,6 +17,7 @@ import {
   useGetCohortRetentionDataQuery,
   useGetConversionFunnelDataQuery,
   useGetInviteMetricsDataQuery,
+  useGetTopZipCodesDataQuery,
   useGetUsersByStateDataQuery,
 } from "../../Redux/slices/growth&RetentionApi";
 
@@ -45,6 +45,11 @@ export function GrowthRetention() {
     useGetUsersByStateDataQuery(geoYear);
   const usersByState = usersByStateData?.data;
 
+  const { data: topZipCodesData, isLoading: loadingTopZipCodesData } =
+    useGetTopZipCodesDataQuery();
+  const topZipCodes = topZipCodesData?.data;
+  // console.log("topZipCodes", topZipCodes);
+
   const COLORS = [
     "#2563eb", // vibrant blue
     "#3b82f6", // bright blue
@@ -58,7 +63,8 @@ export function GrowthRetention() {
     loadingConversionFunnelData ||
     loadingCohortRetentionData ||
     loadingInviteMetricsData ||
-    loadingUsersByStateData
+    loadingUsersByStateData ||
+    loadingTopZipCodesData
   ) {
     return (
       <div className="flex justify-center items-center h-[92vh]">
@@ -229,7 +235,7 @@ export function GrowthRetention() {
       </div>
 
       {/* Top Zip Codes Card */}
-      {/* <Card
+      <Card
         elevation={2}
         sx={{
           borderRadius: 4,
@@ -242,26 +248,26 @@ export function GrowthRetention() {
             Highest user concentration areas
           </p>
           <div className="grid grid-cols-5 gap-5">
-            {geoData.byZip.map((item, index) => (
+            {topZipCodes.map((item, index) => (
               <div
-                key={item.zip}
+                key={item.zipCode}
                 className="p-4 rounded-lg border border-[#e5e7eb]"
               >
                 <div className="flex items-center gap-2 mb-2">
                   <FaMapMarkerAlt
                     style={{ color: COLORS[index], fontSize: "20px" }}
                   />
-                  <p className="text-lg font-bold">{item.zip}</p>
+                  <p className="text-lg font-bold">{item.zipCode}</p>
                 </div>
-                <p className="text-sm text-[#6b7280] mb-1">{item.city}</p>
+                <p className="text-sm text-[#6b7280] mb-1">{item.country}</p>
                 <p className="text-lg font-semibold text-[#3b82f6]">
-                  {item.users} users
+                  {item.userCount} users
                 </p>
               </div>
             ))}
           </div>
         </CardContent>
-      </Card> */}
+      </Card>
     </div>
   );
 }
