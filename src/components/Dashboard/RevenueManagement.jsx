@@ -43,18 +43,18 @@ import {
   ComposedChart,
 } from "recharts";
 import { MetricCard } from "../UI/MetricCard";
+import { generateRevenueData } from "../../../public/data/revenueData";
 import {
-  allAdjustmentsData,
-  allPlanMixData,
-  generateRevenueData,
-} from "../../../public/data/revenueData";
-import {
+  useGetPlanMixDistributionDataQuery,
+  useGetRecognizedRevenueDataQuery,
   useGetRevenueMetricsDataQuery,
   useGetRevenueTrendsDataQuery,
   useGetTrialToPaidDataQuery,
 } from "../../Redux/slices/revenueApi";
 import RevenueTrendsChart from "../Chart/RevenueChart/RevenueTrendsChart";
 import TrialToPaidChart from "../Chart/RevenueChart/TrialToPaidChart";
+import PlanMixDistributionChart from "../Chart/RevenueChart/PlanMixDistributionChart";
+import RecognitionChart from "../Chart/RevenueChart/RecognitionChart";
 
 export default function RevenueManagement() {
   const currentYear = new Date().getFullYear().toString();
@@ -67,8 +67,8 @@ export default function RevenueManagement() {
   // Year filters for each chart
   const [mrrYear, setMrrYear] = useState(currentYear);
   const [conversionYear, setConversionYear] = useState(currentYear);
-  const [planMixYear, setPlanMixYear] = useState("2025");
-  const [adjustmentsYear, setAdjustmentsYear] = useState("2025");
+  const [planMixYear, setPlanMixYear] = useState(currentYear);
+  const [recognizedYear, setRecognizedYear] = useState(currentYear);
   // const [familyVsIndividualYear, setFamilyVsIndividualYear] = useState("2025");
 
   const { data: revenueMetricsData, isLoading: loadingRevenueMetricsData } =
@@ -83,10 +83,18 @@ export default function RevenueManagement() {
     useGetTrialToPaidDataQuery(conversionYear);
   const trialToPaid = trialToPaidData?.data;
 
-  const planMixData = allPlanMixData[planMixYear];
-  const adjustmentsData = allAdjustmentsData[adjustmentsYear];
-  // const familyVsIndividualData =
-  //   allFamilyVsIndividualData[familyVsIndividualYear];
+  const {
+    data: planMixDistributionData,
+    isLoading: loadingPlanMixDistributionData,
+  } = useGetPlanMixDistributionDataQuery(conversionYear);
+  const planMixDistribution = planMixDistributionData?.data;
+
+  const {
+    data: recognizedRevenueData,
+    isLoading: loadingRecognizedRevenueData,
+  } = useGetRecognizedRevenueDataQuery(recognizedYear);
+  const recognizedRevenue = recognizedRevenueData?.data;
+  console.log("recognized year", recognizedRevenue, recognizedYear);
 
   const COLORS = [
     "#3b82f6", // bright blue
@@ -128,7 +136,9 @@ export default function RevenueManagement() {
   if (
     loadingRevenueMetricsData ||
     loadingRevenueTrendsData ||
-    loadingTrialToPaidData
+    loadingTrialToPaidData ||
+    loadingPlanMixDistributionData ||
+    loadingRecognizedRevenueData
   ) {
     return (
       <div className="flex justify-center items-center h-[92vh]">
@@ -362,93 +372,10 @@ export default function RevenueManagement() {
             >
               Subscriber distribution across plans
             </p>
-            <ResponsiveContainer width="100%" height={320}>
-              <PieChart>
-                <Pie
-                  data={planMixData.distribution}
-                  dataKey="users"
-                  nameKey="plan"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={100}
-                  label={(entry) => `${entry.plan}: ${entry.percent}%`}
-                >
-                  {planMixData.distribution.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={COLORS[index % COLORS.length]}
-                    />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-
-        <Card
-          elevation={2}
-          sx={{
-            borderRadius: 4,
-          }}
-        >
-          <CardContent sx={{ p: 3 }}>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: "4px",
-              }}
-            >
-              <p style={{ margin: 0, fontSize: "1.25rem", fontWeight: 600 }}>
-                Upgrades & Downgrades
-              </p>
-              <FormControl sx={{ minWidth: 100 }} size="small">
-                <Select
-                  value={planMixYear}
-                  onChange={(e) => setPlanMixYear(e.target.value)}
-                  sx={{
-                    borderRadius: 2,
-                    background: "white",
-                    "& .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "rgb(59, 130, 246)",
-                    },
-                  }}
-                >
-                  <MenuItem value="2023">2023</MenuItem>
-                  <MenuItem value="2024">2024</MenuItem>
-                  <MenuItem value="2025">2025</MenuItem>
-                </Select>
-              </FormControl>
-            </div>
-            <p
-              style={{
-                margin: 0,
-                fontSize: "0.875rem",
-                color: "#6b7280",
-                marginBottom: "24px",
-              }}
-            >
-              Plan tier changes over time
-            </p>
-            <ResponsiveContainer width="100%" height={320}>
-              <BarChart data={planMixData.changes}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis dataKey="month" stroke="#6b7280" />
-                <YAxis stroke="#6b7280" />
-                <Tooltip
-                  contentStyle={{
-                    background: "white",
-                    border: "1px solid #e5e7eb",
-                    borderRadius: "8px",
-                  }}
-                />
-                <Legend />
-                <Bar dataKey="upgrades" fill="#10b981" name="Upgrades" />
-                <Bar dataKey="downgrades" fill="#ef4444" name="Downgrades" />
-              </BarChart>
-            </ResponsiveContainer>
+            <PlanMixDistributionChart
+              planMixDistribution={planMixDistribution}
+              COLORS={COLORS}
+            />
           </CardContent>
         </Card>
       </div>
@@ -482,8 +409,8 @@ export default function RevenueManagement() {
               </p>
               <FormControl sx={{ minWidth: 100 }} size="small">
                 <Select
-                  value={adjustmentsYear}
-                  onChange={(e) => setAdjustmentsYear(e.target.value)}
+                  value={recognizedYear}
+                  onChange={(e) => setRecognizedYear(e.target.value)}
                   sx={{
                     borderRadius: 2,
                     background: "white",
@@ -492,9 +419,10 @@ export default function RevenueManagement() {
                     },
                   }}
                 >
-                  <MenuItem value="2023">2023</MenuItem>
-                  <MenuItem value="2024">2024</MenuItem>
                   <MenuItem value="2025">2025</MenuItem>
+                  <MenuItem value="2026">2026</MenuItem>
+                  <MenuItem value="2027">2027</MenuItem>
+                  <MenuItem value="2028">2028</MenuItem>
                 </Select>
               </FormControl>
             </div>
@@ -508,94 +436,9 @@ export default function RevenueManagement() {
             >
               Payment adjustments and recognized revenue
             </p>
-            <ResponsiveContainer width="100%" height={320}>
-              <ComposedChart data={adjustmentsData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis dataKey="month" stroke="#6b7280" />
-                <YAxis stroke="#6b7280" />
-                <Tooltip
-                  contentStyle={{
-                    background: "white",
-                    border: "1px solid #e5e7eb",
-                    borderRadius: "8px",
-                  }}
-                />
-                <Legend />
-                <Bar
-                  dataKey="discounts"
-                  stackId="a"
-                  fill="#f59e0b"
-                  name="Discounts ($)"
-                />
-                <Bar
-                  dataKey="refunds"
-                  stackId="a"
-                  fill="#ef4444"
-                  name="Refunds ($)"
-                />
-                <Line
-                  type="monotone"
-                  dataKey="recognized"
-                  stroke="#10b981"
-                  strokeWidth={3}
-                  name="Recognized Revenue ($)"
-                />
-              </ComposedChart>
-            </ResponsiveContainer>
+            <RecognitionChart recognizedRevenue={recognizedRevenue} />
           </CardContent>
         </Card>
-
-        {/* <Card
-          elevation={2}
-          sx={{
-            borderRadius: 4,
-          }}
-        >
-          <CardContent sx={{ p: 3 }}>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: "4px",
-              }}
-            >
-              <p style={{ margin: 0, fontSize: "1.25rem", fontWeight: 600 }}>
-                Family vs Individual Plans
-              </p>
-              <FormControl sx={{ minWidth: 100 }} size="small">
-                <Select
-                  value={familyVsIndividualYear}
-                  onChange={(e) => setFamilyVsIndividualYear(e.target.value)}
-                  sx={{
-                    borderRadius: 2,
-                    background: "white",
-                    "& .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "rgb(59, 130, 246)",
-                    },
-                  }}
-                >
-                  <MenuItem value="2023">2023</MenuItem>
-                  <MenuItem value="2024">2024</MenuItem>
-                  <MenuItem value="2025">2025</MenuItem>
-                </Select>
-              </FormControl>
-            </div>
-            <p
-              style={{
-                margin: 0,
-                fontSize: "0.875rem",
-                color: "#6b7280",
-                marginBottom: "24px",
-              }}
-            >
-              Revenue and user comparison
-            </p>
-            <RevenueUserComparisonChart
-              familyVsIndividualData={familyVsIndividualData}
-            />
-          </CardContent>
-        </Card> */}
       </div>
 
       {/* Data Table */}

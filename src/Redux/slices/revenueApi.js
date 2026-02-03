@@ -41,20 +41,33 @@ const revenueApi = baseApi.injectEndpoints({
       },
       providesTags: ["revenue"],
     }),
-    getUsersByStateData: builder.query({
+    getPlanMixDistributionData: builder.query({
       query: (year) => {
         const accessToken = sessionStorage.getItem("accessToken");
         return {
-          url: `/dashboard/users-by-state?year=${year}`,
+          url: `/dashboard/plan-mix-distribution?year=${year}`,
           method: "get",
           headers: {
             authorization: `Bearer ${accessToken}`,
           },
         };
       },
-      providesTags: ["growth&Retention"],
+      providesTags: ["revenue"],
     }),
-    getTopZipCodesData: builder.query({
+    getRecognizedRevenueData: builder.query({
+      query: (year) => {
+        const accessToken = sessionStorage.getItem("accessToken");
+        return {
+          url: `/dashboard/upgrades-and-downgrades?year=${year}`,
+          method: "get",
+          headers: {
+            authorization: `Bearer ${accessToken}`,
+          },
+        };
+      },
+      providesTags: ["revenue"],
+    }),
+    getRecognizedData: builder.query({
       query: () => {
         const accessToken = sessionStorage.getItem("accessToken");
         return {
@@ -74,4 +87,6 @@ export const {
   useGetRevenueMetricsDataQuery,
   useGetRevenueTrendsDataQuery,
   useGetTrialToPaidDataQuery,
+  useGetPlanMixDistributionDataQuery,
+  useGetRecognizedRevenueDataQuery,
 } = revenueApi;
