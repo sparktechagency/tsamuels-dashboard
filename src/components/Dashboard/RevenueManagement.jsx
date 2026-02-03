@@ -28,12 +28,12 @@ import {
   FaClock,
 } from "react-icons/fa";
 import { MetricCard } from "../UI/MetricCard";
-import { generateRevenueData } from "../../../public/data/revenueData";
 import {
   useGetPlanMixDistributionDataQuery,
   useGetRecognizedRevenueDataQuery,
   useGetRevenueMetricsDataQuery,
   useGetRevenueTrendsDataQuery,
+  useGetSubscriptionHistoryDataQuery,
   useGetTrialToPaidDataQuery,
   useGetUpgradesAndDowngradesDataQuery,
 } from "../../Redux/slices/revenueApi";
@@ -89,6 +89,13 @@ export default function RevenueManagement() {
   } = useGetRecognizedRevenueDataQuery(recognizedYear);
   const recognizedRevenue = recognizedRevenueData?.data;
 
+  const {
+    data: subscriptionHistoiryData,
+    isLoading: loadingSubscriptionHistoiryData,
+  } = useGetSubscriptionHistoryDataQuery(recognizedYear);
+  const subscriptionHistory = subscriptionHistoiryData?.data?.result;
+  console.log("subscriptionHistoiry", subscriptionHistory);
+
   const COLORS = [
     "#3b82f6", // bright blue
     "#2563eb", // deeper blue
@@ -97,15 +104,6 @@ export default function RevenueManagement() {
     "#6366f1", // indigo
     "#4f46e5", // deep indigo
   ];
-
-  const revenueData = generateRevenueData();
-
-  const paginatedData = revenueData.slice(
-    page * rowsPerPage,
-    page * rowsPerPage + rowsPerPage,
-  );
-
-  // console.log(paginatedData);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -132,7 +130,8 @@ export default function RevenueManagement() {
     loadingTrialToPaidData ||
     loadingPlanMixDistributionData ||
     loadingUpgradesAndDowngradesData ||
-    loadingRecognizedRevenueData
+    loadingRecognizedRevenueData ||
+    loadingSubscriptionHistoiryData
   ) {
     return (
       <div className="flex justify-center items-center h-[92vh]">
@@ -505,7 +504,7 @@ export default function RevenueManagement() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {paginatedData.map((record) => (
+            {subscriptionHistory.map((record) => (
               <TableRow key={record.id} hover>
                 <TableCell>
                   <div>
@@ -555,7 +554,7 @@ export default function RevenueManagement() {
         <TablePagination
           rowsPerPageOptions={[5, 10, 25, 50]}
           component="div"
-          count={revenueData.length}
+          count={subscriptionHistory.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}

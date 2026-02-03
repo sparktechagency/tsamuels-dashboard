@@ -80,6 +80,19 @@ const revenueApi = baseApi.injectEndpoints({
       },
       providesTags: ["growth&Retention"],
     }),
+    getSubscriptionHistoryData: builder.query({
+      query: () => {
+        const accessToken = sessionStorage.getItem("accessToken");
+        return {
+          url: "/dashboard/subscription-history",
+          method: "get",
+          headers: {
+            authorization: `Bearer ${accessToken}`,
+          },
+        };
+      },
+      providesTags: ["growth&Retention"],
+    }),
   }),
 });
 
@@ -90,4 +103,5 @@ export const {
   useGetPlanMixDistributionDataQuery,
   useGetUpgradesAndDowngradesDataQuery,
   useGetRecognizedRevenueDataQuery,
+  useGetSubscriptionHistoryDataQuery,
 } = revenueApi;
