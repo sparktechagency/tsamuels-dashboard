@@ -43,6 +43,7 @@ import TrialToPaidChart from "../Chart/RevenueChart/TrialToPaidChart";
 import PlanMixDistributionChart from "../Chart/RevenueChart/PlanMixDistributionChart";
 import RecognitionChart from "../Chart/RevenueChart/RecognitionChart";
 import UpgradesAndDowngradesChart from "../Chart/RevenueChart/UpgradesAndDowngradesChart";
+import { NoDataFallback } from "../utils/noDataFallBack";
 
 export default function RevenueManagement() {
   const currentYear = new Date().getFullYear().toString();
@@ -124,21 +125,7 @@ export default function RevenueManagement() {
     setSelectedRecord(null);
   };
 
-  if (
-    loadingRevenueMetricsData ||
-    loadingRevenueTrendsData ||
-    loadingTrialToPaidData ||
-    loadingPlanMixDistributionData ||
-    loadingUpgradesAndDowngradesData ||
-    loadingRecognizedRevenueData ||
-    loadingSubscriptionHistoiryData
-  ) {
-    return (
-      <div className="flex justify-center items-center h-[92vh]">
-        <CircularProgress />
-      </div>
-    );
-  }
+  // No longer blocking the whole page with a global loader
 
   return (
     <div style={{ padding: "32px" }}>
@@ -154,9 +141,13 @@ export default function RevenueManagement() {
         <MetricCard
           title="Monthly Recurring Revenue"
           value={
-            revenueMetrics?.mrr?.value
-              ? `$${(revenueMetrics.mrr.value / 1000).toFixed(1)}k`
-              : "$0.0k"
+            loadingRevenueMetricsData ? (
+              <CircularProgress size={20} />
+            ) : revenueMetrics?.mrr?.value ? (
+              `$${(revenueMetrics.mrr.value / 1000).toFixed(1)}k`
+            ) : (
+              "$0.0k"
+            )
           }
           growth={revenueMetrics?.mrr?.growth ?? 0}
           icon={FaDollarSign}
@@ -165,9 +156,13 @@ export default function RevenueManagement() {
         <MetricCard
           title="Annual Recurring Revenue"
           value={
-            revenueMetrics?.arr?.value
-              ? `$${(revenueMetrics.arr.value / 1000).toFixed(0)}k`
-              : "$0k"
+            loadingRevenueMetricsData ? (
+              <CircularProgress size={20} />
+            ) : revenueMetrics?.arr?.value ? (
+              `$${(revenueMetrics.arr.value / 1000).toFixed(0)}k`
+            ) : (
+              "$0k"
+            )
           }
           growth={revenueMetrics?.arr?.growth ?? 0}
           icon={FaChartLine}
@@ -176,9 +171,13 @@ export default function RevenueManagement() {
         <MetricCard
           title="Average Revenue Per User"
           value={
-            revenueMetrics?.arpu?.value
-              ? `$${revenueMetrics.arpu.value.toFixed(2)}`
-              : "$0.00"
+            loadingRevenueMetricsData ? (
+              <CircularProgress size={20} />
+            ) : revenueMetrics?.arpu?.value ? (
+              `$${revenueMetrics.arpu.value.toFixed(2)}`
+            ) : (
+              "$0.00"
+            )
           }
           growth={revenueMetrics?.arpu?.growth ?? 0}
           icon={FaUsers}
@@ -187,9 +186,13 @@ export default function RevenueManagement() {
         <MetricCard
           title="Customer Acq. Payback"
           value={
-            revenueMetrics?.paybackPeriod?.months
-              ? `${revenueMetrics.paybackPeriod.months.toFixed(1)} mo`
-              : "0.0 mo"
+            loadingRevenueMetricsData ? (
+              <CircularProgress size={20} />
+            ) : revenueMetrics?.paybackPeriod?.months ? (
+              `${revenueMetrics.paybackPeriod.months.toFixed(1)} mo`
+            ) : (
+              "0.0 mo"
+            )
           }
           growth={revenueMetrics?.paybackPeriod?.growth ?? 0}
           icon={FaClock}
@@ -253,7 +256,15 @@ export default function RevenueManagement() {
             >
               Revenue metrics and customer value
             </p>
-            <RevenueTrendsChart revenueTrends={revenueTrends} />
+            {loadingRevenueTrendsData ? (
+              <div className="flex justify-center items-center h-[300px]">
+                <CircularProgress />
+              </div>
+            ) : revenueTrends && revenueTrends.length > 0 ? (
+              <RevenueTrendsChart revenueTrends={revenueTrends} />
+            ) : (
+              <NoDataFallback />
+            )}
           </CardContent>
         </Card>
 
@@ -304,7 +315,15 @@ export default function RevenueManagement() {
             >
               Trial users converting to paid plans
             </p>
-            <TrialToPaidChart trialToPaid={trialToPaid} />
+            {loadingTrialToPaidData ? (
+              <div className="flex justify-center items-center h-[300px]">
+                <CircularProgress />
+              </div>
+            ) : trialToPaid && trialToPaid.length > 0 ? (
+              <TrialToPaidChart trialToPaid={trialToPaid} />
+            ) : (
+              <NoDataFallback />
+            )}
           </CardContent>
         </Card>
       </div>
@@ -365,10 +384,18 @@ export default function RevenueManagement() {
             >
               Subscriber distribution across plans
             </p>
-            <PlanMixDistributionChart
-              planMixDistribution={planMixDistribution}
-              COLORS={COLORS}
-            />
+            {loadingPlanMixDistributionData ? (
+              <div className="flex justify-center items-center h-[300px]">
+                <CircularProgress />
+              </div>
+            ) : planMixDistribution && planMixDistribution.length > 0 ? (
+              <PlanMixDistributionChart
+                planMixDistribution={planMixDistribution}
+                COLORS={COLORS}
+              />
+            ) : (
+              <NoDataFallback />
+            )}
           </CardContent>
         </Card>
 
@@ -420,9 +447,17 @@ export default function RevenueManagement() {
             >
               Plan tier changes over time
             </p>
-            <UpgradesAndDowngradesChart
-              upgradesAndDowngrades={upgradesAndDowngrades}
-            />
+            {loadingUpgradesAndDowngradesData ? (
+              <div className="flex justify-center items-center h-[300px]">
+                <CircularProgress />
+              </div>
+            ) : upgradesAndDowngrades && upgradesAndDowngrades.length > 0 ? (
+              <UpgradesAndDowngradesChart
+                upgradesAndDowngrades={upgradesAndDowngrades}
+              />
+            ) : (
+              <NoDataFallback />
+            )}
           </CardContent>
         </Card>
       </div>
@@ -483,7 +518,15 @@ export default function RevenueManagement() {
             >
               Payment adjustments and recognized revenue
             </p>
-            <RecognitionChart recognizedRevenue={recognizedRevenue} />
+            {loadingRecognizedRevenueData ? (
+              <div className="flex justify-center items-center h-[300px]">
+                <CircularProgress />
+              </div>
+            ) : recognizedRevenue && recognizedRevenue.length > 0 ? (
+              <RecognitionChart recognizedRevenue={recognizedRevenue} />
+            ) : (
+              <NoDataFallback />
+            )}
           </CardContent>
         </Card>
       </div>
@@ -504,57 +547,67 @@ export default function RevenueManagement() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {subscriptionHistory.map((record) => (
-              <TableRow key={record.id} hover>
-                <TableCell>
-                  <div>
-                    <div>{record.userName}</div>
-                    <div style={{ fontSize: "0.875rem", color: "#6b7280" }}>
-                      {record.userId}
-                    </div>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <Chip
-                    label={record.plan}
-                    size="small"
-                    color={
-                      record.plan.includes("Annual") ? "primary" : "default"
-                    }
-                  />
-                </TableCell>
-                <TableCell>${record.amount}</TableCell>
-                {/* <TableCell>
-                  {record.discount > 0 ? `$${record.discount}` : "-"}
-                </TableCell> */}
-                <TableCell>
-                  <Chip
-                    label={record.status}
-                    size="small"
-                    color={
-                      record.status === "Active"
-                        ? "success"
-                        : record.status === "Trial"
-                          ? "info"
-                          : "default"
-                    }
-                  />
-                </TableCell>
-                {/* <TableCell>{record.paymentMethod}</TableCell> */}
-                <TableCell>{record.nextBilling}</TableCell>
-                <TableCell align="right">
-                  <IconButton size="small" onClick={() => handleView(record)}>
-                    <FaEye size={16} />
-                  </IconButton>
+            {loadingSubscriptionHistoiryData ? (
+              <TableRow>
+                <TableCell colSpan={6} align="center" sx={{ py: 10 }}>
+                  <CircularProgress />
                 </TableCell>
               </TableRow>
-            ))}
+            ) : subscriptionHistory && subscriptionHistory.length > 0 ? (
+              subscriptionHistory.map((record) => (
+                <TableRow key={record.id} hover>
+                  <TableCell>
+                    <div>
+                      <div>{record.userName}</div>
+                      <div style={{ fontSize: "0.875rem", color: "#6b7280" }}>
+                        {record.userId}
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Chip
+                      label={record.plan}
+                      size="small"
+                      color={
+                        record.plan.includes("Annual") ? "primary" : "default"
+                      }
+                    />
+                  </TableCell>
+                  <TableCell>${record.amount}</TableCell>
+                  <TableCell>
+                    <Chip
+                      label={record.status}
+                      size="small"
+                      color={
+                        record.status === "Active"
+                          ? "success"
+                          : record.status === "Trial"
+                            ? "info"
+                            : "default"
+                      }
+                    />
+                  </TableCell>
+                  <TableCell>{record.nextBilling}</TableCell>
+                  <TableCell align="right">
+                    <IconButton size="small" onClick={() => handleView(record)}>
+                      <FaEye size={16} />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={6} align="center" sx={{ py: 0 }}>
+                  <NoDataFallback />
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
         <TablePagination
           rowsPerPageOptions={[5, 10, 25, 50]}
           component="div"
-          count={subscriptionHistory.length}
+          count={subscriptionHistory?.length ?? 0}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
