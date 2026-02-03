@@ -17,6 +17,7 @@ import {
   FormControl,
   Modal,
   Box,
+  CircularProgress,
 } from "@mui/material";
 import {
   FaEye,
@@ -26,51 +27,75 @@ import {
   FaUsers,
   FaClock,
 } from "react-icons/fa";
-import {
-  BarChart,
-  Bar,
-  Line,
-  PieChart,
-  Pie,
-  Cell,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  ComposedChart,
-} from "recharts";
 import { MetricCard } from "../UI/MetricCard";
 import {
-  allAdjustmentsData,
-  allConversionData,
-  // allFamilyVsIndividualData,
-  allMrrData,
-  allPlanMixData,
-  generateRevenueData,
-} from "../../../public/data/revenueData";
-import RevenueUserComparisonChart from "../Chart/RevenueChart/RevenueUserComparisonChart";
+  useGetPlanMixDistributionDataQuery,
+  useGetRecognizedRevenueDataQuery,
+  useGetRevenueMetricsDataQuery,
+  useGetRevenueTrendsDataQuery,
+  useGetSubscriptionHistoryDataQuery,
+  useGetTrialToPaidDataQuery,
+  useGetUpgradesAndDowngradesDataQuery,
+} from "../../Redux/slices/revenueApi";
+
+import RevenueTrendsChart from "../Chart/RevenueChart/RevenueTrendsChart";
+import TrialToPaidChart from "../Chart/RevenueChart/TrialToPaidChart";
+import PlanMixDistributionChart from "../Chart/RevenueChart/PlanMixDistributionChart";
+import RecognitionChart from "../Chart/RevenueChart/RecognitionChart";
+import UpgradesAndDowngradesChart from "../Chart/RevenueChart/UpgradesAndDowngradesChart";
+import { NoDataFallback } from "../utils/noDataFallBack";
 
 export default function RevenueManagement() {
+  const currentYear = new Date().getFullYear().toString();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
   // Year filters for each chart
-  const [mrrYear, setMrrYear] = useState("2025");
-  const [conversionYear, setConversionYear] = useState("2025");
-  const [planMixYear, setPlanMixYear] = useState("2025");
-  const [adjustmentsYear, setAdjustmentsYear] = useState("2025");
-  // const [familyVsIndividualYear, setFamilyVsIndividualYear] = useState("2025");
+  const [mrrYear, setMrrYear] = useState(currentYear);
+  const [conversionYear, setConversionYear] = useState(currentYear);
+  const [planMixYear, setPlanMixYear] = useState(currentYear);
+  const [recognizedYear, setRecognizedYear] = useState(currentYear);
+  const [upDownYear, setUpDownYear] = useState(currentYear);
 
-  const mrrData = allMrrData[mrrYear];
-  const conversionData = allConversionData[conversionYear];
-  const planMixData = allPlanMixData[planMixYear];
-  const adjustmentsData = allAdjustmentsData[adjustmentsYear];
-  // const familyVsIndividualData =
-  //   allFamilyVsIndividualData[familyVsIndividualYear];
+  const { data: revenueMetricsData, isLoading: loadingRevenueMetricsData } =
+    useGetRevenueMetricsDataQuery();
+  const revenueMetrics = revenueMetricsData?.data;
+
+  const { data: revenueTrendsData, isLoading: loadingRevenueTrendsData } =
+    useGetRevenueTrendsDataQuery(mrrYear);
+  const revenueTrends = revenueTrendsData?.data;
+
+  const { data: trialToPaidData, isLoading: loadingTrialToPaidData } =
+    useGetTrialToPaidDataQuery(conversionYear);
+  const trialToPaid = trialToPaidData?.data;
+
+  const {
+    data: planMixDistributionData,
+    isLoading: loadingPlanMixDistributionData,
+  } = useGetPlanMixDistributionDataQuery(conversionYear);
+  const planMixDistribution = planMixDistributionData?.data;
+
+  const {
+    data: upgradesAndDowngradesData,
+    isLoading: loadingUpgradesAndDowngradesData,
+  } = useGetUpgradesAndDowngradesDataQuery(upDownYear);
+  const upgradesAndDowngrades = upgradesAndDowngradesData?.data;
+
+  const {
+    data: recognizedRevenueData,
+    isLoading: loadingRecognizedRevenueData,
+  } = useGetRecognizedRevenueDataQuery(recognizedYear);
+  const recognizedRevenue = recognizedRevenueData?.data;
+
+  const {
+    data: subscriptionHistoiryData,
+    isLoading: loadingSubscriptionHistoiryData,
+  } = useGetSubscriptionHistoryDataQuery(recognizedYear);
+  const subscriptionHistory = subscriptionHistoiryData?.data?.result;
+  console.log("subscriptionHistoiry", subscriptionHistory);
 
   const COLORS = [
     "#3b82f6", // bright blue
@@ -80,21 +105,6 @@ export default function RevenueManagement() {
     "#6366f1", // indigo
     "#4f46e5", // deep indigo
   ];
-
-  // Current metrics (from latest month)
-  const currentMRR = mrrData[mrrData.length - 1].mrr;
-  const currentARR = mrrData[mrrData.length - 1].arr;
-  const currentARPU = mrrData[mrrData.length - 1].arpu;
-  const currentPayback = mrrData[mrrData.length - 1].payback;
-
-  const revenueData = generateRevenueData();
-
-  const paginatedData = revenueData.slice(
-    page * rowsPerPage,
-    page * rowsPerPage + rowsPerPage,
-  );
-
-  // console.log(paginatedData);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -115,6 +125,8 @@ export default function RevenueManagement() {
     setSelectedRecord(null);
   };
 
+  // No longer blocking the whole page with a global loader
+
   return (
     <div style={{ padding: "32px" }}>
       {/* Top Row Metrics - Revenue KPIs */}
@@ -128,29 +140,61 @@ export default function RevenueManagement() {
       >
         <MetricCard
           title="Monthly Recurring Revenue"
-          value={`$${(currentMRR / 1000).toFixed(1)}k`}
-          change={8.2}
+          value={
+            loadingRevenueMetricsData ? (
+              <CircularProgress size={20} />
+            ) : revenueMetrics?.mrr?.value ? (
+              `$${(revenueMetrics.mrr.value / 1000).toFixed(1)}k`
+            ) : (
+              "$0.0k"
+            )
+          }
+          growth={revenueMetrics?.mrr?.growth ?? 0}
           icon={FaDollarSign}
           subtitle="MRR"
         />
         <MetricCard
           title="Annual Recurring Revenue"
-          value={`$${(currentARR / 1000).toFixed(0)}k`}
-          change={9.5}
+          value={
+            loadingRevenueMetricsData ? (
+              <CircularProgress size={20} />
+            ) : revenueMetrics?.arr?.value ? (
+              `$${(revenueMetrics.arr.value / 1000).toFixed(0)}k`
+            ) : (
+              "$0k"
+            )
+          }
+          growth={revenueMetrics?.arr?.growth ?? 0}
           icon={FaChartLine}
           subtitle="ARR"
         />
         <MetricCard
           title="Average Revenue Per User"
-          value={`$${currentARPU.toFixed(2)}`}
-          change={5.3}
+          value={
+            loadingRevenueMetricsData ? (
+              <CircularProgress size={20} />
+            ) : revenueMetrics?.arpu?.value ? (
+              `$${revenueMetrics.arpu.value.toFixed(2)}`
+            ) : (
+              "$0.00"
+            )
+          }
+          growth={revenueMetrics?.arpu?.growth ?? 0}
           icon={FaUsers}
           subtitle="ARPU"
         />
         <MetricCard
           title="Customer Acq. Payback"
-          value={`${currentPayback.toFixed(1)} mo`}
-          change={-12.5}
+          value={
+            loadingRevenueMetricsData ? (
+              <CircularProgress size={20} />
+            ) : revenueMetrics?.paybackPeriod?.months ? (
+              `${revenueMetrics.paybackPeriod.months.toFixed(1)} mo`
+            ) : (
+              "0.0 mo"
+            )
+          }
+          growth={revenueMetrics?.paybackPeriod?.growth ?? 0}
           icon={FaClock}
           subtitle="Payback Period"
         />
@@ -195,9 +239,10 @@ export default function RevenueManagement() {
                     },
                   }}
                 >
-                  <MenuItem value="2023">2023</MenuItem>
-                  <MenuItem value="2024">2024</MenuItem>
                   <MenuItem value="2025">2025</MenuItem>
+                  <MenuItem value="2026">2026</MenuItem>
+                  <MenuItem value="2027">2027</MenuItem>
+                  <MenuItem value="2028">2028</MenuItem>
                 </Select>
               </FormControl>
             </div>
@@ -211,42 +256,15 @@ export default function RevenueManagement() {
             >
               Revenue metrics and customer value
             </p>
-            <ResponsiveContainer width="100%" height={320}>
-              <ComposedChart data={mrrData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis dataKey="month" stroke="#6b7280" />
-                <YAxis yAxisId="left" stroke="#6b7280" />
-                <YAxis yAxisId="right" orientation="right" stroke="#6b7280" />
-                <Tooltip
-                  contentStyle={{
-                    background: "white",
-                    border: "1px solid #e5e7eb",
-                    borderRadius: "8px",
-                  }}
-                />
-                <Legend />
-                <Bar
-                  yAxisId="left"
-                  dataKey="mrr"
-                  fill="#93c5fd"
-                  name="MRR ($)"
-                />
-                <Bar
-                  yAxisId="left"
-                  dataKey="arr"
-                  fill="#3b82f6"
-                  name="ARR ($)"
-                />
-                <Line
-                  yAxisId="right"
-                  type="monotone"
-                  dataKey="arpu"
-                  stroke="#10b981"
-                  strokeWidth={3}
-                  name="ARPU ($)"
-                />
-              </ComposedChart>
-            </ResponsiveContainer>
+            {loadingRevenueTrendsData ? (
+              <div className="flex justify-center items-center h-[300px]">
+                <CircularProgress />
+              </div>
+            ) : revenueTrends && revenueTrends.length > 0 ? (
+              <RevenueTrendsChart revenueTrends={revenueTrends} />
+            ) : (
+              <NoDataFallback />
+            )}
           </CardContent>
         </Card>
 
@@ -280,9 +298,10 @@ export default function RevenueManagement() {
                     },
                   }}
                 >
-                  <MenuItem value="2023">2023</MenuItem>
-                  <MenuItem value="2024">2024</MenuItem>
                   <MenuItem value="2025">2025</MenuItem>
+                  <MenuItem value="2026">2026</MenuItem>
+                  <MenuItem value="2027">2027</MenuItem>
+                  <MenuItem value="2028">2028</MenuItem>
                 </Select>
               </FormControl>
             </div>
@@ -296,37 +315,15 @@ export default function RevenueManagement() {
             >
               Trial users converting to paid plans
             </p>
-            <ResponsiveContainer width="100%" height={320}>
-              <ComposedChart data={conversionData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis dataKey="month" stroke="#6b7280" />
-                <YAxis yAxisId="left" stroke="#6b7280" />
-                <YAxis yAxisId="right" orientation="right" stroke="#6b7280" />
-                <Tooltip
-                  contentStyle={{
-                    background: "white",
-                    border: "1px solid #e5e7eb",
-                    borderRadius: "8px",
-                  }}
-                />
-                <Legend />
-                <Bar
-                  yAxisId="left"
-                  dataKey="trials"
-                  fill="#93c5fd"
-                  name="Trials"
-                />
-                <Bar yAxisId="left" dataKey="paid" fill="#3b82f6" name="Paid" />
-                <Line
-                  yAxisId="right"
-                  type="monotone"
-                  dataKey="rate"
-                  stroke="#10b981"
-                  strokeWidth={3}
-                  name="Conversion %"
-                />
-              </ComposedChart>
-            </ResponsiveContainer>
+            {loadingTrialToPaidData ? (
+              <div className="flex justify-center items-center h-[300px]">
+                <CircularProgress />
+              </div>
+            ) : trialToPaid && trialToPaid.length > 0 ? (
+              <TrialToPaidChart trialToPaid={trialToPaid} />
+            ) : (
+              <NoDataFallback />
+            )}
           </CardContent>
         </Card>
       </div>
@@ -370,9 +367,10 @@ export default function RevenueManagement() {
                     },
                   }}
                 >
-                  <MenuItem value="2023">2023</MenuItem>
-                  <MenuItem value="2024">2024</MenuItem>
                   <MenuItem value="2025">2025</MenuItem>
+                  <MenuItem value="2026">2026</MenuItem>
+                  <MenuItem value="2027">2027</MenuItem>
+                  <MenuItem value="2028">2028</MenuItem>
                 </Select>
               </FormControl>
             </div>
@@ -386,30 +384,22 @@ export default function RevenueManagement() {
             >
               Subscriber distribution across plans
             </p>
-            <ResponsiveContainer width="100%" height={320}>
-              <PieChart>
-                <Pie
-                  data={planMixData.distribution}
-                  dataKey="users"
-                  nameKey="plan"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={100}
-                  label={(entry) => `${entry.plan}: ${entry.percent}%`}
-                >
-                  {planMixData.distribution.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={COLORS[index % COLORS.length]}
-                    />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
+            {loadingPlanMixDistributionData ? (
+              <div className="flex justify-center items-center h-[300px]">
+                <CircularProgress />
+              </div>
+            ) : planMixDistribution && planMixDistribution.length > 0 ? (
+              <PlanMixDistributionChart
+                planMixDistribution={planMixDistribution}
+                COLORS={COLORS}
+              />
+            ) : (
+              <NoDataFallback />
+            )}
           </CardContent>
         </Card>
 
+        {/* upgrades & downgrades */}
         <Card
           elevation={2}
           sx={{
@@ -430,8 +420,8 @@ export default function RevenueManagement() {
               </p>
               <FormControl sx={{ minWidth: 100 }} size="small">
                 <Select
-                  value={planMixYear}
-                  onChange={(e) => setPlanMixYear(e.target.value)}
+                  value={upDownYear}
+                  onChange={(e) => setUpDownYear(e.target.value)}
                   sx={{
                     borderRadius: 2,
                     background: "white",
@@ -440,9 +430,10 @@ export default function RevenueManagement() {
                     },
                   }}
                 >
-                  <MenuItem value="2023">2023</MenuItem>
-                  <MenuItem value="2024">2024</MenuItem>
                   <MenuItem value="2025">2025</MenuItem>
+                  <MenuItem value="2026">2026</MenuItem>
+                  <MenuItem value="2027">2027</MenuItem>
+                  <MenuItem value="2028">2028</MenuItem>
                 </Select>
               </FormControl>
             </div>
@@ -456,23 +447,17 @@ export default function RevenueManagement() {
             >
               Plan tier changes over time
             </p>
-            <ResponsiveContainer width="100%" height={320}>
-              <BarChart data={planMixData.changes}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis dataKey="month" stroke="#6b7280" />
-                <YAxis stroke="#6b7280" />
-                <Tooltip
-                  contentStyle={{
-                    background: "white",
-                    border: "1px solid #e5e7eb",
-                    borderRadius: "8px",
-                  }}
-                />
-                <Legend />
-                <Bar dataKey="upgrades" fill="#10b981" name="Upgrades" />
-                <Bar dataKey="downgrades" fill="#ef4444" name="Downgrades" />
-              </BarChart>
-            </ResponsiveContainer>
+            {loadingUpgradesAndDowngradesData ? (
+              <div className="flex justify-center items-center h-[300px]">
+                <CircularProgress />
+              </div>
+            ) : upgradesAndDowngrades && upgradesAndDowngrades.length > 0 ? (
+              <UpgradesAndDowngradesChart
+                upgradesAndDowngrades={upgradesAndDowngrades}
+              />
+            ) : (
+              <NoDataFallback />
+            )}
           </CardContent>
         </Card>
       </div>
@@ -506,8 +491,8 @@ export default function RevenueManagement() {
               </p>
               <FormControl sx={{ minWidth: 100 }} size="small">
                 <Select
-                  value={adjustmentsYear}
-                  onChange={(e) => setAdjustmentsYear(e.target.value)}
+                  value={recognizedYear}
+                  onChange={(e) => setRecognizedYear(e.target.value)}
                   sx={{
                     borderRadius: 2,
                     background: "white",
@@ -516,9 +501,10 @@ export default function RevenueManagement() {
                     },
                   }}
                 >
-                  <MenuItem value="2023">2023</MenuItem>
-                  <MenuItem value="2024">2024</MenuItem>
                   <MenuItem value="2025">2025</MenuItem>
+                  <MenuItem value="2026">2026</MenuItem>
+                  <MenuItem value="2027">2027</MenuItem>
+                  <MenuItem value="2028">2028</MenuItem>
                 </Select>
               </FormControl>
             </div>
@@ -532,94 +518,17 @@ export default function RevenueManagement() {
             >
               Payment adjustments and recognized revenue
             </p>
-            <ResponsiveContainer width="100%" height={320}>
-              <ComposedChart data={adjustmentsData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis dataKey="month" stroke="#6b7280" />
-                <YAxis stroke="#6b7280" />
-                <Tooltip
-                  contentStyle={{
-                    background: "white",
-                    border: "1px solid #e5e7eb",
-                    borderRadius: "8px",
-                  }}
-                />
-                <Legend />
-                <Bar
-                  dataKey="discounts"
-                  stackId="a"
-                  fill="#f59e0b"
-                  name="Discounts ($)"
-                />
-                <Bar
-                  dataKey="refunds"
-                  stackId="a"
-                  fill="#ef4444"
-                  name="Refunds ($)"
-                />
-                <Line
-                  type="monotone"
-                  dataKey="recognized"
-                  stroke="#10b981"
-                  strokeWidth={3}
-                  name="Recognized Revenue ($)"
-                />
-              </ComposedChart>
-            </ResponsiveContainer>
+            {loadingRecognizedRevenueData ? (
+              <div className="flex justify-center items-center h-[300px]">
+                <CircularProgress />
+              </div>
+            ) : recognizedRevenue && recognizedRevenue.length > 0 ? (
+              <RecognitionChart recognizedRevenue={recognizedRevenue} />
+            ) : (
+              <NoDataFallback />
+            )}
           </CardContent>
         </Card>
-
-        {/* <Card
-          elevation={2}
-          sx={{
-            borderRadius: 4,
-          }}
-        >
-          <CardContent sx={{ p: 3 }}>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: "4px",
-              }}
-            >
-              <p style={{ margin: 0, fontSize: "1.25rem", fontWeight: 600 }}>
-                Family vs Individual Plans
-              </p>
-              <FormControl sx={{ minWidth: 100 }} size="small">
-                <Select
-                  value={familyVsIndividualYear}
-                  onChange={(e) => setFamilyVsIndividualYear(e.target.value)}
-                  sx={{
-                    borderRadius: 2,
-                    background: "white",
-                    "& .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "rgb(59, 130, 246)",
-                    },
-                  }}
-                >
-                  <MenuItem value="2023">2023</MenuItem>
-                  <MenuItem value="2024">2024</MenuItem>
-                  <MenuItem value="2025">2025</MenuItem>
-                </Select>
-              </FormControl>
-            </div>
-            <p
-              style={{
-                margin: 0,
-                fontSize: "0.875rem",
-                color: "#6b7280",
-                marginBottom: "24px",
-              }}
-            >
-              Revenue and user comparison
-            </p>
-            <RevenueUserComparisonChart
-              familyVsIndividualData={familyVsIndividualData}
-            />
-          </CardContent>
-        </Card> */}
       </div>
 
       {/* Data Table */}
@@ -638,57 +547,67 @@ export default function RevenueManagement() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {paginatedData.map((record) => (
-              <TableRow key={record.id} hover>
-                <TableCell>
-                  <div>
-                    <div>{record.userName}</div>
-                    <div style={{ fontSize: "0.875rem", color: "#6b7280" }}>
-                      {record.userId}
-                    </div>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <Chip
-                    label={record.plan}
-                    size="small"
-                    color={
-                      record.plan.includes("Annual") ? "primary" : "default"
-                    }
-                  />
-                </TableCell>
-                <TableCell>${record.amount}</TableCell>
-                {/* <TableCell>
-                  {record.discount > 0 ? `$${record.discount}` : "-"}
-                </TableCell> */}
-                <TableCell>
-                  <Chip
-                    label={record.status}
-                    size="small"
-                    color={
-                      record.status === "Active"
-                        ? "success"
-                        : record.status === "Trial"
-                          ? "info"
-                          : "default"
-                    }
-                  />
-                </TableCell>
-                {/* <TableCell>{record.paymentMethod}</TableCell> */}
-                <TableCell>{record.nextBilling}</TableCell>
-                <TableCell align="right">
-                  <IconButton size="small" onClick={() => handleView(record)}>
-                    <FaEye size={16} />
-                  </IconButton>
+            {loadingSubscriptionHistoiryData ? (
+              <TableRow>
+                <TableCell colSpan={6} align="center" sx={{ py: 10 }}>
+                  <CircularProgress />
                 </TableCell>
               </TableRow>
-            ))}
+            ) : subscriptionHistory && subscriptionHistory.length > 0 ? (
+              subscriptionHistory.map((record) => (
+                <TableRow key={record.id} hover>
+                  <TableCell>
+                    <div>
+                      <div>{record.userName}</div>
+                      <div style={{ fontSize: "0.875rem", color: "#6b7280" }}>
+                        {record.userId}
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Chip
+                      label={record.plan}
+                      size="small"
+                      color={
+                        record.plan.includes("Annual") ? "primary" : "default"
+                      }
+                    />
+                  </TableCell>
+                  <TableCell>${record.amount}</TableCell>
+                  <TableCell>
+                    <Chip
+                      label={record.status}
+                      size="small"
+                      color={
+                        record.status === "Active"
+                          ? "success"
+                          : record.status === "Trial"
+                            ? "info"
+                            : "default"
+                      }
+                    />
+                  </TableCell>
+                  <TableCell>{record.nextBilling}</TableCell>
+                  <TableCell align="right">
+                    <IconButton size="small" onClick={() => handleView(record)}>
+                      <FaEye size={16} />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={6} align="center" sx={{ py: 0 }}>
+                  <NoDataFallback />
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
         <TablePagination
           rowsPerPageOptions={[5, 10, 25, 50]}
           component="div"
-          count={revenueData.length}
+          count={subscriptionHistory?.length ?? 0}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}

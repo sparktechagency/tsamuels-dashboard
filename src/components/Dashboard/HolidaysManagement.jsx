@@ -25,6 +25,7 @@ import { MdOutlineDeleteOutline } from "react-icons/md";
 import dayjs from "dayjs";
 import { toast } from "sonner";
 import HolidayCard from "../UI/HolidayCard";
+import { NoDataFallback } from "../utils/noDataFallBack";
 
 const colorOptions = [
   { name: "Red", value: "#EF4444" },
@@ -582,18 +583,28 @@ export function HolidaysManagement() {
       </Dialog>
 
       {/* Events Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {events.map((event) => {
-          return (
-            <HolidayCard
-              key={event.id}
-              event={event}
-              handleEmojiClick={handleEmojiClick}
-              handleEditHoliday={handleEditHoliday}
-              handleDeleteHoliday={handleDeleteHoliday}
-            />
-          );
-        })}
+      <div
+        className={
+          events.length > 0
+            ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+            : ""
+        }
+      >
+        {events.length > 0 ? (
+          events.map((event) => {
+            return (
+              <HolidayCard
+                key={event.id}
+                event={event}
+                handleEmojiClick={handleEmojiClick}
+                handleEditHoliday={handleEditHoliday}
+                handleDeleteHoliday={handleDeleteHoliday}
+              />
+            );
+          })
+        ) : (
+          <NoDataFallback />
+        )}
       </div>
     </div>
   );
