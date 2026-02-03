@@ -11,7 +11,7 @@ import { BsChatHeart } from "react-icons/bs";
 import { IoSettingsOutline } from "react-icons/io5";
 import { BiDollarCircle } from "react-icons/bi";
 import { GoGraph } from "react-icons/go";
-import { FaShieldHalved } from "react-icons/fa6";
+import { FaRegCalendarAlt } from "react-icons/fa";
 import { MdOutlineAdminPanelSettings } from "react-icons/md";
 
 import { Link, NavLink } from "react-router-dom";
@@ -64,11 +64,6 @@ export default function Sidebar({ closeSidebar }) {
             icon: <AiOutlineTransaction fontSize={24} />,
             label: "Notifications",
           },
-          // {
-          //   to: "/reliabilities",
-          //   icon: <MdDiamond fontSize={24} />,
-          //   label: "Reliabilities",
-          // },
           {
             to: "/support",
             icon: <MdOutlineMarkEmailUnread fontSize={24} />,
@@ -78,6 +73,11 @@ export default function Sidebar({ closeSidebar }) {
             to: "/admin-controls",
             icon: <MdOutlineAdminPanelSettings fontSize={24} />,
             label: "Admin Controls",
+          },
+          {
+            to: "/holidays",
+            icon: <FaRegCalendarAlt fontSize={22} />,
+            label: "Holidays",
           },
           {
             to: "/settings",

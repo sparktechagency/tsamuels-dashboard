@@ -30,6 +30,7 @@ import {
   useGetOnboardingCompletionDataQuery,
   useGetUsersComparisonDataQuery,
 } from "../../Redux/slices/dashboardApi";
+import { NoDataFallback } from "../utils/noDataFallBack";
 
 export default function Dashboard() {
   const currentYear = new Date().getFullYear().toString();
@@ -173,7 +174,11 @@ export default function Dashboard() {
           <p className="text-sm text-[#6b7280] mb-6">
             Growth vs loyalty trends
           </p>
-          <NewVsReturningChart userTypeData={comparisonChartData} />
+          {comparisonChartData && comparisonChartData.length > 0 ? (
+            <NewVsReturningChart userTypeData={comparisonChartData} />
+          ) : (
+            <NoDataFallback />
+          )}
         </div>
 
         <div className="p-4 bg-white rounded-lg shadow-lg">
@@ -203,7 +208,11 @@ export default function Dashboard() {
           <p className="text-sm text-[#6b7280] mb-6">
             Active users and session counts by feature
           </p>
-          <FeatureUsageChart featureUsageData={featureUsageData} />
+          {featureUsageData && featureUsageData.length > 0 ? (
+            <FeatureUsageChart featureUsageData={featureUsageData} />
+          ) : (
+            <NoDataFallback />
+          )}
         </div>
       </div>
 
@@ -243,7 +252,11 @@ export default function Dashboard() {
             <p className="text-sm text-[#6b7280] mb-6">
               User progression and drop-off points
             </p>
-            <OnboardingChart onboardingData={onboardingCompletionData} />
+            {onboardingCompletionData && onboardingCompletionData.length > 0 ? (
+              <OnboardingChart onboardingData={onboardingCompletionData} />
+            ) : (
+              <NoDataFallback />
+            )}
           </div>
         </Card>
       </div>
@@ -284,9 +297,14 @@ export default function Dashboard() {
             <p className="text-sm text-[#6b7280] mb-6">
               Events per family and average members
             </p>
-            <CalendarAndFamilyChart
-              calendarDensityData={calendarAndFamilyGrowthData}
-            />
+            {calendarAndFamilyGrowthData &&
+            calendarAndFamilyGrowthData.length > 0 ? (
+              <CalendarAndFamilyChart
+                calendarDensityData={calendarAndFamilyGrowthData}
+              />
+            ) : (
+              <NoDataFallback />
+            )}
           </div>
         </Card>
       </div>

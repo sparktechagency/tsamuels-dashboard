@@ -31,11 +31,11 @@ const SignIn = () => {
       password: form.get("password"),
     };
 
-    console.log("signIn Data", values);
+    // console.log("signIn Data", values);
     // navigate("/", { replace: true });
     try {
       const res = await login(values).unwrap();
-      console.log("log in response", res);
+      // console.log("log in response", res);
       sessionStorage.setItem("accessToken", res?.data?.accessToken);
       sessionStorage.setItem("refreshToken", res?.data?.refreshToken);
 
