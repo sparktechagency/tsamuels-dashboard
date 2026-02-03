@@ -1,5 +1,7 @@
 import {
+  Area,
   Bar,
+  BarChart,
   CartesianGrid,
   ComposedChart,
   Legend,
@@ -10,10 +12,10 @@ import {
   YAxis,
 } from "recharts";
 
-export default function RecognitionChart({ recognizedRevenue }) {
+export default function UpgradesAndDowngradesChart({ upgradesAndDowngrades }) {
   return (
     <ResponsiveContainer width="100%" height={320}>
-      <ComposedChart data={recognizedRevenue}>
+      <BarChart data={upgradesAndDowngrades}>
         <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
         <XAxis dataKey="month" stroke="#6b7280" />
         <YAxis stroke="#6b7280" />
@@ -25,21 +27,9 @@ export default function RecognitionChart({ recognizedRevenue }) {
           }}
         />
         <Legend />
-        <Bar
-          dataKey="discounts"
-          stackId="a"
-          fill="#f59e0b"
-          name="Discounts ($)"
-        />
-        <Bar dataKey="refunds" stackId="a" fill="#ef4444" name="Refunds ($)" />
-        <Line
-          type="monotone"
-          dataKey="recognizedRevenue"
-          stroke="#10b981"
-          strokeWidth={3}
-          name="Recognized Revenue ($)"
-        />
-      </ComposedChart>
+        <Bar dataKey="upgrades" fill="#10b981" name="Upgrades" />
+        <Bar dataKey="downgrades" fill="#ef4444" name="Downgrades" />
+      </BarChart>
     </ResponsiveContainer>
   );
 }

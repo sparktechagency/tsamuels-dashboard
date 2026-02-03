@@ -27,21 +27,6 @@ import {
   FaUsers,
   FaClock,
 } from "react-icons/fa";
-import {
-  BarChart,
-  Bar,
-  Line,
-  PieChart,
-  Pie,
-  Cell,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  ComposedChart,
-} from "recharts";
 import { MetricCard } from "../UI/MetricCard";
 import { generateRevenueData } from "../../../public/data/revenueData";
 import {
@@ -50,11 +35,14 @@ import {
   useGetRevenueMetricsDataQuery,
   useGetRevenueTrendsDataQuery,
   useGetTrialToPaidDataQuery,
+  useGetUpgradesAndDowngradesDataQuery,
 } from "../../Redux/slices/revenueApi";
+
 import RevenueTrendsChart from "../Chart/RevenueChart/RevenueTrendsChart";
 import TrialToPaidChart from "../Chart/RevenueChart/TrialToPaidChart";
 import PlanMixDistributionChart from "../Chart/RevenueChart/PlanMixDistributionChart";
 import RecognitionChart from "../Chart/RevenueChart/RecognitionChart";
+import UpgradesAndDowngradesChart from "../Chart/RevenueChart/UpgradesAndDowngradesChart";
 
 export default function RevenueManagement() {
   const currentYear = new Date().getFullYear().toString();
@@ -69,7 +57,7 @@ export default function RevenueManagement() {
   const [conversionYear, setConversionYear] = useState(currentYear);
   const [planMixYear, setPlanMixYear] = useState(currentYear);
   const [recognizedYear, setRecognizedYear] = useState(currentYear);
-  // const [familyVsIndividualYear, setFamilyVsIndividualYear] = useState("2025");
+  const [upDownYear, setUpDownYear] = useState(currentYear);
 
   const { data: revenueMetricsData, isLoading: loadingRevenueMetricsData } =
     useGetRevenueMetricsDataQuery();
@@ -90,11 +78,16 @@ export default function RevenueManagement() {
   const planMixDistribution = planMixDistributionData?.data;
 
   const {
+    data: upgradesAndDowngradesData,
+    isLoading: loadingUpgradesAndDowngradesData,
+  } = useGetUpgradesAndDowngradesDataQuery(upDownYear);
+  const upgradesAndDowngrades = upgradesAndDowngradesData?.data;
+
+  const {
     data: recognizedRevenueData,
     isLoading: loadingRecognizedRevenueData,
   } = useGetRecognizedRevenueDataQuery(recognizedYear);
   const recognizedRevenue = recognizedRevenueData?.data;
-  console.log("recognized year", recognizedRevenue, recognizedYear);
 
   const COLORS = [
     "#3b82f6", // bright blue
@@ -138,6 +131,7 @@ export default function RevenueManagement() {
     loadingRevenueTrendsData ||
     loadingTrialToPaidData ||
     loadingPlanMixDistributionData ||
+    loadingUpgradesAndDowngradesData ||
     loadingRecognizedRevenueData
   ) {
     return (
@@ -375,6 +369,60 @@ export default function RevenueManagement() {
             <PlanMixDistributionChart
               planMixDistribution={planMixDistribution}
               COLORS={COLORS}
+            />
+          </CardContent>
+        </Card>
+
+        {/* upgrades & downgrades */}
+        <Card
+          elevation={2}
+          sx={{
+            borderRadius: 4,
+          }}
+        >
+          <CardContent sx={{ p: 3 }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "4px",
+              }}
+            >
+              <p style={{ margin: 0, fontSize: "1.25rem", fontWeight: 600 }}>
+                Upgrades & Downgrades
+              </p>
+              <FormControl sx={{ minWidth: 100 }} size="small">
+                <Select
+                  value={upDownYear}
+                  onChange={(e) => setUpDownYear(e.target.value)}
+                  sx={{
+                    borderRadius: 2,
+                    background: "white",
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "rgb(59, 130, 246)",
+                    },
+                  }}
+                >
+                  <MenuItem value="2025">2025</MenuItem>
+                  <MenuItem value="2026">2026</MenuItem>
+                  <MenuItem value="2027">2027</MenuItem>
+                  <MenuItem value="2028">2028</MenuItem>
+                </Select>
+              </FormControl>
+            </div>
+            <p
+              style={{
+                margin: 0,
+                fontSize: "0.875rem",
+                color: "#6b7280",
+                marginBottom: "24px",
+              }}
+            >
+              Plan tier changes over time
+            </p>
+            <UpgradesAndDowngradesChart
+              upgradesAndDowngrades={upgradesAndDowngrades}
             />
           </CardContent>
         </Card>

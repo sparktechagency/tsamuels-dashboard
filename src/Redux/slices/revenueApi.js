@@ -54,7 +54,7 @@ const revenueApi = baseApi.injectEndpoints({
       },
       providesTags: ["revenue"],
     }),
-    getRecognizedRevenueData: builder.query({
+    getUpgradesAndDowngradesData: builder.query({
       query: (year) => {
         const accessToken = sessionStorage.getItem("accessToken");
         return {
@@ -67,11 +67,11 @@ const revenueApi = baseApi.injectEndpoints({
       },
       providesTags: ["revenue"],
     }),
-    getRecognizedData: builder.query({
-      query: () => {
+    getRecognizedRevenueData: builder.query({
+      query: (year) => {
         const accessToken = sessionStorage.getItem("accessToken");
         return {
-          url: "/dashboard/top-zip-codes",
+          url: `/dashboard/discounts-refunds-and-revenue?year=${year}`,
           method: "get",
           headers: {
             authorization: `Bearer ${accessToken}`,
@@ -88,5 +88,6 @@ export const {
   useGetRevenueTrendsDataQuery,
   useGetTrialToPaidDataQuery,
   useGetPlanMixDistributionDataQuery,
+  useGetUpgradesAndDowngradesDataQuery,
   useGetRecognizedRevenueDataQuery,
 } = revenueApi;
