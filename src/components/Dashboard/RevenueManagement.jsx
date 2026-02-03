@@ -17,6 +17,7 @@ import {
   FormControl,
   Modal,
   Box,
+  CircularProgress,
 } from "@mui/material";
 import {
   FaEye,
@@ -44,29 +45,44 @@ import {
 import { MetricCard } from "../UI/MetricCard";
 import {
   allAdjustmentsData,
-  allConversionData,
-  // allFamilyVsIndividualData,
-  allMrrData,
   allPlanMixData,
   generateRevenueData,
 } from "../../../public/data/revenueData";
-import RevenueUserComparisonChart from "../Chart/RevenueChart/RevenueUserComparisonChart";
+import {
+  useGetRevenueMetricsDataQuery,
+  useGetRevenueTrendsDataQuery,
+  useGetTrialToPaidDataQuery,
+} from "../../Redux/slices/revenueApi";
+import RevenueTrendsChart from "../Chart/RevenueChart/RevenueTrendsChart";
+import TrialToPaidChart from "../Chart/RevenueChart/TrialToPaidChart";
 
 export default function RevenueManagement() {
+  const currentYear = new Date().getFullYear().toString();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
   // Year filters for each chart
-  const [mrrYear, setMrrYear] = useState("2025");
-  const [conversionYear, setConversionYear] = useState("2025");
+  const [mrrYear, setMrrYear] = useState(currentYear);
+  const [conversionYear, setConversionYear] = useState(currentYear);
   const [planMixYear, setPlanMixYear] = useState("2025");
   const [adjustmentsYear, setAdjustmentsYear] = useState("2025");
   // const [familyVsIndividualYear, setFamilyVsIndividualYear] = useState("2025");
 
-  const mrrData = allMrrData[mrrYear];
-  const conversionData = allConversionData[conversionYear];
+  const { data: revenueMetricsData, isLoading: loadingRevenueMetricsData } =
+    useGetRevenueMetricsDataQuery();
+  const revenueMetrics = revenueMetricsData?.data;
+
+  const { data: revenueTrendsData, isLoading: loadingRevenueTrendsData } =
+    useGetRevenueTrendsDataQuery(mrrYear);
+  const revenueTrends = revenueTrendsData?.data;
+
+  const { data: trialToPaidData, isLoading: loadingTrialToPaidData } =
+    useGetTrialToPaidDataQuery(conversionYear);
+  const trialToPaid = trialToPaidData?.data;
+
   const planMixData = allPlanMixData[planMixYear];
   const adjustmentsData = allAdjustmentsData[adjustmentsYear];
   // const familyVsIndividualData =
@@ -80,12 +96,6 @@ export default function RevenueManagement() {
     "#6366f1", // indigo
     "#4f46e5", // deep indigo
   ];
-
-  // Current metrics (from latest month)
-  const currentMRR = mrrData[mrrData.length - 1].mrr;
-  const currentARR = mrrData[mrrData.length - 1].arr;
-  const currentARPU = mrrData[mrrData.length - 1].arpu;
-  const currentPayback = mrrData[mrrData.length - 1].payback;
 
   const revenueData = generateRevenueData();
 
@@ -115,6 +125,18 @@ export default function RevenueManagement() {
     setSelectedRecord(null);
   };
 
+  if (
+    loadingRevenueMetricsData ||
+    loadingRevenueTrendsData ||
+    loadingTrialToPaidData
+  ) {
+    return (
+      <div className="flex justify-center items-center h-[92vh]">
+        <CircularProgress />
+      </div>
+    );
+  }
+
   return (
     <div style={{ padding: "32px" }}>
       {/* Top Row Metrics - Revenue KPIs */}
@@ -128,29 +150,45 @@ export default function RevenueManagement() {
       >
         <MetricCard
           title="Monthly Recurring Revenue"
-          value={`$${(currentMRR / 1000).toFixed(1)}k`}
-          change={8.2}
+          value={
+            revenueMetrics?.mrr?.value
+              ? `$${(revenueMetrics.mrr.value / 1000).toFixed(1)}k`
+              : "$0.0k"
+          }
+          growth={revenueMetrics?.mrr?.growth ?? 0}
           icon={FaDollarSign}
           subtitle="MRR"
         />
         <MetricCard
           title="Annual Recurring Revenue"
-          value={`$${(currentARR / 1000).toFixed(0)}k`}
-          change={9.5}
+          value={
+            revenueMetrics?.arr?.value
+              ? `$${(revenueMetrics.arr.value / 1000).toFixed(0)}k`
+              : "$0k"
+          }
+          growth={revenueMetrics?.arr?.growth ?? 0}
           icon={FaChartLine}
           subtitle="ARR"
         />
         <MetricCard
           title="Average Revenue Per User"
-          value={`$${currentARPU.toFixed(2)}`}
-          change={5.3}
+          value={
+            revenueMetrics?.arpu?.value
+              ? `$${revenueMetrics.arpu.value.toFixed(2)}`
+              : "$0.00"
+          }
+          growth={revenueMetrics?.arpu?.growth ?? 0}
           icon={FaUsers}
           subtitle="ARPU"
         />
         <MetricCard
           title="Customer Acq. Payback"
-          value={`${currentPayback.toFixed(1)} mo`}
-          change={-12.5}
+          value={
+            revenueMetrics?.paybackPeriod?.months
+              ? `${revenueMetrics.paybackPeriod.months.toFixed(1)} mo`
+              : "0.0 mo"
+          }
+          growth={revenueMetrics?.paybackPeriod?.growth ?? 0}
           icon={FaClock}
           subtitle="Payback Period"
         />
@@ -195,9 +233,10 @@ export default function RevenueManagement() {
                     },
                   }}
                 >
-                  <MenuItem value="2023">2023</MenuItem>
-                  <MenuItem value="2024">2024</MenuItem>
                   <MenuItem value="2025">2025</MenuItem>
+                  <MenuItem value="2026">2026</MenuItem>
+                  <MenuItem value="2027">2027</MenuItem>
+                  <MenuItem value="2028">2028</MenuItem>
                 </Select>
               </FormControl>
             </div>
@@ -211,42 +250,7 @@ export default function RevenueManagement() {
             >
               Revenue metrics and customer value
             </p>
-            <ResponsiveContainer width="100%" height={320}>
-              <ComposedChart data={mrrData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis dataKey="month" stroke="#6b7280" />
-                <YAxis yAxisId="left" stroke="#6b7280" />
-                <YAxis yAxisId="right" orientation="right" stroke="#6b7280" />
-                <Tooltip
-                  contentStyle={{
-                    background: "white",
-                    border: "1px solid #e5e7eb",
-                    borderRadius: "8px",
-                  }}
-                />
-                <Legend />
-                <Bar
-                  yAxisId="left"
-                  dataKey="mrr"
-                  fill="#93c5fd"
-                  name="MRR ($)"
-                />
-                <Bar
-                  yAxisId="left"
-                  dataKey="arr"
-                  fill="#3b82f6"
-                  name="ARR ($)"
-                />
-                <Line
-                  yAxisId="right"
-                  type="monotone"
-                  dataKey="arpu"
-                  stroke="#10b981"
-                  strokeWidth={3}
-                  name="ARPU ($)"
-                />
-              </ComposedChart>
-            </ResponsiveContainer>
+            <RevenueTrendsChart revenueTrends={revenueTrends} />
           </CardContent>
         </Card>
 
@@ -280,9 +284,10 @@ export default function RevenueManagement() {
                     },
                   }}
                 >
-                  <MenuItem value="2023">2023</MenuItem>
-                  <MenuItem value="2024">2024</MenuItem>
                   <MenuItem value="2025">2025</MenuItem>
+                  <MenuItem value="2026">2026</MenuItem>
+                  <MenuItem value="2027">2027</MenuItem>
+                  <MenuItem value="2028">2028</MenuItem>
                 </Select>
               </FormControl>
             </div>
@@ -296,37 +301,7 @@ export default function RevenueManagement() {
             >
               Trial users converting to paid plans
             </p>
-            <ResponsiveContainer width="100%" height={320}>
-              <ComposedChart data={conversionData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis dataKey="month" stroke="#6b7280" />
-                <YAxis yAxisId="left" stroke="#6b7280" />
-                <YAxis yAxisId="right" orientation="right" stroke="#6b7280" />
-                <Tooltip
-                  contentStyle={{
-                    background: "white",
-                    border: "1px solid #e5e7eb",
-                    borderRadius: "8px",
-                  }}
-                />
-                <Legend />
-                <Bar
-                  yAxisId="left"
-                  dataKey="trials"
-                  fill="#93c5fd"
-                  name="Trials"
-                />
-                <Bar yAxisId="left" dataKey="paid" fill="#3b82f6" name="Paid" />
-                <Line
-                  yAxisId="right"
-                  type="monotone"
-                  dataKey="rate"
-                  stroke="#10b981"
-                  strokeWidth={3}
-                  name="Conversion %"
-                />
-              </ComposedChart>
-            </ResponsiveContainer>
+            <TrialToPaidChart trialToPaid={trialToPaid} />
           </CardContent>
         </Card>
       </div>
@@ -370,9 +345,10 @@ export default function RevenueManagement() {
                     },
                   }}
                 >
-                  <MenuItem value="2023">2023</MenuItem>
-                  <MenuItem value="2024">2024</MenuItem>
                   <MenuItem value="2025">2025</MenuItem>
+                  <MenuItem value="2026">2026</MenuItem>
+                  <MenuItem value="2027">2027</MenuItem>
+                  <MenuItem value="2028">2028</MenuItem>
                 </Select>
               </FormControl>
             </div>
