@@ -10,24 +10,16 @@ import {
   TableHead,
   TableRow,
   TablePagination,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   IconButton,
   Chip,
   Select,
   MenuItem,
   FormControl,
-  InputLabel,
   Modal,
   Box,
 } from "@mui/material";
 import {
-  FaEdit,
-  FaTrash,
   FaEye,
-  FaPlus,
   FaTimes,
   FaDollarSign,
   FaChartLine,
@@ -37,13 +29,10 @@ import {
 import {
   BarChart,
   Bar,
-  LineChart,
   Line,
   PieChart,
   Pie,
   Cell,
-  AreaChart,
-  Area,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -102,7 +91,7 @@ export default function RevenueManagement() {
 
   const paginatedData = revenueData.slice(
     page * rowsPerPage,
-    page * rowsPerPage + rowsPerPage
+    page * rowsPerPage + rowsPerPage,
   );
 
   // console.log(paginatedData);
@@ -680,8 +669,8 @@ export default function RevenueManagement() {
                       record.status === "Active"
                         ? "success"
                         : record.status === "Trial"
-                        ? "info"
-                        : "default"
+                          ? "info"
+                          : "default"
                     }
                   />
                 </TableCell>

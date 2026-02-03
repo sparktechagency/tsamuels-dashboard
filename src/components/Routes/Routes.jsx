@@ -23,6 +23,7 @@ import AdminControls from "../Dashboard/AdminControls";
 import PrivacyCompliance from "../Dashboard/PrivacyCompliance";
 import Settings from "../Dashboard/Settings";
 import ProtectedRoute from "../../utils/ProtectedRoute";
+import { HolidaysManagement } from "../Dashboard/HolidaysManagement";
 
 const router = createBrowserRouter([
   {
@@ -70,15 +71,6 @@ const router = createBrowserRouter([
             element: <RevenueManagement />,
           },
           {
-            path: "transaction",
-            element: <Transaction />,
-          },
-          {
-            path: "reliabilities",
-            element: <Reliability />,
-          },
-
-          {
             path: "support",
             element: <Support />,
           },
@@ -87,8 +79,8 @@ const router = createBrowserRouter([
             element: <AdminControls />,
           },
           {
-            path: "privacy-compliance",
-            element: <PrivacyCompliance />,
+            path: "holidays",
+            element: <HolidaysManagement />,
           },
           {
             path: "settings",

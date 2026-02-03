@@ -20,12 +20,7 @@ import {
   useGetTopZipCodesDataQuery,
   useGetUsersByStateDataQuery,
 } from "../../Redux/slices/growth&RetentionApi";
-
-const NoDataFallback = () => (
-  <div className="flex flex-col items-center justify-center h-[300px] bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
-    <p className="text-gray-400 font-medium">No data available for this period</p>
-  </div>
-);
+import { NoDataFallback } from "../utils/noDataFallBack";
 
 export function GrowthRetention() {
   const currentYear = new Date().getFullYear().toString();
@@ -291,7 +286,9 @@ export function GrowthRetention() {
             </div>
           ) : (
             <div className="p-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200 text-center">
-              <p className="text-gray-400 font-medium">No zip code data found</p>
+              <p className="text-gray-400 font-medium">
+                No zip code data found
+              </p>
             </div>
           )}
         </CardContent>
