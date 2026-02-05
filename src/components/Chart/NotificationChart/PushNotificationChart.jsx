@@ -9,10 +9,11 @@ import {
   YAxis,
 } from "recharts";
 
-export default function PushNotificationChart({ deliverabilityData }) {
+export default function PushNotificationChart({ pushNotifications }) {
+  // console.log(pushNotifications);
   return (
     <ResponsiveContainer width="100%" height={320}>
-      <ComposedChart data={deliverabilityData}>
+      <ComposedChart data={pushNotifications}>
         <CartesianGrid strokeDasharray="3 3" stroke="#d1d5db" />
         <XAxis dataKey="month" stroke="#374151" />
         <YAxis stroke="#374151" />
@@ -28,7 +29,7 @@ export default function PushNotificationChart({ deliverabilityData }) {
 
         <Area
           type="monotone"
-          dataKey="pushSent"
+          dataKey="sent"
           stackId="1"
           stroke="#60a5fa"
           fill="#60a5fa"
@@ -36,7 +37,7 @@ export default function PushNotificationChart({ deliverabilityData }) {
         />
         <Area
           type="monotone"
-          dataKey="pushDelivered"
+          dataKey="delivered"
           stackId="2"
           stroke="#3b82f6"
           fill="#3b82f6"
@@ -44,7 +45,7 @@ export default function PushNotificationChart({ deliverabilityData }) {
         />
         <Area
           type="monotone"
-          dataKey="pushOpened"
+          dataKey="opened"
           stackId="3"
           stroke="#2563eb"
           fill="#2563eb"
@@ -52,7 +53,7 @@ export default function PushNotificationChart({ deliverabilityData }) {
         />
         <Area
           type="monotone"
-          dataKey="pushClicked"
+          dataKey="clicked"
           stackId="4"
           stroke="#1d4ed8"
           fill="#1d4ed8"
