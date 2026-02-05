@@ -19,6 +19,7 @@ import {
   Tabs,
   Tab,
   Divider,
+  CircularProgress,
 } from "@mui/material";
 import {
   FaEye,
@@ -30,16 +31,20 @@ import {
   FaExchangeAlt,
   FaGift,
 } from "react-icons/fa";
-import {
-  PieChart,
-  Pie,
-  Cell,
-  ResponsiveContainer,
-  Legend,
-  Tooltip,
-} from "recharts";
+
 import { toast } from "sonner";
 import { MetricCard } from "../UI/MetricCard";
+import {
+  useGetAllFamiliesDataQuery,
+  useGetAllUsersDataQuery,
+  useGetPlanDistributionDataQuery,
+  useGetStatusDistributionDataQuery,
+  useGetUserAnalyticsDataQuery,
+} from "../../Redux/slices/adminControlsApi";
+import UserStatusChart from "../Chart/AdminControlsChart/UserStatusChart";
+import PlanDistributionChart from "../Chart/AdminControlsChart/PlanDistributionChart";
+import AdminActionsModal from "../UI/AdminActionsModal";
+import dayjs from "dayjs";
 
 const modalStyle = {
   position: "absolute",
@@ -57,6 +62,54 @@ const modalStyle = {
 };
 
 export default function AdminControls() {
+  const { data: userAnalyticsData, isLoading: loadingUserAnalyticsData } =
+    useGetUserAnalyticsDataQuery();
+  const userAnalytics = userAnalyticsData?.data;
+
+  const { data: userStatusData, isLoading: loadingUserStatusData } =
+    useGetStatusDistributionDataQuery();
+  const userStatus = userStatusData?.data;
+
+  const userStatusChartData =
+    userStatus &&
+    Object.entries(userStatus).map(([key, value]) => ({
+      name: key.charAt(0).toUpperCase() + key.slice(1),
+      value: value?.count,
+      percentage: value.percentage,
+    }));
+
+  const { data: planDistributionData, isLoading: loadingPlanDistributionData } =
+    useGetPlanDistributionDataQuery();
+  const planDistribution = planDistributionData?.data;
+
+  const planDistributionChartData =
+    planDistribution &&
+    Object.entries(planDistribution).map(([key, value]) => ({
+      name: key.charAt(0).toUpperCase() + key.slice(1),
+      value: value?.count,
+      percentage: value.percentage,
+    }));
+
+  const {
+    data: allUsersData,
+    isLoading: loadingAllUsersData,
+    error: allUsersError,
+  } = useGetAllUsersDataQuery();
+  const allUsers = allUsersData?.data;
+  if (allUsersError) console.error("Error fetching users:", allUsersError);
+  // console.log("allUsers", allUsers);
+
+  const {
+    data: allFamiliesData,
+    isLoading: loadingAllFamiliesData,
+    error: allFamiliesError,
+  } = useGetAllFamiliesDataQuery();
+  // Ensure we access .data if that's where the array is, and fallback to []
+  const allFamilies = allFamiliesData?.data?.result || [];
+  if (allFamiliesError)
+    console.error("Error fetching families:", allFamiliesError);
+  // console.log("allFamilies", allFamilies);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -70,133 +123,35 @@ export default function AdminControls() {
     reason: "",
   });
 
-  // Generate user and family data
-  const generateUserData = () => {
-    const plans = ["Free", "Premium", "Trial"];
-    const data = [];
-
-    for (let i = 1; i <= 100; i++) {
-      const plan = plans[i % 3];
-      const status =
-        i % 20 === 0 ? "Blocked" : i % 10 === 0 ? "Inactive" : "Active";
-      data.push({
-        id: `user_${1000 + i}`,
-        name: `User ${i}`,
-        email: `user${i}@example.com`,
-        plan,
-        status,
-        familyId: `family_${Math.floor(i / 3) + 100}`,
-        lastActive: `2024-12-${String(
-          Math.floor(Math.random() * 28) + 1
-        ).padStart(2, "0")}`,
-        joinedDate: `2023-${String(Math.floor(Math.random() * 12) + 1).padStart(
-          2,
-          "0"
-        )}-15`,
-        eventsCreated: Math.floor(Math.random() * 200),
-        sessionsActive: Math.floor(Math.random() * 5),
-        type: "user",
-      });
-    }
-    return data;
-  };
-
-  const generateFamilyData = () => {
-    const plans = ["Free", "Premium", "Premium Plus"];
-    const data = [];
-
-    for (let i = 1; i <= 50; i++) {
-      const plan = plans[i % 3];
-      const memberCount = Math.floor(Math.random() * 8) + 2;
-      data.push({
-        id: `family_${100 + i}`,
-        name: `The ${
-          ["Smith", "Johnson", "Williams", "Brown", "Jones"][i % 5]
-        } Family`,
-        plan,
-        owner: `user_${1000 + i * 3}`,
-        ownerEmail: `user${i * 3}@example.com`,
-        memberCount,
-        eventsCount: Math.floor(Math.random() * 500),
-        createdDate: `2023-${String(
-          Math.floor(Math.random() * 12) + 1
-        ).padStart(2, "0")}-${String(
-          Math.floor(Math.random() * 28) + 1
-        ).padStart(2, "0")}`,
-        lastActivity: `2024-12-${String(
-          Math.floor(Math.random() * 28) + 1
-        ).padStart(2, "0")}`,
-        status: i % 15 === 0 ? "Inactive" : "Active",
-        type: "family",
-      });
-    }
-    return data;
-  };
-
-  const userData = generateUserData();
-  const familyData = generateFamilyData();
-
-  // Calculate metrics
-  const totalUsers = userData.length;
-  const activeUsers = userData.filter((u) => u.status === "Active").length;
-  const blockedUsers = userData.filter((u) => u.status === "Blocked").length;
-  const premiumUsers = userData.filter((u) => u.plan === "Premium").length;
-
-  const totalFamilies = familyData.length;
-  const activeFamilies = familyData.filter((f) => f.status === "Active").length;
-
-  // Chart data
-  const userStatusData = [
-    {
-      name: "Active",
-      value: userData.filter((u) => u.status === "Active").length,
-    },
-    {
-      name: "Inactive",
-      value: userData.filter((u) => u.status === "Inactive").length,
-    },
-    {
-      name: "Blocked",
-      value: userData.filter((u) => u.status === "Blocked").length,
-    },
-  ];
-
-  const planDistributionData = [
-    { name: "Free", value: userData.filter((u) => u.plan === "Free").length },
-    {
-      name: "Premium",
-      value: userData.filter((u) => u.plan === "Premium").length,
-    },
-    { name: "Trial", value: userData.filter((u) => u.plan === "Trial").length },
-  ];
-
   const COLORS = ["#10b981", "#f59e0b", "#ef4444"];
   const PLAN_COLORS = ["#94a3b8", "#3b82f6", "#8b5cf6"];
 
-  const currentData = activeTab === 0 ? userData : familyData;
+  const currentData = activeTab === 0 ? allUsers : allFamilies;
+  console.log("currentData", currentData, activeTab);
 
-  const filteredData = currentData.filter((record) => {
-    const query = searchQuery.toLowerCase();
-    if (activeTab === 0) {
-      return (
-        record.name.toLowerCase().includes(query) ||
-        record.email.toLowerCase().includes(query) ||
-        record.id.toLowerCase().includes(query) ||
-        record.familyId.toLowerCase().includes(query)
-      );
-    } else {
-      return (
-        record.name.toLowerCase().includes(query) ||
-        record.id.toLowerCase().includes(query) ||
-        record.owner.toLowerCase().includes(query)
-      );
-    }
-  });
+  const filteredData =
+    currentData &&
+    currentData.length > 0 &&
+    (currentData || []).filter((record) => {
+      const query = searchQuery.toLowerCase();
+      if (activeTab === 0) {
+        return (
+          record?.name.toLowerCase().includes(query) ||
+          record?.email.toLowerCase().includes(query) ||
+          record?._id.toLowerCase().includes(query) ||
+          record?.familyId.toLowerCase().includes(query)
+        );
+      } else {
+        return (
+          record?.familyName.toLowerCase().includes(query) ||
+          record?._id.toLowerCase().includes(query)
+        );
+      }
+    });
 
-  const paginatedData = filteredData.slice(
-    page * rowsPerPage,
-    page * rowsPerPage + rowsPerPage
-  );
+  const paginatedData =
+    filteredData &&
+    filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -234,7 +189,7 @@ export default function AdminControls() {
     toast.success(
       `Impersonating ${
         selectedRecord.name || selectedRecord.email
-      } in read-only mode`
+      } in read-only mode`,
     );
     closeModal();
   };
@@ -248,7 +203,7 @@ export default function AdminControls() {
     toast.success(
       `All ${selectedRecord.sessionsActive || 0} active sessions revoked for ${
         selectedRecord.name
-      }`
+      }`,
     );
     closeModal();
   };
@@ -256,7 +211,7 @@ export default function AdminControls() {
   const handleBlockUser = () => {
     if (
       confirm(
-        `Are you sure you want to block ${selectedRecord.name}? They will not be able to access the app.`
+        `Are you sure you want to block ${selectedRecord.name}? They will not be able to access the app.`,
       )
     ) {
       toast.success(`User ${selectedRecord.name} has been blocked`);
@@ -270,7 +225,7 @@ export default function AdminControls() {
       return;
     }
     toast.success(
-      `Family ownership transferred from ${selectedRecord.owner} to ${actionInputs.targetId}`
+      `Family ownership transferred from ${selectedRecord.owner} to ${actionInputs.targetId}`,
     );
     closeModal();
   };
@@ -282,11 +237,11 @@ export default function AdminControls() {
     }
     if (
       confirm(
-        `Merge ${selectedRecord.name} with ${actionInputs.targetId}? This cannot be undone.`
+        `Merge ${selectedRecord.name} with ${actionInputs.targetId}? This cannot be undone.`,
       )
     ) {
       toast.success(
-        `Family ${selectedRecord.id} merged with ${actionInputs.targetId}`
+        `Family ${selectedRecord.id} merged with ${actionInputs.targetId}`,
       );
       closeModal();
     }
@@ -295,7 +250,7 @@ export default function AdminControls() {
   const handleDeleteFamily = () => {
     if (
       confirm(
-        `Permanently delete ${selectedRecord.name}? All data will be lost. This cannot be undone.`
+        `Permanently delete ${selectedRecord.name}? All data will be lost. This cannot be undone.`,
       )
     ) {
       toast.success(`Family ${selectedRecord.name} has been deleted`);
@@ -330,6 +285,20 @@ export default function AdminControls() {
   //   closeModal();
   // };
 
+  if (
+    loadingUserAnalyticsData ||
+    loadingUserStatusData ||
+    loadingPlanDistributionData ||
+    loadingAllUsersData ||
+    loadingAllFamiliesData
+  ) {
+    return (
+      <div className="flex justify-center items-center h-[92vh]">
+        <CircularProgress />
+      </div>
+    );
+  }
+
   return (
     <div style={{ padding: "32px" }}>
       {/* Top Row Metrics */}
@@ -343,33 +312,35 @@ export default function AdminControls() {
       >
         <MetricCard
           title="Total Users"
-          value={totalUsers.toString()}
-          change={8.2}
+          value={userAnalytics?.totalUsers.count}
+          growth={userAnalytics?.totalUsers.growth}
           icon={FaUsers}
-          subtitle={`${activeUsers} active`}
+          subtitle={`${userAnalytics?.totalUsers.active} active`}
         />
         <MetricCard
           title="Premium Users"
-          value={premiumUsers.toString()}
-          change={12.5}
+          value={userAnalytics?.premiumUsers.count}
+          growth={userAnalytics?.premiumUsers.growth}
           icon={FaDollarSign}
-          subtitle={`${((premiumUsers / totalUsers) * 100).toFixed(
-            1
-          )}% conversion`}
+          subtitle={`${userAnalytics?.premiumUsers.conversionRate}% conversion`}
         />
         <MetricCard
           title="Total Families"
-          value={totalFamilies.toString()}
-          change={6.8}
+          value={userAnalytics?.totalFamilies.count}
+          growth={userAnalytics?.totalFamilies.growth}
           icon={FaUsers}
-          subtitle={`${activeFamilies} active`}
+          subtitle={`${userAnalytics?.totalFamilies.active} active`}
         />
         <MetricCard
           title="Blocked Users"
-          value={blockedUsers.toString()}
-          change={-15.3}
+          value={userAnalytics?.blockedUsers.count}
+          growth={userAnalytics?.blockedUsers.growth}
           icon={FaLock}
-          subtitle="Requires attention"
+          subtitle={
+            userAnalytics?.blockedUsers?.requiresAttention
+              ? "Require Attention"
+              : "No Action Needed"
+          }
         />
       </div>
 
@@ -410,31 +381,10 @@ export default function AdminControls() {
             >
               Active, inactive, and blocked users
             </p>
-            <ResponsiveContainer width="100%" height={280}>
-              <PieChart>
-                <Pie
-                  data={userStatusData}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  label={({ name, percent }) =>
-                    `${name} ${(percent * 100).toFixed(0)}%`
-                  }
-                  outerRadius={90}
-                  fill="#8884d8"
-                  dataKey="value"
-                >
-                  {userStatusData.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={COLORS[index % COLORS.length]}
-                    />
-                  ))}
-                </Pie>
-                <Tooltip />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
+            <UserStatusChart
+              userStatusChartData={userStatusChartData}
+              COLORS={COLORS}
+            />
           </CardContent>
         </Card>
 
@@ -466,31 +416,10 @@ export default function AdminControls() {
             >
               Free, premium, and trial users
             </p>
-            <ResponsiveContainer width="100%" height={280}>
-              <PieChart>
-                <Pie
-                  data={planDistributionData}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  label={({ name, percent }) =>
-                    `${name} ${(percent * 100).toFixed(0)}%`
-                  }
-                  outerRadius={90}
-                  fill="#8884d8"
-                  dataKey="value"
-                >
-                  {planDistributionData.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={PLAN_COLORS[index % PLAN_COLORS.length]}
-                    />
-                  ))}
-                </Pie>
-                <Tooltip />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
+            <PlanDistributionChart
+              planDistributionChartData={planDistributionChartData}
+              PLAN_COLORS={PLAN_COLORS}
+            />
           </CardContent>
         </Card>
       </div>
@@ -529,8 +458,8 @@ export default function AdminControls() {
             setSearchQuery("");
           }}
         >
-          <Tab label={`Users (${userData.length})`} />
-          <Tab label={`Families (${familyData.length})`} />
+          <Tab label={`Users (${allUsers.length})`} />
+          <Tab label={`Families (${allFamilies.length})`} />
         </Tabs>
       </Paper>
 
@@ -549,10 +478,9 @@ export default function AdminControls() {
                 </>
               ) : (
                 <>
-                  <TableCell>Family ID</TableCell>
                   <TableCell>Name</TableCell>
                   <TableCell>Plan</TableCell>
-                  <TableCell>Owner</TableCell>
+
                   <TableCell>Members</TableCell>
                   <TableCell>Events</TableCell>
                   <TableCell>Status</TableCell>
@@ -577,8 +505,8 @@ export default function AdminControls() {
                           record.plan === "Premium"
                             ? "primary"
                             : record.plan === "Trial"
-                            ? "info"
-                            : "default"
+                              ? "info"
+                              : "default"
                         }
                       />
                     </TableCell>
@@ -587,16 +515,20 @@ export default function AdminControls() {
                         label={record.status}
                         size="small"
                         color={
-                          record.status === "Active"
+                          record.status === "active"
                             ? "success"
-                            : record.status === "Blocked"
-                            ? "error"
-                            : "default"
+                            : record.status === "blocked"
+                              ? "error"
+                              : "default"
                         }
                       />
                     </TableCell>
                     <TableCell sx={{ fontSize: "0.875rem", color: "#6b7280" }}>
-                      {record.lastActive}
+                      {record.onlineStatus?.lastSeen
+                        ? dayjs(record.onlineStatus.lastSeen).format(
+                            "MMM D, YYYY",
+                          )
+                        : "N/A"}
                     </TableCell>
                     <TableCell align="right">
                       <IconButton
@@ -610,41 +542,34 @@ export default function AdminControls() {
                   </>
                 ) : (
                   <>
-                    <TableCell
-                      sx={{ fontFamily: "monospace", fontSize: "0.875rem" }}
-                    >
-                      {record.id}
-                    </TableCell>
-                    <TableCell>{record.name}</TableCell>
+                    <TableCell>{record.familyName}</TableCell>
                     <TableCell>
                       <Chip
-                        label={record.plan}
+                        label={record.subscriptionPlan}
                         size="small"
                         color={
-                          record.plan.includes("Premium")
+                          record.subscriptionPlan.includes("Premium")
                             ? "primary"
                             : "default"
                         }
                       />
                     </TableCell>
-                    <TableCell
-                      sx={{ fontFamily: "monospace", fontSize: "0.75rem" }}
-                    >
-                      {record.owner}
-                    </TableCell>
-                    <TableCell>{record.memberCount}</TableCell>
-                    <TableCell>{record.eventsCount}</TableCell>
+
+                    <TableCell>{record.members}</TableCell>
+                    <TableCell>{record.totalEvents}</TableCell>
                     <TableCell>
                       <Chip
                         label={record.status}
                         size="small"
                         color={
-                          record.status === "Active" ? "success" : "default"
+                          record.status === "active" ? "success" : "default"
                         }
                       />
                     </TableCell>
                     <TableCell sx={{ fontSize: "0.875rem", color: "#6b7280" }}>
-                      {record.createdDate}
+                      {record.createdAt
+                        ? dayjs(record.createdAt).format("MMM D, YYYY")
+                        : "N/A"}
                     </TableCell>
                     <TableCell align="right">
                       <IconButton
@@ -673,829 +598,21 @@ export default function AdminControls() {
       </TableContainer>
 
       {/* Admin Actions Modal */}
-      <Modal open={isModalOpen} onClose={closeModal}>
-        <Box sx={modalStyle}>
-          {/* Modal Header */}
-          <div
-            style={{
-              padding: "24px",
-              borderBottom: "1px solid #e5e7eb",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              background: "linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%)",
-              color: "white",
-              borderRadius: "16px 16px 0 0",
-            }}
-          >
-            <p style={{ margin: 0, fontSize: "1.5rem", fontWeight: 600 }}>
-              {selectedRecord?.type === "user"
-                ? "👤 User Admin Controls"
-                : "👨‍👩‍👧‍👦 Family Admin Controls"}
-            </p>
-            <IconButton
-              onClick={closeModal}
-              size="small"
-              sx={{ color: "white" }}
-            >
-              <FaTimes size={20} />
-            </IconButton>
-          </div>
-
-          {/* Modal Body */}
-          <div style={{ padding: "24px" }}>
-            {selectedRecord && (
-              <>
-                {/* Details Section */}
-                <div
-                  style={{
-                    marginBottom: "24px",
-                    padding: "16px",
-                    background: "#f8fafc",
-                    borderRadius: "8px",
-                    border: "1px solid #e2e8f0",
-                  }}
-                >
-                  <p
-                    style={{
-                      margin: 0,
-                      fontSize: "1.125rem",
-                      fontWeight: 600,
-                      marginBottom: "12px",
-                      color: "#1e40af",
-                    }}
-                  >
-                    {selectedRecord.type === "user"
-                      ? "📋 User Details"
-                      : "📋 Family Details"}
-                  </p>
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "repeat(2, 1fr)",
-                      gap: "12px",
-                    }}
-                  >
-                    {selectedRecord.type === "user" ? (
-                      <>
-                        <div>
-                          <p
-                            style={{
-                              margin: 0,
-                              fontSize: "0.75rem",
-                              color: "#6b7280",
-                              marginBottom: "4px",
-                              textTransform: "uppercase",
-                              letterSpacing: "0.5px",
-                            }}
-                          >
-                            User ID
-                          </p>
-                          <p
-                            style={{
-                              margin: 0,
-                              fontFamily: "monospace",
-                              fontWeight: 600,
-                            }}
-                          >
-                            {selectedRecord.id}
-                          </p>
-                        </div>
-                        <div>
-                          <p
-                            style={{
-                              margin: 0,
-                              fontSize: "0.75rem",
-                              color: "#6b7280",
-                              marginBottom: "4px",
-                              textTransform: "uppercase",
-                              letterSpacing: "0.5px",
-                            }}
-                          >
-                            Name
-                          </p>
-                          <p style={{ margin: 0, fontWeight: 600 }}>
-                            {selectedRecord.name}
-                          </p>
-                        </div>
-                        <div style={{ gridColumn: "1 / -1" }}>
-                          <p
-                            style={{
-                              margin: 0,
-                              fontSize: "0.75rem",
-                              color: "#6b7280",
-                              marginBottom: "4px",
-                              textTransform: "uppercase",
-                              letterSpacing: "0.5px",
-                            }}
-                          >
-                            Email
-                          </p>
-                          <p style={{ margin: 0, fontWeight: 600 }}>
-                            {selectedRecord.email}
-                          </p>
-                        </div>
-                        <div>
-                          <p
-                            style={{
-                              margin: 0,
-                              fontSize: "0.75rem",
-                              color: "#6b7280",
-                              marginBottom: "4px",
-                              textTransform: "uppercase",
-                              letterSpacing: "0.5px",
-                            }}
-                          >
-                            Plan
-                          </p>
-                          <Chip
-                            label={selectedRecord.plan}
-                            size="small"
-                            color={
-                              selectedRecord.plan === "Premium"
-                                ? "primary"
-                                : "default"
-                            }
-                          />
-                        </div>
-                        <div>
-                          <p
-                            style={{
-                              margin: 0,
-                              fontSize: "0.75rem",
-                              color: "#6b7280",
-                              marginBottom: "4px",
-                              textTransform: "uppercase",
-                              letterSpacing: "0.5px",
-                            }}
-                          >
-                            Status
-                          </p>
-                          <Chip
-                            label={selectedRecord.status}
-                            size="small"
-                            color={
-                              selectedRecord.status === "Active"
-                                ? "success"
-                                : selectedRecord.status === "Blocked"
-                                ? "error"
-                                : "default"
-                            }
-                          />
-                        </div>
-                        <div>
-                          <p
-                            style={{
-                              margin: 0,
-                              fontSize: "0.75rem",
-                              color: "#6b7280",
-                              marginBottom: "4px",
-                              textTransform: "uppercase",
-                              letterSpacing: "0.5px",
-                            }}
-                          >
-                            Family ID
-                          </p>
-                          <p
-                            style={{
-                              margin: 0,
-                              fontFamily: "monospace",
-                              fontSize: "0.875rem",
-                            }}
-                          >
-                            {selectedRecord.familyId}
-                          </p>
-                        </div>
-                        <div>
-                          <p
-                            style={{
-                              margin: 0,
-                              fontSize: "0.75rem",
-                              color: "#6b7280",
-                              marginBottom: "4px",
-                              textTransform: "uppercase",
-                              letterSpacing: "0.5px",
-                            }}
-                          >
-                            Active Sessions
-                          </p>
-                          <p style={{ margin: 0 }}>
-                            {selectedRecord.sessionsActive}
-                          </p>
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <div>
-                          <p
-                            style={{
-                              margin: 0,
-                              fontSize: "0.75rem",
-                              color: "#6b7280",
-                              marginBottom: "4px",
-                              textTransform: "uppercase",
-                              letterSpacing: "0.5px",
-                            }}
-                          >
-                            Family ID
-                          </p>
-                          <p
-                            style={{
-                              margin: 0,
-                              fontFamily: "monospace",
-                              fontWeight: 600,
-                            }}
-                          >
-                            {selectedRecord.id}
-                          </p>
-                        </div>
-                        <div>
-                          <p
-                            style={{
-                              margin: 0,
-                              fontSize: "0.75rem",
-                              color: "#6b7280",
-                              marginBottom: "4px",
-                              textTransform: "uppercase",
-                              letterSpacing: "0.5px",
-                            }}
-                          >
-                            Name
-                          </p>
-                          <p style={{ margin: 0, fontWeight: 600 }}>
-                            {selectedRecord.name}
-                          </p>
-                        </div>
-                        <div>
-                          <p
-                            style={{
-                              margin: 0,
-                              fontSize: "0.75rem",
-                              color: "#6b7280",
-                              marginBottom: "4px",
-                              textTransform: "uppercase",
-                              letterSpacing: "0.5px",
-                            }}
-                          >
-                            Plan
-                          </p>
-                          <Chip
-                            label={selectedRecord.plan}
-                            size="small"
-                            color="primary"
-                          />
-                        </div>
-                        <div>
-                          <p
-                            style={{
-                              margin: 0,
-                              fontSize: "0.75rem",
-                              color: "#6b7280",
-                              marginBottom: "4px",
-                              textTransform: "uppercase",
-                              letterSpacing: "0.5px",
-                            }}
-                          >
-                            Status
-                          </p>
-                          <Chip
-                            label={selectedRecord.status}
-                            size="small"
-                            color={
-                              selectedRecord.status === "Active"
-                                ? "success"
-                                : "default"
-                            }
-                          />
-                        </div>
-                        <div>
-                          <p
-                            style={{
-                              margin: 0,
-                              fontSize: "0.75rem",
-                              color: "#6b7280",
-                              marginBottom: "4px",
-                              textTransform: "uppercase",
-                              letterSpacing: "0.5px",
-                            }}
-                          >
-                            Owner
-                          </p>
-                          <p
-                            style={{
-                              margin: 0,
-                              fontFamily: "monospace",
-                              fontSize: "0.875rem",
-                            }}
-                          >
-                            {selectedRecord.owner}
-                          </p>
-                        </div>
-                        <div>
-                          <p
-                            style={{
-                              margin: 0,
-                              fontSize: "0.75rem",
-                              color: "#6b7280",
-                              marginBottom: "4px",
-                              textTransform: "uppercase",
-                              letterSpacing: "0.5px",
-                            }}
-                          >
-                            Owner Email
-                          </p>
-                          <p style={{ margin: 0, fontSize: "0.875rem" }}>
-                            {selectedRecord.ownerEmail}
-                          </p>
-                        </div>
-                        <div>
-                          <p
-                            style={{
-                              margin: 0,
-                              fontSize: "0.75rem",
-                              color: "#6b7280",
-                              marginBottom: "4px",
-                              textTransform: "uppercase",
-                              letterSpacing: "0.5px",
-                            }}
-                          >
-                            Members
-                          </p>
-                          <p style={{ margin: 0 }}>
-                            {selectedRecord.memberCount} members
-                          </p>
-                        </div>
-                        <div>
-                          <p
-                            style={{
-                              margin: 0,
-                              fontSize: "0.75rem",
-                              color: "#6b7280",
-                              marginBottom: "4px",
-                              textTransform: "uppercase",
-                              letterSpacing: "0.5px",
-                            }}
-                          >
-                            Events
-                          </p>
-                          <p style={{ margin: 0 }}>
-                            {selectedRecord.eventsCount} events
-                          </p>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                </div>
-
-                <Divider sx={{ my: 3 }} />
-
-                {/* Actions Section */}
-                <div>
-                  <p
-                    style={{
-                      margin: 0,
-                      fontSize: "1.25rem",
-                      fontWeight: 600,
-                      marginBottom: "20px",
-                      color: "#1e293b",
-                    }}
-                  >
-                    🛠️ Admin Actions
-                  </p>
-
-                  {selectedRecord.type === "user" ? (
-                    <>
-                      {/* User Security Actions */}
-                      <div style={{ marginBottom: "24px" }}>
-                        <p
-                          style={{
-                            margin: 0,
-                            fontSize: "0.875rem",
-                            fontWeight: 600,
-                            color: "#64748b",
-                            marginBottom: "12px",
-                            textTransform: "uppercase",
-                            letterSpacing: "1px",
-                          }}
-                        >
-                          🔒 Security Actions
-                        </p>
-                        <div
-                          style={{
-                            display: "grid",
-                            gridTemplateColumns: "repeat(2, 1fr)",
-                            gap: "12px",
-                          }}
-                        >
-                          <Button
-                            variant="outlined"
-                            fullWidth
-                            onClick={handleImpersonate}
-                            sx={{
-                              borderRadius: 2,
-                              textTransform: "none",
-                              py: 1.5,
-                              borderColor: "#3b82f6",
-                              color: "#3b82f6",
-                              "&:hover": {
-                                borderColor: "#2563eb",
-                                bgcolor: "#eff6ff",
-                              },
-                            }}
-                          >
-                            👁️ Impersonate (Read-Only)
-                          </Button>
-                          <Button
-                            variant="outlined"
-                            fullWidth
-                            onClick={handleForcePasswordReset}
-                            sx={{
-                              borderRadius: 2,
-                              textTransform: "none",
-                              py: 1.5,
-                              borderColor: "#f59e0b",
-                              color: "#f59e0b",
-                              "&:hover": {
-                                borderColor: "#d97706",
-                                bgcolor: "#fef3c7",
-                              },
-                            }}
-                          >
-                            🔑 Force Password Reset
-                          </Button>
-                          <Button
-                            variant="outlined"
-                            fullWidth
-                            onClick={handleRevokeSessions}
-                            sx={{
-                              borderRadius: 2,
-                              textTransform: "none",
-                              py: 1.5,
-                              borderColor: "#f59e0b",
-                              color: "#f59e0b",
-                              "&:hover": {
-                                borderColor: "#d97706",
-                                bgcolor: "#fef3c7",
-                              },
-                            }}
-                          >
-                            🚫 Revoke Sessions
-                          </Button>
-                          <Button
-                            variant="outlined"
-                            fullWidth
-                            onClick={handleBlockUser}
-                            sx={{
-                              borderRadius: 2,
-                              textTransform: "none",
-                              py: 1.5,
-                              borderColor: "#ef4444",
-                              color: "#ef4444",
-                              "&:hover": {
-                                borderColor: "#dc2626",
-                                bgcolor: "#fee2e2",
-                              },
-                            }}
-                          >
-                            ⛔ Block User
-                          </Button>
-                        </div>
-                      </div>
-
-                      {/* Billing Actions */}
-                      {/* <div style={{ marginBottom: "16px" }}>
-                        <p
-                          style={{
-                            margin: 0,
-                            fontSize: "0.875rem",
-                            fontWeight: 600,
-                            color: "#64748b",
-                            marginBottom: "12px",
-                            textTransform: "uppercase",
-                            letterSpacing: "1px",
-                          }}
-                        >
-                          💰 Billing Actions
-                        </p>
-                        <div
-                          style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            gap: "12px",
-                          }}
-                        >
-                          <div>
-                            <div
-                              style={{
-                                display: "flex",
-                                gap: "8px",
-                                marginBottom: "8px",
-                              }}
-                            >
-                              <TextField
-                                size="small"
-                                label="Number of Months"
-                                type="number"
-                                value={actionInputs.promoMonths}
-                                onChange={(e) =>
-                                  setActionInputs({
-                                    ...actionInputs,
-                                    promoMonths: e.target.value,
-                                  })
-                                }
-                                sx={{ flex: 1 }}
-                              />
-                              <Button
-                                variant="contained"
-                                onClick={handleGrantPromo}
-                                sx={{
-                                  borderRadius: 2,
-                                  textTransform: "none",
-                                  bgcolor: "#10b981",
-                                  "&:hover": { bgcolor: "#059669" },
-                                }}
-                              >
-                                🎁 Grant Promo Months
-                              </Button>
-                            </div>
-                          </div>
-                          <div style={{ display: "flex", gap: "8px" }}>
-                            <TextField
-                              size="small"
-                              label="Refund Amount ($)"
-                              type="number"
-                              value={actionInputs.refundAmount}
-                              onChange={(e) =>
-                                setActionInputs({
-                                  ...actionInputs,
-                                  refundAmount: e.target.value,
-                                })
-                              }
-                              sx={{ flex: 1 }}
-                            />
-                            <Button
-                              variant="contained"
-                              onClick={handleIssueRefund}
-                              sx={{
-                                borderRadius: 2,
-                                textTransform: "none",
-                                bgcolor: "#f59e0b",
-                                "&:hover": { bgcolor: "#d97706" },
-                              }}
-                            >
-                              💵 Issue Refund
-                            </Button>
-                          </div>
-                          <Button
-                            variant="contained"
-                            fullWidth
-                            onClick={handleCompPlan}
-                            sx={{
-                              borderRadius: 2,
-                              textTransform: "none",
-                              py: 1.5,
-                              bgcolor: "#8b5cf6",
-                              "&:hover": { bgcolor: "#7c3aed" },
-                            }}
-                          >
-                            ⭐ Comp Premium Plan
-                          </Button>
-                        </div>
-                      </div> */}
-                    </>
-                  ) : (
-                    <>
-                      {/* Family Management Actions */}
-                      <div style={{ marginBottom: "24px" }}>
-                        <p
-                          style={{
-                            margin: 0,
-                            fontSize: "0.875rem",
-                            fontWeight: 600,
-                            color: "#64748b",
-                            marginBottom: "12px",
-                            textTransform: "uppercase",
-                            letterSpacing: "1px",
-                          }}
-                        >
-                          👨‍👩‍👧‍👦 Family Management
-                        </p>
-                        <div
-                          style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            gap: "12px",
-                          }}
-                        >
-                          <div style={{ display: "flex", gap: "8px" }}>
-                            <TextField
-                              size="small"
-                              label="New Owner User ID"
-                              value={actionInputs.targetId}
-                              onChange={(e) =>
-                                setActionInputs({
-                                  ...actionInputs,
-                                  targetId: e.target.value,
-                                })
-                              }
-                              sx={{ flex: 1 }}
-                            />
-                            <Button
-                              variant="contained"
-                              onClick={handleTransferOwnership}
-                              sx={{
-                                borderRadius: 2,
-                                textTransform: "none",
-                                bgcolor: "#3b82f6",
-                                "&:hover": { bgcolor: "#2563eb" },
-                              }}
-                            >
-                              🔄 Transfer Ownership
-                            </Button>
-                          </div>
-                          <div style={{ display: "flex", gap: "8px" }}>
-                            <TextField
-                              size="small"
-                              label="Target Family ID"
-                              value={actionInputs.targetId}
-                              onChange={(e) =>
-                                setActionInputs({
-                                  ...actionInputs,
-                                  targetId: e.target.value,
-                                })
-                              }
-                              sx={{ flex: 1 }}
-                            />
-                            <Button
-                              variant="contained"
-                              onClick={handleMergeFamilies}
-                              sx={{
-                                borderRadius: 2,
-                                textTransform: "none",
-                                bgcolor: "#10b981",
-                                "&:hover": { bgcolor: "#059669" },
-                              }}
-                            >
-                              🔗 Merge Families
-                            </Button>
-                          </div>
-                          <Button
-                            variant="outlined"
-                            fullWidth
-                            onClick={handleDeleteFamily}
-                            sx={{
-                              borderRadius: 2,
-                              textTransform: "none",
-                              py: 1.5,
-                              borderColor: "#ef4444",
-                              color: "#ef4444",
-                              "&:hover": {
-                                borderColor: "#dc2626",
-                                bgcolor: "#fee2e2",
-                              },
-                            }}
-                          >
-                            🗑️ Delete Family
-                          </Button>
-                        </div>
-                      </div>
-
-                      {/* Billing Actions for Families */}
-                      {/* <div style={{ marginBottom: "16px" }}>
-                        <p
-                          style={{
-                            margin: 0,
-                            fontSize: "0.875rem",
-                            fontWeight: 600,
-                            color: "#64748b",
-                            marginBottom: "12px",
-                            textTransform: "uppercase",
-                            letterSpacing: "1px",
-                          }}
-                        >
-                          💰 Billing Actions
-                        </p>
-                        <div
-                          style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            gap: "12px",
-                          }}
-                        >
-                          <div style={{ display: "flex", gap: "8px" }}>
-                            <TextField
-                              size="small"
-                              label="Number of Months"
-                              type="number"
-                              value={actionInputs.promoMonths}
-                              onChange={(e) =>
-                                setActionInputs({
-                                  ...actionInputs,
-                                  promoMonths: e.target.value,
-                                })
-                              }
-                              sx={{ flex: 1 }}
-                            />
-                            <Button
-                              variant="contained"
-                              onClick={handleGrantPromo}
-                              sx={{
-                                borderRadius: 2,
-                                textTransform: "none",
-                                bgcolor: "#10b981",
-                                "&:hover": { bgcolor: "#059669" },
-                              }}
-                            >
-                              🎁 Grant Promo Months
-                            </Button>
-                          </div>
-                          <div style={{ display: "flex", gap: "8px" }}>
-                            <TextField
-                              size="small"
-                              label="Refund Amount ($)"
-                              type="number"
-                              value={actionInputs.refundAmount}
-                              onChange={(e) =>
-                                setActionInputs({
-                                  ...actionInputs,
-                                  refundAmount: e.target.value,
-                                })
-                              }
-                              sx={{ flex: 1 }}
-                            />
-                            <Button
-                              variant="contained"
-                              onClick={handleIssueRefund}
-                              sx={{
-                                borderRadius: 2,
-                                textTransform: "none",
-                                bgcolor: "#f59e0b",
-                                "&:hover": { bgcolor: "#d97706" },
-                              }}
-                            >
-                              💵 Issue Refund
-                            </Button>
-                          </div>
-                          <Button
-                            variant="contained"
-                            fullWidth
-                            onClick={handleCompPlan}
-                            sx={{
-                              borderRadius: 2,
-                              textTransform: "none",
-                              py: 1.5,
-                              bgcolor: "#8b5cf6",
-                              "&:hover": { bgcolor: "#7c3aed" },
-                            }}
-                          >
-                            ⭐ Comp Premium Plan
-                          </Button>
-                        </div>
-                      </div> */}
-                    </>
-                  )}
-
-                  {/* Optional Notes */}
-                  {/* <TextField
-                    fullWidth
-                    size="small"
-                    label="Reason / Notes (optional)"
-                    multiline
-                    rows={2}
-                    value={actionInputs.reason}
-                    onChange={(e) =>
-                      setActionInputs({
-                        ...actionInputs,
-                        reason: e.target.value,
-                      })
-                    }
-                    sx={{ mt: 2 }}
-                  /> */}
-                </div>
-              </>
-            )}
-          </div>
-
-          {/* Modal Footer */}
-          <div
-            style={{
-              padding: "16px 24px",
-              borderTop: "1px solid #e5e7eb",
-              display: "flex",
-              justifyContent: "flex-end",
-              background: "#f8fafc",
-            }}
-          >
-            <Button
-              onClick={closeModal}
-              variant="outlined"
-              sx={{ textTransform: "none", borderRadius: 2 }}
-            >
-              Close
-            </Button>
-          </div>
-        </Box>
-      </Modal>
+      <AdminActionsModal
+        isModalOpen={isModalOpen}
+        closeModal={closeModal}
+        modalStyle={modalStyle}
+        selectedRecord={selectedRecord}
+        handleImpersonate={handleImpersonate}
+        handleForcePasswordReset={handleForcePasswordReset}
+        handleRevokeSessions={handleRevokeSessions}
+        handleBlockUser={handleBlockUser}
+        handleTransferOwnership={handleTransferOwnership}
+        handleMergeFamilies={handleMergeFamilies}
+        handleDeleteFamily={handleDeleteFamily}
+        actionInputs={actionInputs}
+        setActionInputs={setActionInputs}
+      />
     </div>
   );
 }

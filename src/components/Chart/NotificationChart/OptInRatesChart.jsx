@@ -11,7 +11,7 @@ import {
 } from "recharts";
 
 export default function OptInRatesChart({ optInRates }) {
-  console.log(optInRates);
+//   console.log(optInRates);
   return (
     <ResponsiveContainer width="100%" height={320}>
       <ComposedChart data={optInRates} layout="vertical">

@@ -58,7 +58,20 @@ export function MetricCard({
           <p className="text-2xl font-semibold">{value}</p>
 
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            {subtitle && <p className="text-sm text-[#6d7075]">{subtitle}</p>}
+            {subtitle && (
+              <p
+                className={
+                  subtitle === "No Action Needed"
+                    ? "text-sm text-green-500"
+                    : subtitle === "Require Attention"
+                      ? "text-sm text-red-500"
+                      : "text-sm text-[#6d7075]"
+                }
+              >
+                {subtitle}
+              </p>
+            )}
+
             {growth !== undefined && (
               <Box
                 sx={{

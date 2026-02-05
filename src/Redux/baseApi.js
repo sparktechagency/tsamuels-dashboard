@@ -13,5 +13,6 @@ export const baseApi = createApi({
     "growth&Retention",
     "revenue",
     "notifications",
+    "adminControls",
   ],
 });
