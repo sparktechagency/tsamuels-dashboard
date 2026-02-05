@@ -16,9 +16,9 @@ export default function AdminActionsModal({
   closeModal,
   modalStyle,
   selectedRecord,
-  handleImpersonate,
-  handleForcePasswordReset,
-  handleRevokeSessions,
+  // handleImpersonate,
+  // handleForcePasswordReset,
+  // handleRevokeSessions,
   handleBlockUser,
   handleTransferOwnership,
   handleDeleteFamily,
@@ -424,7 +424,7 @@ export default function AdminActionsModal({
                           gap: "12px",
                         }}
                       >
-                        <Button
+                        {/* <Button
                           variant="outlined"
                           fullWidth
                           onClick={handleImpersonate}
@@ -477,7 +477,7 @@ export default function AdminActionsModal({
                           }}
                         >
                           🚫 Revoke Sessions
-                        </Button>
+                        </Button> */}
                         <Button
                           variant="outlined"
                           fullWidth

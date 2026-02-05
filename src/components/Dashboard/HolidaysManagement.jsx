@@ -14,6 +14,7 @@ import {
   Typography,
   Grid,
   Tooltip,
+  CircularProgress,
 } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
@@ -26,6 +27,7 @@ import dayjs from "dayjs";
 import { toast } from "sonner";
 import HolidayCard from "../UI/HolidayCard";
 import { NoDataFallback } from "../utils/noDataFallBack";
+import { useGetAllHolidaysDataQuery } from "../../Redux/slices/holidaysApi";
 
 const colorOptions = [
   { name: "Red", value: "#EF4444" },
@@ -107,6 +109,11 @@ export function HolidaysManagement() {
     emojis: "",
   });
   const [emojiClickAnimation, setEmojiClickAnimation] = useState({});
+
+  const { data: allHolidaysData, isLoading: loadingAllHolidaysData } =
+    useGetAllHolidaysDataQuery();
+  const holidaysData = allHolidaysData?.data || [];
+  console.log(holidaysData);
 
   const handleAddHoliday = () => {
     const newErrors = { name: "", date: "", emojis: "" };
@@ -204,7 +211,7 @@ export function HolidaysManagement() {
     setHolidayDate(holiday.date);
     setSelectedColorStart(holiday.colorStart);
     setSelectedColorEnd(holiday.colorEnd);
-    setAddedEmojis(holiday.emojis);
+    setAddedEmojis(holiday.emojis || []);
     setCustomEmoji("");
     setErrors({ name: "", date: "", emojis: "" });
     setIsDialogOpen(true);
@@ -270,6 +277,14 @@ export function HolidaysManagement() {
     resetForm();
   };
 
+  if (loadingAllHolidaysData) {
+    return (
+      <div className="flex justify-center items-center h-[92vh]">
+        <CircularProgress />
+      </div>
+    );
+  }
+
   return (
     <div className="p-8">
       {/* Header */}
@@ -303,9 +318,25 @@ export function HolidaysManagement() {
         maxWidth="sm"
         fullWidth
       >
-        <DialogTitle>
-          {editingHoliday ? "Edit Holiday" : "Create New Holiday"}
-        </DialogTitle>
+        <div className="flex items-center justify-between mr-5">
+          <DialogTitle>
+            {editingHoliday ? "Edit Holiday" : "Create New Holiday"}
+          </DialogTitle>
+          <IconButton
+            onClick={handleDialogClose}
+            size="small"
+            className="flex items-center"
+            sx={{
+              backgroundColor: "#000",
+              color: "white",
+              width: 20,
+              height: 20,
+              "&:hover": { backgroundColor: "#DC2626" },
+            }}
+          >
+            ×
+          </IconButton>
+        </div>
         <DialogContent>
           <Box sx={{ mt: 2, display: "flex", flexDirection: "column", gap: 3 }}>
             {/* Holiday Name */}
@@ -441,19 +472,23 @@ export function HolidaysManagement() {
                   Animation Emojis (Click to Add)
                 </Typography>
                 <Chip
-                  label={`${addedEmojis.length}/15 (min 5)`}
+                  label={`${(addedEmojis || []).length}/15 (min 5)`}
                   size="small"
                   color={
-                    addedEmojis.length < 5
+                    (addedEmojis || []).length < 5
                       ? "error"
-                      : addedEmojis.length >= 15
+                      : (addedEmojis || []).length >= 15
                         ? "warning"
                         : "primary"
                   }
                 />
               </div>
               {errors.emojis && (
-                <Typography variant="caption" color="error" className="mb-2 block">
+                <Typography
+                  variant="caption"
+                  color="error"
+                  className="mb-2 block"
+                >
                   {errors.emojis}
                 </Typography>
               )}
@@ -521,7 +556,7 @@ export function HolidaysManagement() {
                   {addedEmojis.length > 0 && `(${addedEmojis.length})`}:
                 </Typography>
                 {addedEmojis.length > 0 ? (
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-4">
                     {addedEmojis.map((emoji, idx) => (
                       <div key={`${emoji}-${idx}`} className="relative group">
                         <div className="w-12 h-12 text-2xl rounded-lg bg-gradient-to-br from-cyan-100 to-blue-100 flex items-center justify-center border-2 border-cyan-200">
@@ -530,7 +565,7 @@ export function HolidaysManagement() {
                         <IconButton
                           onClick={() => removeEmojiAtIndex(idx)}
                           size="small"
-                          className="absolute -top-1 -right-1 hidden group-hover:flex"
+                          className="absolute -top-14 -right-9 hidden group-hover:flex"
                           sx={{
                             backgroundColor: "#EF4444",
                             color: "white",
@@ -541,7 +576,7 @@ export function HolidaysManagement() {
                         >
                           ×
                         </IconButton>
-                        <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-gray-700 text-white text-[10px] rounded-full flex items-center justify-center">
+                        <div className="absolute bottom-4 -right-2 w-4 h-4 bg-gray-700 text-white text-[10px] rounded-full flex items-center justify-center">
                           {idx + 1}
                         </div>
                       </div>
@@ -590,8 +625,8 @@ export function HolidaysManagement() {
             : ""
         }
       >
-        {events.length > 0 ? (
-          events.map((event) => {
+        {holidaysData && holidaysData.length > 0 ? (
+          holidaysData.map((event) => {
             return (
               <HolidayCard
                 key={event.id}

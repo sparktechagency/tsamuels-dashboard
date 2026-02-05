@@ -14,5 +14,6 @@ export const baseApi = createApi({
     "revenue",
     "notifications",
     "adminControls",
+    "holidays",
   ],
 });
