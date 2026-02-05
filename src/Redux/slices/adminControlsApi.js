@@ -67,6 +67,49 @@ const adminControlsApi = baseApi.injectEndpoints({
       },
       providesTags: ["adminControls"],
     }),
+    changeUserStatus: builder.mutation({
+      query: ({ id, status }) => {
+        const accessToken = sessionStorage.getItem("accessToken");
+        return {
+          url: `/user-managements/status/${id}`,
+          method: "PATCH",
+          headers: {
+            authorization: `Bearer ${accessToken}`,
+          },
+          body: { status },
+        };
+      },
+      invalidatesTags: ["adminControls"],
+    }),
+    transferOwnership: builder.mutation({
+      query: (data) => {
+        console.log("family id", data);
+        const accessToken = sessionStorage.getItem("accessToken");
+        return {
+          url: "/family-management/transfer-ownership",
+          method: "post",
+          headers: {
+            authorization: `Bearer ${accessToken}`,
+          },
+          body: data,
+        };
+      },
+      invalidatesTags: ["adminControls"],
+    }),
+    deleteFamily: builder.mutation({
+      query: (id) => {
+        console.log("family id", id);
+        const accessToken = sessionStorage.getItem("accessToken");
+        return {
+          url: `/family-management/delete-family/${id}`,
+          method: "delete",
+          headers: {
+            authorization: `Bearer ${accessToken}`,
+          },
+        };
+      },
+      invalidatesTags: ["adminControls"],
+    }),
   }),
 });
 
@@ -76,4 +119,7 @@ export const {
   useGetPlanDistributionDataQuery,
   useGetAllUsersDataQuery,
   useGetAllFamiliesDataQuery,
+  useChangeUserStatusMutation,
+  useTransferOwnershipMutation,
+  useDeleteFamilyMutation,
 } = adminControlsApi;

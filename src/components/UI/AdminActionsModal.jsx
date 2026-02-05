@@ -21,7 +21,6 @@ export default function AdminActionsModal({
   handleRevokeSessions,
   handleBlockUser,
   handleTransferOwnership,
-  handleMergeFamilies,
   handleDeleteFamily,
   actionInputs,
   setActionInputs,
@@ -261,7 +260,7 @@ export default function AdminActionsModal({
                             fontWeight: 600,
                           }}
                         >
-                          {selectedRecord.creatorId}
+                          {selectedRecord._id}
                         </p>
                       </div>
                       <div>
@@ -487,15 +486,29 @@ export default function AdminActionsModal({
                             borderRadius: 2,
                             textTransform: "none",
                             py: 1.5,
-                            borderColor: "#ef4444",
-                            color: "#ef4444",
+                            borderColor:
+                              selectedRecord.status === "blocked"
+                                ? "#10b981"
+                                : "#ef4444",
+                            color:
+                              selectedRecord.status === "blocked"
+                                ? "#10b981"
+                                : "#ef4444",
                             "&:hover": {
-                              borderColor: "#dc2626",
-                              bgcolor: "#fee2e2",
+                              borderColor:
+                                selectedRecord.status === "blocked"
+                                  ? "#059669"
+                                  : "#dc2626",
+                              bgcolor:
+                                selectedRecord.status === "blocked"
+                                  ? "#ecfdf5"
+                                  : "#fee2e2",
                             },
                           }}
                         >
-                          ⛔ Block User
+                          {selectedRecord.status === "blocked"
+                            ? "✅ Unblock User"
+                            : "⛔ Block User"}
                         </Button>
                       </div>
                     </div>
@@ -550,32 +563,7 @@ export default function AdminActionsModal({
                             🔄 Transfer Ownership
                           </Button>
                         </div>
-                        <div style={{ display: "flex", gap: "8px" }}>
-                          <TextField
-                            size="small"
-                            label="Target Family ID"
-                            value={actionInputs.targetId}
-                            onChange={(e) =>
-                              setActionInputs({
-                                ...actionInputs,
-                                targetId: e.target.value,
-                              })
-                            }
-                            sx={{ flex: 1 }}
-                          />
-                          <Button
-                            variant="contained"
-                            onClick={handleMergeFamilies}
-                            sx={{
-                              borderRadius: 2,
-                              textTransform: "none",
-                              bgcolor: "#10b981",
-                              "&:hover": { bgcolor: "#059669" },
-                            }}
-                          >
-                            🔗 Merge Families
-                          </Button>
-                        </div>
+
                         <Button
                           variant="outlined"
                           fullWidth

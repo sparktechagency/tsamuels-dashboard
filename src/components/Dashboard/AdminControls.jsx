@@ -35,11 +35,14 @@ import {
 import { toast } from "sonner";
 import { MetricCard } from "../UI/MetricCard";
 import {
+  useChangeUserStatusMutation,
+  useDeleteFamilyMutation,
   useGetAllFamiliesDataQuery,
   useGetAllUsersDataQuery,
   useGetPlanDistributionDataQuery,
   useGetStatusDistributionDataQuery,
   useGetUserAnalyticsDataQuery,
+  useTransferOwnershipMutation,
 } from "../../Redux/slices/adminControlsApi";
 import UserStatusChart from "../Chart/AdminControlsChart/UserStatusChart";
 import PlanDistributionChart from "../Chart/AdminControlsChart/PlanDistributionChart";
@@ -109,6 +112,10 @@ export default function AdminControls() {
   if (allFamiliesError)
     console.error("Error fetching families:", allFamiliesError);
   // console.log("allFamilies", allFamilies);
+
+  const [changeUserStatus] = useChangeUserStatusMutation();
+  const [transferOwnership] = useTransferOwnershipMutation();
+  const [deleteFamily] = useDeleteFamilyMutation();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(null);
@@ -184,106 +191,77 @@ export default function AdminControls() {
     });
   };
 
-  // Admin action handlers
-  const handleImpersonate = () => {
-    toast.success(
-      `Impersonating ${
-        selectedRecord.name || selectedRecord.email
-      } in read-only mode`,
-    );
-    closeModal();
-  };
+  const handleBlockUser = async () => {
+    const isBlocked = selectedRecord.status === "blocked";
+    const newStatus = isBlocked ? "active" : "blocked";
+    const action = isBlocked ? "unblock" : "block";
 
-  const handleForcePasswordReset = () => {
-    toast.success(`Password reset email sent to ${selectedRecord.email}`);
-    closeModal();
-  };
-
-  const handleRevokeSessions = () => {
-    toast.success(
-      `All ${selectedRecord.sessionsActive || 0} active sessions revoked for ${
-        selectedRecord.name
-      }`,
-    );
-    closeModal();
-  };
-
-  const handleBlockUser = () => {
-    if (
-      confirm(
-        `Are you sure you want to block ${selectedRecord.name}? They will not be able to access the app.`,
-      )
-    ) {
-      toast.success(`User ${selectedRecord.name} has been blocked`);
-      closeModal();
-    }
-  };
-
-  const handleTransferOwnership = () => {
-    if (!actionInputs.targetId) {
-      toast.error("Please enter the new owner user ID");
-      return;
-    }
-    toast.success(
-      `Family ownership transferred from ${selectedRecord.owner} to ${actionInputs.targetId}`,
-    );
-    closeModal();
-  };
-
-  const handleMergeFamilies = () => {
-    if (!actionInputs.targetId) {
-      toast.error("Please enter the target family ID to merge with");
-      return;
-    }
-    if (
-      confirm(
-        `Merge ${selectedRecord.name} with ${actionInputs.targetId}? This cannot be undone.`,
-      )
-    ) {
+    try {
+      const response = await changeUserStatus({
+        id: selectedRecord._id,
+        status: newStatus,
+      });
+      console.log(response);
       toast.success(
-        `Family ${selectedRecord.id} merged with ${actionInputs.targetId}`,
+        `User ${selectedRecord.name} has been ${
+          isBlocked ? "unblocked" : "blocked"
+        }`,
       );
       closeModal();
+    } catch (error) {
+      toast.error(`Failed to ${action} ${selectedRecord.name}`);
+      console.error(error);
     }
   };
 
-  const handleDeleteFamily = () => {
-    if (
-      confirm(
-        `Permanently delete ${selectedRecord.name}? All data will be lost. This cannot be undone.`,
-      )
-    ) {
-      toast.success(`Family ${selectedRecord.name} has been deleted`);
-      closeModal();
+  const handleTransferOwnership = async () => {
+    try {
+      const data = {
+        familyId: selectedRecord._id,
+        newOwnerId: actionInputs.targetId,
+      };
+      console.log(data);
+      const response = await transferOwnership(data).unwrap();
+      if (response.success) {
+        console.log(response);
+        toast.success(
+          `Family ownership transferred from ${selectedRecord.familyName} to ${actionInputs.targetId}`,
+        );
+        closeModal();
+      }
+    } catch (error) {
+      if (error.data.message === "Family not found") {
+        toast.error("Family not found!");
+      }
+      if (error.data.message === "New owner not found") {
+        toast.error("New owner not found!");
+      } else {
+        console.log(error);
+        toast.error(`Failed to transfer ownership for ${selectedRecord.name}`);
+        console.error(error);
+      }
     }
   };
 
-  // const handleGrantPromo = () => {
-  //   if (!actionInputs.promoMonths) {
-  //     toast.error("Please enter number of promo months");
-  //     return;
-  //   }
-  //   toast.success(
-  //     `${actionInputs.promoMonths} promo months granted to ${selectedRecord.name}`
-  //   );
-  //   closeModal();
-  // };
-
-  // const handleCompPlan = () => {
-  //   toast.success(`Premium plan comped for ${selectedRecord.name}`);
-  //   closeModal();
-  // };
-
-  // const handleIssueRefund = () => {
-  //   if (!actionInputs.refundAmount) {
-  //     toast.error("Please enter refund amount");
-  //     return;
-  //   }
-  //   toast.success(
-  //     `Refund of $${actionInputs.refundAmount} issued to ${selectedRecord.name}`
-  //   );
-  //   closeModal();
-  // };
+  const handleDeleteFamily = async () => {
+    try {
+      const familyId = selectedRecord.id || selectedRecord._id;
+      console.log("familyId", familyId);
+      const response = await deleteFamily(familyId).unwrap();
+      if (response.success) {
+        console.log(response);
+        toast.success(`Family ${selectedRecord.name} has been deleted`);
+        closeModal();
+      }
+    } catch (error) {
+      if (error.data.message === "Family not found") {
+        toast.error("Family not found!");
+      } else {
+        toast.error("Failed to delete family");
+        console.error(error);
+      }
+    }
+  };
 
   if (
     loadingUserAnalyticsData ||
@@ -548,7 +526,7 @@ export default function AdminControls() {
                         label={record.subscriptionPlan}
                         size="small"
                         color={
-                          record.subscriptionPlan.includes("Premium")
+                          record.subscriptionPlan?.includes("Premium")
                             ? "primary"
                             : "default"
                         }
@@ -603,12 +581,8 @@ export default function AdminControls() {
         closeModal={closeModal}
         modalStyle={modalStyle}
         selectedRecord={selectedRecord}
-        handleImpersonate={handleImpersonate}
-        handleForcePasswordReset={handleForcePasswordReset}
-        handleRevokeSessions={handleRevokeSessions}
         handleBlockUser={handleBlockUser}
         handleTransferOwnership={handleTransferOwnership}
-        handleMergeFamilies={handleMergeFamilies}
         handleDeleteFamily={handleDeleteFamily}
         actionInputs={actionInputs}
         setActionInputs={setActionInputs}
