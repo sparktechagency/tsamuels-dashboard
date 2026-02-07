@@ -34,7 +34,7 @@ const TermsAndConditions = () => {
   const handleOnSave = async () => {
     try {
       const response = await addSettings({ termsOfService: content }).unwrap();
-      console.log(response);
+      // console.log(response);
       if (response.success) {
         toast.success("Terms and Conditions added successfully!");
         refetch();
