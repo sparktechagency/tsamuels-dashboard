@@ -134,7 +134,7 @@ export default function AdminControls() {
   const PLAN_COLORS = ["#94a3b8", "#3b82f6", "#8b5cf6"];
 
   const currentData = activeTab === 0 ? allUsers : allFamilies;
-  console.log("currentData", currentData, activeTab);
+  // console.log("currentData", currentData, activeTab);
 
   const filteredData =
     currentData &&
