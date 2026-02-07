@@ -30,19 +30,20 @@ const settingsApi = baseApi.injectEndpoints({
       },
       invalidatesTags: ["settings"],
     }),
-    editHoliday: builder.mutation({
-      query: ({ data, id }) => {
+    updatePassword: builder.mutation({
+      query: (data) => {
+        console.log("update pass data", data);
         const accessToken = sessionStorage.getItem("accessToken");
         return {
-          url: `/holidays/update/${id}`,
-          method: "patch",
+          url: "/auth/change-password",
+          method: "POST",
           body: data,
           headers: {
             authorization: `Bearer ${accessToken}`,
           },
         };
       },
-      invalidatesTags: ["holidays"],
+      invalidatesTags: ["settings"],
     }),
     deleteHoliday: builder.mutation({
       query: ({ id }) => {
@@ -61,4 +62,8 @@ const settingsApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { useGetProfileDataQuery, useEditProfileMutation } = settingsApi;
+export const {
+  useGetProfileDataQuery,
+  useEditProfileMutation,
+  useUpdatePasswordMutation,
+} = settingsApi;

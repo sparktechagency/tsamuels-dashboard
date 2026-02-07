@@ -8,20 +8,23 @@ import {
   InputAdornment,
   IconButton,
   InputLabel,
+  CircularProgress,
 } from "@mui/material";
 import { IoMdEye } from "react-icons/io";
 import { IoIosEyeOff } from "react-icons/io";
-import { MdArrowBackIosNew } from "react-icons/md";
+import { toast } from "sonner";
+import { useUpdatePasswordMutation } from "../../../Redux/slices/settingsApi";
 
 export default function ChangePassword() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState("");
 
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const [changePassword, { isLoading }] = useUpdatePasswordMutation();
 
   const handleShowCurrentPassword = () =>
     setShowCurrentPassword((show) => !show);
@@ -29,16 +32,46 @@ export default function ChangePassword() {
   const handleShowConfirmPassword = () =>
     setShowConfirmPassword((show) => !show);
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (newPassword !== confirmPassword) {
-      setError("New password and confirm password do not match.");
-      return;
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      return toast.warning("All fields are required");
     }
-    setError("");
-    console.log("Password change request submitted");
+
+    if (newPassword !== confirmPassword) {
+      return toast.error("New Password and Confirm Password do not match");
+    }
+
+    try {
+      const payload = {
+        currentPassword,
+        newPassword,
+        confirmPassword,
+      };
+      console.log("payload", payload);
+
+      const res = await changePassword(payload).unwrap();
+
+      if (res.success) {
+        toast.success("Password changed successfully");
+        setCurrentPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error?.data?.message || "Failed to change password");
+    }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-[92vh]">
+        <CircularProgress />
+      </div>
+    );
+  }
 
   return (
     <div className="bg-[#fff] p-8">
@@ -152,13 +185,6 @@ export default function ChangePassword() {
                 }
               />
             </div>
-
-            {/* Error Message */}
-            {error && (
-              <div>
-                <Typography color="error">{error}</Typography>
-              </div>
-            )}
 
             {/* Submit Button */}
             <div>
