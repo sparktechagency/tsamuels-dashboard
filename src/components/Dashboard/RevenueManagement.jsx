@@ -95,7 +95,7 @@ export default function RevenueManagement() {
     isLoading: loadingSubscriptionHistoiryData,
   } = useGetSubscriptionHistoryDataQuery(recognizedYear);
   const subscriptionHistory = subscriptionHistoiryData?.data?.result;
-  console.log("subscriptionHistoiry", subscriptionHistory);
+  // console.log("subscriptionHistoiry", subscriptionHistory);
 
   const COLORS = [
     "#3b82f6", // bright blue

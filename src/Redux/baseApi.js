@@ -16,5 +16,6 @@ export const baseApi = createApi({
     "adminControls",
     "holidays",
     "settings",
+    "support",
   ],
 });

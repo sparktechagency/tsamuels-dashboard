@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   TableContainer,
   Table,
@@ -7,80 +7,65 @@ import {
   TableCell,
   TableBody,
   TablePagination,
-  InputBase,
   InputAdornment,
   Modal,
   IconButton,
   TextField,
   Button,
+  CircularProgress,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
 import { FaSearch } from "react-icons/fa";
-import { FiEye } from "react-icons/fi";
+import { FiEye, FiTrash2 } from "react-icons/fi";
 import { toast } from "sonner";
-
-const supportEmailData = [
-  {
-    name: "Samuel Johnson",
-    userName: "SJohnson",
-    phoneNumber: "+6908975678",
-    problemDescription:
-      "The user is not responding to messages. The issue started on 13th September.",
-    status: "Solved",
-    date: "2023-10-01",
-  },
-  {
-    name: "Emily Davis",
-    userName: "EDavis",
-    phoneNumber: "+6908981234",
-    problemDescription: "Unable to log into the system after password reset.",
-    status: "Pending",
-    date: "2023-10-02",
-  },
-  {
-    name: "Michael Smith",
-    userName: "MSmith",
-    phoneNumber: "+6908998765",
-    problemDescription:
-      "The user is reporting slow system performance during peak hours.",
-    status: "Pending",
-    date: "2023-10-03",
-  },
-  {
-    name: "Olivia Brown",
-    userName: "OBrown",
-    phoneNumber: "+6908884321",
-    problemDescription:
-      "The user is unable to access their profile page after recent updates.",
-    status: "Solved",
-    date: "2023-10-04",
-  },
-  {
-    name: "James Wilson",
-    userName: "JWilson",
-    phoneNumber: "+6908776543",
-    problemDescription:
-      "The user encountered a system crash during data upload.",
-    status: "Solved",
-    date: "2023-10-05",
-  },
-];
+import {
+  useDeleteSupportDataMutation,
+  useEditSupportDataMutation,
+  useGetSupportDataQuery,
+} from "../../Redux/slices/supportApi";
+import dayjs from "dayjs";
 
 export default function Support() {
   const [searchText, setSearchText] = useState("");
-  const [filteredEmails, setFilteredEmails] = useState(supportEmailData);
+  const [filteredEmails, setFilteredEmails] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [openDetailsModal, setOpenDetailsModal] = useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [selectedEmail, setSelectedEmail] = useState(null);
+  const [deleteId, setDeleteId] = useState(null);
   const [replyText, setReplyText] = useState("");
+
+  const {
+    data: supportData,
+    isLoading: loadingSupportData,
+    refetch,
+  } = useGetSupportDataQuery();
+  const supports = supportData?.data || [];
+  // console.log("support data", supports);
+
+  const [updateSupport, { isLoading: isUpdating }] =
+    useEditSupportDataMutation();
+  const [deleteSupport, { isLoading: isDeleting }] =
+    useDeleteSupportDataMutation();
+
+  // Update filtered emails when support data changes
+  useEffect(() => {
+    if (supports) {
+      setFilteredEmails(supports);
+    }
+  }, [supports]);
 
   const handleSearchChange = (e) => {
     const search = e.target.value;
     setSearchText(search);
-    const filtered = supportEmailData.filter(
+    const filtered = supports.filter(
       (email) =>
-        email.userName.toLowerCase().includes(search.toLowerCase()) ||
-        email.phoneNumber.includes(search)
+        email.name?.toLowerCase().includes(search.toLowerCase()) ||
+        email.email?.includes(search),
     );
     setFilteredEmails(filtered);
     setPage(0);
@@ -89,6 +74,7 @@ export default function Support() {
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
+
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
@@ -106,28 +92,71 @@ export default function Support() {
     setReplyText("");
   };
 
-  const handleSendReply = () => {
+  const handleSendReply = async () => {
     if (!replyText.trim()) {
       toast.error("Please type a reply before sending.");
       return;
     }
 
-    const updatedEmails = filteredEmails.map((email) =>
-      email.phoneNumber === selectedEmail.phoneNumber
-        ? { ...email, status: "Solved" }
-        : email
-    );
+    try {
+      // Update support status to "Solved" and add reply
+      const response = await updateSupport({
+        id: selectedEmail._id || selectedEmail.id,
+        data: {
+          status: "Solved",
+          reply: replyText,
+        },
+      }).unwrap();
+      // console.log(response);
 
-    setFilteredEmails(updatedEmails);
-
-    console.log("Sending reply:", replyText);
-    console.log("To:", selectedEmail.userName);
-
-    toast.success("Reply sent successfully!");
-
-    setReplyText("");
-    handleCloseModal();
+      if (response.success) {
+        toast.success("Reply sent successfully!");
+        setReplyText("");
+        handleCloseModal();
+        refetch(); // Refresh the data
+      }
+    } catch (error) {
+      console.error("Error sending reply:", error);
+      toast.error(
+        error?.data?.message || "Failed to send reply. Please try again.",
+      );
+    }
   };
+
+  const handleDeleteClick = (email) => {
+    setDeleteId(email._id || email.id);
+    setSelectedEmail(email);
+    setOpenDeleteDialog(true);
+  };
+
+  const handleCloseDeleteDialog = () => {
+    setOpenDeleteDialog(false);
+    setDeleteId(null);
+    setSelectedEmail(null);
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      const response = await deleteSupport(deleteId).unwrap();
+      // console.log(response);
+      if (response.success) {
+        toast.success("Support request deleted successfully!");
+        handleCloseDeleteDialog();
+        refetch(); // Refresh the data
+      }
+    } catch (error) {
+      console.error("Error deleting support:", error);
+      toast.error(error?.data?.message || "Failed to delete support request.");
+    }
+  };
+
+  if (loadingSupportData) {
+    return (
+      <div className="flex justify-center items-center h-[92vh]">
+        <CircularProgress />
+      </div>
+    );
+  }
 
   return (
     <div className="px-10 py-8 h-[92vh]">
@@ -154,18 +183,19 @@ export default function Support() {
                 height: "100%",
               },
             }}
-            placeholder="Search by User Name"
+            placeholder="Search by User Name or Email"
             value={searchText}
             onChange={handleSearchChange}
-            startAdornment={
-              <InputAdornment position="start">
-                <FaSearch />
-              </InputAdornment>
-            }
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <FaSearch />
+                </InputAdornment>
+              ),
+            }}
           />
         </div>
       </div>
-      <div className="flex items-center justify-end mb-4"></div>
 
       <TableContainer>
         <Table>
@@ -193,7 +223,7 @@ export default function Support() {
                   fontSize: "14px",
                 }}
               >
-                Phone Number
+                Email
               </TableCell>
               <TableCell
                 sx={{
@@ -223,7 +253,7 @@ export default function Support() {
                   fontSize: "14px",
                 }}
               >
-                Action
+                Actions
               </TableCell>
             </TableRow>
           </TableHead>
@@ -231,15 +261,17 @@ export default function Support() {
             {filteredEmails
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((email) => (
-                <TableRow key={email.phoneNumber}>
+                <TableRow key={email._id || email.id}>
                   <TableCell sx={{ textAlign: "center" }}>
-                    {email.userName}
+                    {email.name}
                   </TableCell>
                   <TableCell sx={{ textAlign: "center" }}>
-                    {email.phoneNumber}
+                    {email.email}
                   </TableCell>
-                  <TableCell sx={{ textAlign: "center" }}>
-                    {email.problemDescription}
+                  <TableCell sx={{ textAlign: "center", maxWidth: 200 }}>
+                    {email.message?.length > 50
+                      ? `${email.message.substring(0, 50)}...`
+                      : email.message}
                   </TableCell>
                   <TableCell sx={{ textAlign: "center" }}>
                     <span
@@ -248,20 +280,25 @@ export default function Support() {
                         borderRadius: "12px",
                         color: "white",
                         backgroundColor:
-                          email.status.toLowerCase() === "solved"
+                          email.status?.toLowerCase() === "solved"
                             ? "#1EC74F"
-                            : "#EE5252", // Adjust the status color as per the status
+                            : "#EE5252",
                         fontWeight: "600",
                       }}
                     >
-                      {email.status}
+                      {email.status.charAt(0).toUpperCase() +
+                        email.status.slice(1)}
                     </span>
                   </TableCell>
-
                   <TableCell sx={{ textAlign: "center" }}>
-                    <IconButton onClick={() => handleOpenModal(email)}>
-                      <FiEye className="text-lg text-[#131927]" />
-                    </IconButton>
+                    <div className="flex justify-center gap-2">
+                      <IconButton onClick={() => handleOpenModal(email)}>
+                        <FiEye className="text-lg text-[#131927]" />
+                      </IconButton>
+                      <IconButton onClick={() => handleDeleteClick(email)}>
+                        <FiTrash2 className="text-lg text-red-600" />
+                      </IconButton>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
@@ -272,7 +309,7 @@ export default function Support() {
       <TablePagination
         rowsPerPageOptions={[5, 10, 25]}
         component="div"
-        count={supportEmailData.length}
+        count={filteredEmails.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}
@@ -293,6 +330,8 @@ export default function Support() {
             left: "50%",
             transform: "translate(-50%, -50%)",
             width: 600,
+            maxHeight: "90vh",
+            overflowY: "auto",
             backgroundColor: "#FDFDFD",
             boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
             padding: "20px",
@@ -300,7 +339,7 @@ export default function Support() {
           }}
         >
           {selectedEmail && (
-            <div className="flex flex-col items-center gap-5 ">
+            <div className="flex flex-col items-center gap-5">
               <p className="text-center text-3xl font-semibold text-[#1A1A1A] py-5">
                 Support Request Details
               </p>
@@ -308,22 +347,26 @@ export default function Support() {
                 <div className="flex justify-between w-full gap-10">
                   <div>
                     <p className="font-semibold">From:</p>
-                    <p>{selectedEmail.userName}</p>
+                    <p>{selectedEmail.name}</p>
                   </div>
                   <div>
-                    <p className="font-semibold">Phone Number:</p>
-                    <p>{selectedEmail.phoneNumber}</p>
+                    <p className="font-semibold">Email:</p>
+                    <p>{selectedEmail.email}</p>
                   </div>
-                  <div>
-                    <p className="font-semibold">Date:</p>
-                    <p>{selectedEmail.date}</p>
-                  </div>
+                  {selectedEmail.createdAt && (
+                    <div>
+                      <p className="font-semibold">Date:</p>
+                      <p>
+                        {dayjs(selectedEmail.createdAt).format(
+                          "DD MMM YYYY, HH:mm",
+                        )}
+                      </p>
+                    </div>
+                  )}
                 </div>
                 <div>
                   <p className="font-semibold">Message:</p>
-                  <p className="text-justify">
-                    {selectedEmail.problemDescription}
-                  </p>
+                  <p className="text-justify">{selectedEmail.message}</p>
                 </div>
                 <div className="flex flex-col gap-2">
                   <p className="font-semibold">Your Reply</p>
@@ -335,18 +378,18 @@ export default function Support() {
                       width: "100%",
                       "& .MuiOutlinedInput-root": {
                         "&.Mui-focused fieldset": {
-                          borderColor: "#131927", // Change border color on focus
+                          borderColor: "#131927",
                         },
                       },
                       "& .MuiOutlinedInput-notchedOutline": {
-                        borderRadius: "12px", // Apply border-radius to the outline
+                        borderRadius: "12px",
                       },
                       "& .MuiInputBase-root": {
-                        height: "100%", // Ensure the input base fills the TextField height
+                        height: "100%",
                       },
                       backgroundColor: "#F5F5F5",
                       "& .MuiInputBase-input": {
-                        padding: "8px", // Adjust padding for better text alignment
+                        padding: "8px",
                       },
                     }}
                     multiline
@@ -356,6 +399,7 @@ export default function Support() {
                   <div className="flex justify-end gap-4 mt-5">
                     <Button
                       onClick={handleCloseModal}
+                      disabled={isUpdating}
                       sx={{
                         backgroundColor: "#FA4747",
                         textTransform: "none",
@@ -366,7 +410,7 @@ export default function Support() {
                         },
                       }}
                     >
-                      Decline
+                      Cancel
                     </Button>
                     <Button
                       sx={{
@@ -375,12 +419,17 @@ export default function Support() {
                         width: "100px",
                         color: "white",
                         "&:hover": {
-                          backgroundColor: "#2B7FFF",
+                          backgroundColor: "#1a5fd9",
                         },
                       }}
                       onClick={handleSendReply}
+                      disabled={isUpdating}
                     >
-                      Send
+                      {isUpdating ? (
+                        <CircularProgress size={20} sx={{ color: "white" }} />
+                      ) : (
+                        "Send"
+                      )}
                     </Button>
                   </div>
                 </div>
@@ -389,6 +438,64 @@ export default function Support() {
           )}
         </div>
       </Modal>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={openDeleteDialog}
+        onClose={handleCloseDeleteDialog}
+        maxWidth="xs"
+        fullWidth
+      >
+        <DialogTitle sx={{ pb: 1 }}>Delete Support Request</DialogTitle>
+        <DialogContent>
+          <p className="text-gray-700">
+            Are you sure you want to delete this support request? This action
+            cannot be undone.
+          </p>
+          {selectedEmail && (
+            <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+              <p className="font-semibold text-sm text-gray-800 mb-1">
+                From: {selectedEmail.name}
+              </p>
+              <p className="text-xs text-gray-600 mb-1">
+                Email: {selectedEmail.email}
+              </p>
+              <p className="text-xs text-gray-600">
+                {selectedEmail.message?.substring(0, 100)}
+                {selectedEmail.message?.length > 100 ? "..." : ""}
+              </p>
+            </div>
+          )}
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button
+            onClick={handleCloseDeleteDialog}
+            disabled={isDeleting}
+            sx={{
+              color: "#666",
+              textTransform: "none",
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleConfirmDelete}
+            variant="contained"
+            disabled={isDeleting}
+            sx={{
+              bgcolor: "#dc2626",
+              "&:hover": { bgcolor: "#b91c1c" },
+              textTransform: "none",
+            }}
+          >
+            {isDeleting ? (
+              <CircularProgress size={20} sx={{ color: "white" }} />
+            ) : (
+              "Delete"
+            )}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }

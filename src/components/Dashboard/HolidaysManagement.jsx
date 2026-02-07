@@ -91,7 +91,7 @@ export function HolidaysManagement() {
   const { data: allHolidaysData, isLoading: loadingAllHolidaysData } =
     useGetAllHolidaysDataQuery();
   const holidaysData = allHolidaysData?.data || [];
-  console.log(holidaysData);
+  // console.log(holidaysData);
 
   const [createHolidays] = useCreateHolidayMutation();
   const [editHolidays] = useEditHolidayMutation();
