@@ -45,19 +45,34 @@ const settingsApi = baseApi.injectEndpoints({
       },
       invalidatesTags: ["settings"],
     }),
-    deleteHoliday: builder.mutation({
-      query: ({ id }) => {
-        console.log("delete api id", id);
+    getSettings: builder.query({
+      query: (key) => {
+        console.log("settings api key", key);
         const accessToken = sessionStorage.getItem("accessToken");
         return {
-          url: `/holidays/delete/${id}`,
-          method: "delete",
+          url: `/settings?key=${key}`,
+          method: "get",
           headers: {
             authorization: `Bearer ${accessToken}`,
           },
         };
       },
-      invalidatesTags: ["holidays"],
+      providesTags: ["settings"],
+    }),
+    addSettings: builder.mutation({
+      query: (data) => {
+        console.log("settings api data", data);
+        const accessToken = sessionStorage.getItem("accessToken");
+        return {
+          url: "/settings",
+          method: "put",
+          body: data,
+          headers: {
+            authorization: `Bearer ${accessToken}`,
+          },
+        };
+      },
+      invalidatesTags: ["settings"],
     }),
   }),
 });
@@ -66,4 +81,6 @@ export const {
   useGetProfileDataQuery,
   useEditProfileMutation,
   useUpdatePasswordMutation,
+  useGetSettingsQuery,
+  useAddSettingsMutation,
 } = settingsApi;
