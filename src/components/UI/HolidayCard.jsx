@@ -66,7 +66,7 @@ export default function HolidayCard({
               size="small"
               onClick={(e) => {
                 e.stopPropagation();
-                handleDeleteHoliday(event.id);
+                handleDeleteHoliday(event._id);
               }}
               sx={{
                 p: 0.8,

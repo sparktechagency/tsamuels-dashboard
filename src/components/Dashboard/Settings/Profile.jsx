@@ -1,74 +1,140 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   Button,
+  CircularProgress,
   IconButton,
-  InputAdornment,
-  OutlinedInput,
   TextField,
 } from "@mui/material";
 import { FiEdit } from "react-icons/fi";
-import { IoMdEye } from "react-icons/io";
-import { IoIosEyeOff } from "react-icons/io";
-import { MdArrowBackIosNew } from "react-icons/md";
+import { toast } from "sonner";
 
 import profileImg from "../../../../public/Images/profile.png";
+import {
+  useEditProfileMutation,
+  useGetProfileDataQuery,
+} from "../../../Redux/slices/settingsApi";
+import { getImageUrl } from "../../../utils/baseUrl";
 
 export default function Profile() {
-  const [name, setName] = useState("Charlene Reed");
-  const [email, setEmail] = useState("charlenereed@gmail.com");
-  const [userName, setUserName] = useState("Charlene Reed");
-  const [password, setPassword] = useState("**********");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [userName, setUserName] = useState("");
+  const [phone, setPhone] = useState("");
   const [profileImage, setProfileImage] = useState(profileImg);
-  const [showPassword, setShowPassword] = useState(false);
+  const [uploadedFile, setUploadedFile] = useState(null);
 
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
+  const imageUrl = getImageUrl();
+
+  const {
+    data: profileData,
+    isLoading: loadingProfile,
+    refetch,
+  } = useGetProfileDataQuery();
+
+  const profile = profileData?.data;
+
+  const [editProfile] = useEditProfileMutation();
+
+  /* --------------------------------------------
+     Populate form fields when API data loads
+  --------------------------------------------- */
+  useEffect(() => {
+    if (profile) {
+      setName(profile.name || "");
+      setEmail(profile.email || "");
+      setUserName(profile.nickName?.[0] || profile.name || "");
+      setPhone(profile.phone || "");
+      setProfileImage(profile.image ? profile.image : profileImg);
+    }
+  }, [profile]);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfileImage(reader.result);
+    if (!file) return;
+
+    // Store the file for upload
+    setUploadedFile(file);
+
+    // Preview the image
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setProfileImage(reader.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleSubmit = async () => {
+    try {
+      const formData = new FormData();
+
+      const data = {
+        ...(name && { name }),
+        ...(userName && { nickName: userName }),
+        ...(phone && { phone }),
       };
-      reader.readAsDataURL(file);
+
+      console.log("Data to send:", data);
+
+      // Stringify the data object for FormData
+      formData.append("data", JSON.stringify(data));
+
+      // Append image if a new one was uploaded
+      if (uploadedFile) {
+        formData.append("image", uploadedFile);
+      }
+
+      if (!uploadedFile && profile?.image) {
+        formData.append("image", profile.image);
+      }
+
+      console.log("Update Payload:", {
+        data,
+        uploadedFile,
+      });
+
+      const response = await editProfile(formData).unwrap();
+      console.log("Profile update response:", response);
+      if (response.success) {
+        refetch();
+        toast.success("Profile updated successfully!");
+        setUploadedFile(null); // Clear the uploaded file after success
+      }
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      toast.error(
+        error?.data?.message || "Failed to update profile. Please try again.",
+      );
     }
   };
 
-  const handleSubmit = () => {
-    console.log({
-      name,
-      email,
-      userName,
-      password,
-    });
-  };
+  if (loadingProfile) {
+    return (
+      <div className="flex justify-center items-center h-[92vh]">
+        <CircularProgress />
+      </div>
+    );
+  }
 
   return (
-    <div className="flex flex-col gap-10 w-full bg-[#fff] h-screen p-20">
-      <Button
-        onClick={() => window.history.back()}
-        sx={{
-          backgroundColor: "#2B7FFF",
-          color: "white",
-          padding: "5px",
-          width: "10px",
-          height: "30px",
-          ":hover": {
-            backgroundColor: "white",
-            color: "#2B7FFF",
-            border: "1px solid #2B7FFF",
-          },
-        }}
-      >
-        <MdArrowBackIosNew />
-      </Button>
+    <div className="flex flex-col gap-10 w-full bg-white p-8">
       <div className="flex gap-10">
-        {/* Profile Header */}
+        {/* Profile Image */}
         <div className="relative">
           <div className="bg-[#efefef]">
-            <img src={profileImage} alt="" className="size-40" />
+            <img
+              src={
+                uploadedFile
+                  ? profileImage // preview new upload
+                  : profile?.image
+                    ? `${imageUrl}/${profile.image}`
+                    : profileImg
+              }
+              alt="profile"
+              className="size-40 object-cover"
+            />
           </div>
+
           <IconButton
             sx={{
               position: "absolute",
@@ -77,82 +143,55 @@ export default function Profile() {
               backgroundColor: "#2B7FFF",
               borderRadius: "50%",
               padding: "8px",
+              ":hover": { backgroundColor: "#1f6ae1" },
             }}
             component="label"
           >
             <input
               type="file"
               accept="image/*"
+              hidden
               onChange={handleFileChange}
-              style={{ display: "none" }}
             />
             <FiEdit fontSize={20} className="text-white" />
           </IconButton>
         </div>
+
+        {/* Profile Form */}
         <div className="flex flex-col gap-8 w-2/3">
           <div className="flex items-center gap-5">
-            <div className="w-full">
-              <TextField
-                label="Your Name"
-                fullWidth
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-            </div>
-            <div className="w-full">
-              <TextField
-                label="User Name"
-                fullWidth
-                value={userName}
-                onChange={(e) => setUserName(e.target.value)}
-              />
-            </div>
+            <TextField
+              label="Your Name"
+              fullWidth
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+
+            <TextField
+              label="User Name"
+              fullWidth
+              value={userName}
+              onChange={(e) => setUserName(e.target.value)}
+            />
           </div>
 
           <div className="flex items-center gap-5">
-            <div className="w-full">
-              <TextField
-                label="Email"
-                fullWidth
-                value={email}
-                disabled
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div className="w-full">
-              <OutlinedInput
-                id="outlined-adornment-password"
-                type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label={
-                        showPassword
-                          ? "hide the password"
-                          : "display the password"
-                      }
-                      onClick={handleClickShowPassword}
-                      edge="end"
-                    >
-                      {showPassword ? <IoIosEyeOff /> : <IoMdEye />}
-                    </IconButton>
-                  </InputAdornment>
-                }
-                label="Password"
-                fullWidth
-              />
-            </div>
+            <TextField label="Email" fullWidth value={email} disabled />
+
+            <TextField
+              label="Phone"
+              fullWidth
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="Enter phone number"
+            />
           </div>
 
           <Box mt={2}>
             <Button
-              fullWidth
               variant="contained"
               sx={{
                 backgroundColor: "#2B7FFF",
-                color: "white",
                 textTransform: "none",
                 padding: "10px",
                 width: "40%",

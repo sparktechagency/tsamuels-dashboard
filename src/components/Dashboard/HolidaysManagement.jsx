@@ -27,7 +27,12 @@ import dayjs from "dayjs";
 import { toast } from "sonner";
 import HolidayCard from "../UI/HolidayCard";
 import { NoDataFallback } from "../utils/noDataFallBack";
-import { useGetAllHolidaysDataQuery } from "../../Redux/slices/holidaysApi";
+import {
+  useCreateHolidayMutation,
+  useDeleteHolidayMutation,
+  useEditHolidayMutation,
+  useGetAllHolidaysDataQuery,
+} from "../../Redux/slices/holidaysApi";
 
 const colorOptions = [
   { name: "Red", value: "#EF4444" },
@@ -68,33 +73,6 @@ const emojiOptions = [
 ];
 
 export function HolidaysManagement() {
-  const [events, setEvents] = useState([
-    {
-      id: "1",
-      name: "Spring Festival Celebration",
-      date: dayjs(new Date(2026, 1, 15)),
-      colorStart: "#3B82F6",
-      colorEnd: "#8B5CF6",
-      emojis: ["🎯", "📊", "💼", "⭐", "🎉"],
-    },
-    {
-      id: "2",
-      name: "Summer Product Launch Day",
-      date: dayjs(new Date(2026, 1, 20)),
-      colorStart: "#10B981",
-      colorEnd: "#06B6D4",
-      emojis: ["🚀", "🎉", "⭐", "💫", "✨"],
-    },
-    {
-      id: "3",
-      name: "Winter Birthday Party",
-      date: dayjs(new Date(2026, 1, 25)),
-      colorStart: "#EC4899",
-      colorEnd: "#F97316",
-      emojis: ["🎂", "🎈", "🎁", "🎊", "🎉"],
-    },
-  ]);
-
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingHoliday, setEditingHoliday] = useState(null);
   const [holidayName, setHolidayName] = useState("");
@@ -115,7 +93,11 @@ export function HolidaysManagement() {
   const holidaysData = allHolidaysData?.data || [];
   console.log(holidaysData);
 
-  const handleAddHoliday = () => {
+  const [createHolidays] = useCreateHolidayMutation();
+  const [editHolidays] = useEditHolidayMutation();
+  const [deleteHolidays] = useDeleteHolidayMutation();
+
+  const handleAddHoliday = async () => {
     const newErrors = { name: "", date: "", emojis: "" };
     let hasError = false;
 
@@ -123,74 +105,89 @@ export function HolidaysManagement() {
     const trimmedName = holidayName.trim();
     if (trimmedName.length < 3) {
       newErrors.name = "Holiday name must be at least 3 characters";
+      toast.error("Holiday name must be at least 3 characters");
       hasError = true;
     } else if (trimmedName.length > 50) {
       newErrors.name = "Holiday name must be at most 50 characters";
+      toast.error("Holiday name must be at most 50 characters");
       hasError = true;
     } else {
       // Check for duplicates (excluding current editing holiday)
-      const isDuplicate = events.some(
+      const isDuplicate = holidaysData.some(
         (event) =>
           event.name.toLowerCase() === trimmedName.toLowerCase() &&
-          (!editingHoliday || event.id !== editingHoliday.id),
+          (!editingHoliday || event._id !== editingHoliday._id),
       );
       if (isDuplicate) {
         newErrors.name = "A holiday with this name already exists";
+        toast.error("A holiday with this name already exists");
         hasError = true;
       }
     }
 
     if (!holidayDate) {
       newErrors.date = "Please select a date";
+      toast.error("Please select a date for the holiday");
       hasError = true;
     }
 
     if (addedEmojis.length < 5) {
       newErrors.emojis = "Please add at least 5 emojis";
+      toast.error(
+        `Please add at least 5 emojis (currently ${addedEmojis.length})`,
+      );
       hasError = true;
     } else if (addedEmojis.length > 15) {
       newErrors.emojis = "Maximum 15 emojis allowed";
+      toast.error("Maximum 15 emojis allowed");
       hasError = true;
     }
 
     if (hasError) {
       setErrors(newErrors);
-      toast.error("Please fix the errors in the form");
       return;
     }
 
-    if (editingHoliday) {
-      // Update existing holiday
-      setEvents(
-        events.map((event) =>
-          event.id === editingHoliday.id
-            ? {
-                ...event,
-                name: trimmedName,
-                date: holidayDate,
-                colorStart: selectedColorStart,
-                colorEnd: selectedColorEnd,
-                emojis: addedEmojis,
-              }
-            : event,
-        ),
-      );
-      toast.success("Holiday updated successfully");
-    } else {
-      // Create new holiday
-      const newHoliday = {
-        id: Date.now().toString(),
-        name: trimmedName,
-        date: holidayDate,
-        colorStart: selectedColorStart,
-        colorEnd: selectedColorEnd,
-        emojis: addedEmojis,
-      };
-      setEvents([...events, newHoliday]);
-      toast.success("Holiday created successfully");
-    }
+    try {
+      if (editingHoliday) {
+        // Update existing holiday
+        const holidayData = {
+          name: trimmedName,
+          startDate: holidayDate.format("YYYY-MM-DD"),
+          color: selectedColorStart,
+          secondaryColor: selectedColorEnd,
+          animatedIcon: addedEmojis,
+        };
 
-    resetForm();
+        const response = await editHolidays({
+          data: holidayData,
+          id: editingHoliday._id,
+        }).unwrap();
+
+        console.log("Edit response:", response);
+        toast.success("Holiday updated successfully");
+      } else {
+        // Create new holiday
+        const newHoliday = {
+          name: trimmedName,
+          startDate: holidayDate.format("YYYY-MM-DD"),
+          color: selectedColorStart,
+          secondaryColor: selectedColorEnd,
+          animatedIcon: addedEmojis,
+        };
+
+        console.log("Creating holiday:", newHoliday);
+        const response = await createHolidays(newHoliday).unwrap();
+        console.log("Create response:", response);
+        toast.success("Holiday created successfully");
+      }
+      resetForm();
+    } catch (error) {
+      console.error("Error saving holiday:", error);
+      toast.error(
+        error?.data?.message || "Failed to save holiday. Please try again.",
+      );
+    }
   };
 
   const resetForm = () => {
@@ -208,18 +205,27 @@ export function HolidaysManagement() {
   const handleEditHoliday = (holiday) => {
     setEditingHoliday(holiday);
     setHolidayName(holiday.name);
-    setHolidayDate(holiday.date);
-    setSelectedColorStart(holiday.colorStart);
-    setSelectedColorEnd(holiday.colorEnd);
-    setAddedEmojis(holiday.emojis || []);
+    setHolidayDate(dayjs(holiday.startDate));
+    setSelectedColorStart(holiday.color);
+    setSelectedColorEnd(holiday.secondaryColor);
+    setAddedEmojis(holiday.animatedIcon || []);
     setCustomEmoji("");
     setErrors({ name: "", date: "", emojis: "" });
     setIsDialogOpen(true);
   };
 
-  const handleDeleteHoliday = (id) => {
-    setEvents(events.filter((event) => event.id !== id));
-    toast.success("Holiday deleted successfully");
+  const handleDeleteHoliday = async (id) => {
+    console.log(id);
+    try {
+      const response = await deleteHolidays({ id }).unwrap();
+      console.log("Delete response:", response);
+      toast.success("Holiday deleted successfully");
+    } catch (error) {
+      console.error("Error deleting holiday:", error);
+      toast.error(
+        error?.data?.message || "Failed to delete holiday. Please try again.",
+      );
+    }
   };
 
   const handleNameChange = (value) => {
@@ -620,7 +626,7 @@ export function HolidaysManagement() {
       {/* Events Grid */}
       <div
         className={
-          events.length > 0
+          holidaysData.length > 0
             ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
             : ""
         }
