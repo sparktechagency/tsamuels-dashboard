@@ -41,24 +41,7 @@ export default function ChangePassword() {
   };
 
   return (
-    <div className="bg-[#fff] h-screen p-20">
-      <Button
-        onClick={() => window.history.back()}
-        sx={{
-          backgroundColor: "#2B7FFF",
-          color: "white",
-          padding: "5px",
-          width: "10px",
-          height: "30px",
-          ":hover": {
-            backgroundColor: "white",
-            color: "#2B7FFF",
-            border: "1px solid #2B7FFF",
-          },
-        }}
-      >
-        <MdArrowBackIosNew />
-      </Button>
+    <div className="bg-[#fff] p-8">
       <Box sx={{ maxWidth: 500, margin: "auto", padding: 2 }}>
         <form onSubmit={handleSubmit}>
           <div className="flex flex-col gap-5">

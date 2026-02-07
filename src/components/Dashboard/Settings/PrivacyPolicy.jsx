@@ -67,23 +67,6 @@ const PrivacyPolicy = () => {
 
   return (
     <div className="min-h-[90vh] bg-[#fbfbfb] rounded-lg py-5 px-4">
-      <Button
-        onClick={() => window.history.back()}
-        sx={{
-          backgroundColor: "#2B7FFF",
-          color: "white",
-          padding: "5px",
-          width: "10px",
-          height: "30px",
-          ":hover": {
-            backgroundColor: "white",
-            color: "#2B7FFF",
-            border: "1px solid #2B7FFF",
-          },
-        }}
-      >
-        <MdArrowBackIosNew />
-      </Button>
       <div className="p-2 rounded">
         <div className="flex items-center justify-between py-4">
           <h1 className="text-4xl font-bold  text-[#222021]">Privacy Policy</h1>

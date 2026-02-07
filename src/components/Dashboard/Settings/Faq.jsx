@@ -46,24 +46,7 @@ export default function Faq() {
   };
 
   return (
-    <div className="bg-white px-[5%] py-20">
-      <Button
-        onClick={() => window.history.back()}
-        sx={{
-          backgroundColor: "#2B7FFF",
-          color: "white",
-          padding: "5px",
-          width: "10px",
-          height: "30px",
-          ":hover": {
-            backgroundColor: "white",
-            color: "#2B7FFF",
-            border: "1px solid #2B7FFF",
-          },
-        }}
-      >
-        <MdArrowBackIosNew />
-      </Button>{" "}
+    <div className="bg-white px-[5%] py-8">
       <div className="max-w-4xl mx-auto text-center sm:text-left mb-8">
         <p className="text-lg sm:text-3xl lg:text-4xl text-black font-semibold mb-2">
           Frequently Asked Questions
