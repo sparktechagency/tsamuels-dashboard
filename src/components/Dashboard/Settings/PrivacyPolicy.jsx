@@ -1,69 +1,62 @@
 import JoditEditor from "jodit-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-// import { toast } from "sonner";
-// import {
-//   useGetSettingsQuery,
-//   useUpdateSettingsMutation,
-// } from "../../../Redux/api/settingsApi";
-import { Button } from "@mui/material";
-import { MdArrowBackIosNew } from "react-icons/md";
+import { Button, CircularProgress } from "@mui/material";
+import {
+  useAddSettingsMutation,
+  useGetSettingsQuery,
+} from "../../../Redux/slices/settingsApi";
+import { toast } from "sonner";
 
 const PrivacyPolicy = () => {
   const editor = useRef(null);
   const [content, setContent] = useState("");
 
-  // const {
-  //   data: getSettingsData,
-  //   isLoading: isFetching,
-  //   error: fetchError,
-  //   refetch,
-  // } = useGetSettingsQuery();
-  // console.log(getSettingsData?.data?.termsOfService);
+  const {
+    data: getSettingsData,
+    isLoading: isFetching,
+    error: fetchError,
+    refetch,
+  } = useGetSettingsQuery("privacyPolicy");
+  // console.log(getSettingsData?.data);
 
-  // const [addSettings, { isLoading: isAdding }] = useAddSettingsMutation();
-  // const [updateSettings, { isLoading: isUpdating }] =
-  //   useUpdateSettingsMutation();
+  const [addSettings, { isLoading: isAdding }] = useAddSettingsMutation();
 
-  // useEffect(() => {
-  //   if (getSettingsData?.data.termsOfService) {
-  //     setContent(getSettingsData.data.termsOfService);
-  //   }
-  // }, [getSettingsData]);
+  useEffect(() => {
+    if (getSettingsData?.data) {
+      setContent(getSettingsData?.data);
+    }
+  }, [getSettingsData]);
 
   const handleOnSave = async () => {
-    // try {
-    //   await updateSettings({ termsOfService: content }).unwrap();
-    //   toast.success("Terms and Conditions updated successfully!");
-    // if
-    // (getSettingsData?.data.termsOfService) { }
-    //  else {
-    //   // Add a new Terms and Conditions if not existing
-    //   await addSettings({ termsOfService: content }).unwrap();
-    //   toast.success("Terms and Conditions added successfully!");
-    // }
-    // refetch();
-    // } catch (error) {
-    //   toast.error("Failed to save Terms and Conditions. Please try again.");
-    //   console.error("Save error:", error);
-    // }
+    try {
+      const response = await addSettings({ privacyPolicy: content }).unwrap();
+      // console.log(response);
+      if (response.success) {
+        toast.success("Privacy Policy data added successfully!");
+        refetch();
+      }
+    } catch (error) {
+      toast.error("Failed to save Privacy Policy data. Please try again.");
+      console.error("Save error:", error);
+    }
   };
 
-  // if (isFetching || isUpdating) {
-  //   return (
-  //     <div className="flex justify-center items-center h-screen">
-  //       <Spin size="large" tip="Loading Terms and Conditions..." />
-  //     </div>
-  //   );
-  // }
+  if (isFetching || isAdding) {
+    return (
+      <div className="flex justify-center items-center h-[92vh]">
+        <CircularProgress />
+      </div>
+    );
+  }
 
-  // if (fetchError) {
-  //   return (
-  //     <div className="text-white">
-  //       Error loading Terms and Conditions. Please try again later.
-  //     </div>
-  //   );
-  // }
+  if (fetchError) {
+    return (
+      <div className="text-white">
+        Error loading Privacy Policy data. Please try again later.
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-[90vh] bg-[#fbfbfb] rounded-lg py-5 px-4">
