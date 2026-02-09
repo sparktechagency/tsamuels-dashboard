@@ -15,7 +15,7 @@ import ChangePassword from "./Settings/ChangePassword";
 import TermsAndConditions from "./Settings/TermsAndConditions";
 import AboutUs from "./Settings/AboutUs";
 import PrivacyPolicy from "./Settings/PrivacyPolicy";
-import FAQ from "./Settings/FAQ";
+import FAQ from "./Settings/Faq";
 
 function TabPanel({ children, value, index }) {
   return (
@@ -39,10 +39,22 @@ export default function Settings() {
 
   const tabs = [
     { label: "Personal Information", icon: <FaUser />, component: <Profile /> },
-    { label: "Change Password", icon: <FaLock />, component: <ChangePassword /> },
-    { label: "Terms & Conditions", icon: <FaFileContract />, component: <TermsAndConditions /> },
+    {
+      label: "Change Password",
+      icon: <FaLock />,
+      component: <ChangePassword />,
+    },
+    {
+      label: "Terms & Conditions",
+      icon: <FaFileContract />,
+      component: <TermsAndConditions />,
+    },
     { label: "About Us", icon: <FaInfoCircle />, component: <AboutUs /> },
-    { label: "Privacy Policy", icon: <FaShieldAlt />, component: <PrivacyPolicy /> },
+    {
+      label: "Privacy Policy",
+      icon: <FaShieldAlt />,
+      component: <PrivacyPolicy />,
+    },
     { label: "FAQ", icon: <FaQuestionCircle />, component: <FAQ /> },
   ];
 
