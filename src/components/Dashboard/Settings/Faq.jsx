@@ -24,7 +24,7 @@ import {
 } from "../../../Redux/slices/settingsApi";
 import { toast } from "sonner";
 
-export default function Faq() {
+const FAQ = () => {
   const { data: faqData, isLoading: loadingFaqs, isError } = useGetFAQsQuery();
   const [addFaq, { isLoading: isAdding }] = useAddFaqMutation();
   const [editFaq, { isLoading: isEditing }] = useEditFaqMutation();
@@ -349,4 +349,6 @@ export default function Faq() {
       </Dialog>
     </div>
   );
-}
+};
+
+export default FAQ;
